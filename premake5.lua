@@ -44,21 +44,20 @@ project "Raytracy"
 	filter "system:windows"
 		systemversion "latest"
 
-		defines {
-		}
+	
 
 	filter "configurations:Debug"
-		defines "RT_DEBUG"
+		defines "RTY_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "RT_RELEASE"
+		defines "RTY_RELEASE"
 		runtime "Release"
 		optimize "on"
 
 	filter "configurations:Dist"
-		defines "RT_DIST"
+		defines "RTY_DIST"
 		runtime "Release"
 		optimize "on"
 
@@ -87,19 +86,20 @@ project "Sandbox"
 
 	filter "system:windows"
 		systemversion "latest"
+		
 
 	filter "configurations:Debug"
-		defines "RT_DEBUG"
+		defines "RTY_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "RT_RELEASE"
+		defines "RTY_RELEASE"
 		runtime "Release"
 		optimize "on"
 
 	filter "configurations:Dist"
-		defines "RT_DIST"
+		defines "RTY_DIST"
 		runtime "Release"
 		optimize "on"
 
