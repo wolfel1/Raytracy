@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include "core/Log.h"
 #include "core/Core.h"
 #include "Application.h"
 
@@ -11,12 +11,12 @@ extern raytracy::Application* raytracy::CreateApplication();
 namespace raytracy {
 
 	int Main(int argc, char** argv) {
-		std::cout << "Starting App...";
+		Log::Init();
+		RTY_INFO("Starting Raytracy...");
 
 		auto app = CreateApplication();
 
 		app->Run();
-
 
 		return 0;
 	}

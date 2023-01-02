@@ -1,0 +1,4 @@
+[submodule "Raytracy/vendor/spdlog"]
+	path = Raytracy/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+	branch = v1.x
