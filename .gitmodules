@@ -2,3 +2,6 @@
 	path = Raytracy/vendor/spdlog
 	url = https://github.com/gabime/spdlog
 	branch = v1.x
+[submodule "Raytracy/vendor/glm"]
+	path = Raytracy/vendor/glm
+	url = https://github.com/g-truc/glm
