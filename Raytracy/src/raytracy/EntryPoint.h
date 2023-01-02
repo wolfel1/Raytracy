@@ -12,7 +12,7 @@ namespace raytracy {
 
 	int Main(int argc, char** argv) {
 		Log::Init();
-		RTY_INFO("Starting Raytracy...");
+		RTY_CORE_INFO("Starting Raytracy...");
 
 		auto app = CreateApplication();
 
