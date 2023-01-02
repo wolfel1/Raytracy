@@ -17,6 +17,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["spdlog"] = "Raytracy/vendor/spdlog/include"
+IncludeDir["glm"] = "Raytracy/vendor/glm"
 
 project "Raytracy"
 	location "Raytracy"
@@ -30,7 +31,9 @@ project "Raytracy"
 
 	files {
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl",
 	}
 
 	defines {
@@ -39,7 +42,8 @@ project "Raytracy"
 
 	includedirs {
 		"%{prj.name}/src",
-		"%{IncludeDir.spdlog}"
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.glm}",
 	}
 
 
@@ -80,7 +84,8 @@ project "Sandbox"
 
 	includedirs {
 		"Raytracy/src",
-		"%{IncludeDir.spdlog}"
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.glm}"
 	}
 
 	links {
