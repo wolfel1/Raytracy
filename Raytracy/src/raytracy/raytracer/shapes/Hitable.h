@@ -2,10 +2,9 @@
 
 #include "../../core/Core.h"
 #include "../Ray.h"
+#include "../materials/Material.h"
 
 namespace raytracy {
-
-	class Material;
 
 	struct Hit {
 		Point3 point{};
