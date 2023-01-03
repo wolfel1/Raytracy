@@ -8,7 +8,7 @@ namespace raytracy {
 	class Random {
 	private:
 		static std::mt19937 generator;
-		static std::uniform_real_distribution<std::mt19937::result_type> distribution;
+		static std::uniform_real_distribution<float> distribution;
 
 	public:
 		static void Init() {

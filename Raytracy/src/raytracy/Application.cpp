@@ -7,6 +7,8 @@ namespace raytracy {
 	Application* Application::instance = nullptr;
 
 	Application::Application() {
+		RTY_ASSERT(!instance, "App already exists!");
+
 		instance = this;
 		running = true;
 
@@ -14,6 +16,7 @@ namespace raytracy {
 	}
 
 	Application::~Application() {
+		Raytracer::Shutdown();
 	}
 
 	void Application::Run() {

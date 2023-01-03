@@ -8,6 +8,9 @@ namespace raytracy {
 
 	void Raytracer::Shutdown() {
 	}
+	Color3 Raytracer::ComputeRayColor() {
+		return Color3();
+	}
 }
 
 

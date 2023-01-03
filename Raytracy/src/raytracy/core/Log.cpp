@@ -6,7 +6,9 @@
 namespace raytracy {
 	void Log::Init() {
 		spdlog::set_pattern("%^[%T] %n: %v%$");
-		auto logger = spdlog::stdout_color_mt("Raytracy");
-		logger->set_level(spdlog::level::trace);
+		auto raytracer_logger = spdlog::stdout_color_mt("Raytracer");
+		raytracer_logger->set_level(spdlog::level::trace);
+		auto raytracy_logger = spdlog::stdout_color_mt("Raytracy");
+		raytracy_logger->set_level(spdlog::level::trace);
 	}
 }

@@ -13,6 +13,28 @@
 #endif
 #endif
 
+#ifdef RTY_DEBUG
+#ifdef RTY_PLATFORM_WINDOWS
+#define RTY_DEBUG_BREAK() __debugbreak()
+#elif defined(RTY_PLATFORM_LINUX)
+#include <signal.h>
+#define RTY_DEBUG_BREAK() raise(SIGTRAP)
+#else
+#error "Platform doesn't support debugbreak!"
+#endif
+#define RTY_ENABLE_ASSERTS
+#else
+#define RTY_DEBUG_BREAK()
+#endif
+
+#ifdef RTY_ENABLE_ASSERTS
+#define RTY_ASSERT(x, ...) { if(!(x)) { RTY_APP_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
+#define RTY_RAYTRACER_ASSERT(x, ...) { if(!(x)) { RTY_RAYTRACER_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
+#else
+#define RTY_ASSERT(x, ...)
+#define RTY_RAYTRACER_ASSERT(x, ...)
+#endif
+
 using std::make_shared;
 using std::shared_ptr;
 using std::sqrt;
