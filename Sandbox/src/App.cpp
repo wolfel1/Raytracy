@@ -1,4 +1,4 @@
-#include <raytracy/Application.h>
+#include <raytracy.h>
 #include <raytracy/EntryPoint.h>
 
 

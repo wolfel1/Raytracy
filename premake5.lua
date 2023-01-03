@@ -29,8 +29,8 @@ project "Raytracy"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
-	pchheader "rrepch.h"
-	pchsource "Raytracy/src/rrepch.cpp"
+	pchheader "raytracypch.h"
+	pchsource "Raytracy/src/raytracypch.cpp"
 
 	files {
 		"%{prj.name}/src/**.h",

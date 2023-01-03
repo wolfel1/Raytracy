@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 // Platform detection using predefined macros
 #ifdef _WIN32
 /* Windows x64/x86 */
@@ -11,3 +12,7 @@
 #error "x86 Builds are not supported!"
 #endif
 #endif
+
+using std::make_shared;
+using std::shared_ptr;
+using std::sqrt;
