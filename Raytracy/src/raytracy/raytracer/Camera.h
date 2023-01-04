@@ -1,6 +1,7 @@
 #pragma once
 
 #include "helper/Vector3.h"
+#include "Ray.h"
 
 namespace raytracy {
 	class Camera {
@@ -13,5 +14,7 @@ namespace raytracy {
 		float lens_radius;
 	public:
 		Camera(const Point3& look_from, const Point3& look_at, const glm::vec3& up, float field_of_view, float aspect_ratio, float apperture, float focus);
+
+		Ray ShootRay(float u, float v) const;
 	};
 }

@@ -20,4 +20,10 @@ namespace raytracy {
 
 		lens_radius = apperture / 2.0f;
 	}
+	Ray Camera::ShootRay(float u, float v) const {
+		glm::vec3 random_vector = lens_radius * Random::RandomVectorInUnitDisk();
+		glm::vec3 offset = glm::vec3(u * random_vector.x, v * random_vector.y, 0);
+
+		return Ray(origin + offset, lower_left_corner + u * horizontal_axis + v * vertical_axis - origin - offset);
+	}
 }
