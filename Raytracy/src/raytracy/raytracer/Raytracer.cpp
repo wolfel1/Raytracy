@@ -5,23 +5,23 @@
 
 namespace raytracy {
 	void Raytracer::Init() {
-		Random::Init();
+
 	}
 
 	void Raytracer::Submit(const HitableCollection& objects, const Camera& camera, const ImageData& data) {
-		std::ofstream output_stream("../image.ppm", std::ios::out | std::ios::binary);
-		output_stream << "P3\n" << data.image_width << ' ' << data.image_height << "\n255\n";
-		std::cout << "\nProgress: \n[";
+		std::ofstream output_stream("./image.ppm", std::ios::out | std::ios::binary);
+		output_stream << "P3\n" << data.width << ' ' << data.height << "\n255\n";
+		RTY_RAYTRACER_TRACE( "Start process");
 
 		// top to down
-		for (int j = data.image_height - 1; j >= 0; --j) {
-			std::cout << "\rScanlines remaining: " << j << ' ' << std::flush;
+		for (int32_t j = data.height - 1; j >= 0; --j) {
+			RTY_RAYTRACER_TRACE("Scanlines remaining: {0}", j);
 			// left to right
-			for (int i = 0; i < data.image_width; ++i) {
+			for (int32_t i = 0; i < data.width; ++i) {
 				Color3 pixel_color(0);
-				for (int sample = 0; sample < data.samples_per_pixel; ++sample) {
-					auto u = (float(i) + Random::RandomFloat()) / (data.image_width - 1);
-					auto v = (float(j) + Random::RandomFloat()) / (data.image_height - 1);
+				for (uint32_t sample = 0; sample < data.samples_per_pixel; ++sample) {
+					auto u = (float(i) + Random::RandomFloat()) / (data.width - 1);
+					auto v = (float(j) + Random::RandomFloat()) / (data.height - 1);
 					Ray ray = camera.ShootRay(u, v);
 					pixel_color += ComputeRayColor(ray, objects, data.max_depth);
 				}
@@ -31,7 +31,7 @@ namespace raytracy {
 		}
 		output_stream.close();
 
-		std::cout << "\nDone.\n";
+		RTY_RAYTRACER_TRACE("Done.");
 	}
 
 	Color3 Raytracer::ComputeRayColor(const Ray& ray, const HitableCollection& objects, uint32_t depth) {
@@ -42,7 +42,7 @@ namespace raytracy {
 
 		if (objects.HitObjects(ray, 0.001f, infinity, hit)) {
 			Ray scattered_ray;
-			Color3 attenuation;
+			Color3 attenuation{};
 			if (hit.material->Scatter(ray, hit, attenuation, scattered_ray)) {
 				return ComputeRayColor(scattered_ray, objects, depth - 1) * attenuation;
 			}

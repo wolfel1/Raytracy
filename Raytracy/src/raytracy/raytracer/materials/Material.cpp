@@ -5,7 +5,7 @@ namespace raytracy {
 	bool LambertianDiffuse::Scatter(const Ray& incoming_ray, const Hit& hit, Color3& attenuation, Ray& scattered) const {
 		auto scatter_direction = hit.normal + Random::RandomUnitVector();
 
-		if (glm::all(glm::lessThan(glm::abs(scatter_direction), glm::vec3(1e-8)))) {
+		if (glm::all(glm::lessThan(glm::abs(scatter_direction), glm::vec3(1e-8f)))) {
 			scatter_direction = hit.normal;
 		}
 
@@ -48,6 +48,8 @@ namespace raytracy {
 	}
 	
 	float Dielectric::Reflectance(float cosine, float ratio) {
-		return 0.0f;
+		auto reflectance = (1.0f - ratio) / (1.0f + ratio);
+		reflectance = reflectance * reflectance;
+		return reflectance + (1.0f - reflectance) * powf((1.0f - cosine), 5);
 	}
 }

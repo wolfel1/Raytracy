@@ -11,13 +11,10 @@ namespace raytracy {
 		static std::uniform_real_distribution<float> distribution;
 
 	public:
-		static void Init() {
-			generator.seed(std::random_device()());
-	}
 
 		static float RandomFloat() {
 			// Returns a random real in [0,1).
-			return (float)distribution(generator) / std::numeric_limits<float>::max();
+			return rand() / (RAND_MAX + 1.0f);
 		}
 
 		static float RandomFloat(float min, float max) {

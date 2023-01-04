@@ -4,6 +4,7 @@ bin-int/
 
 # Files
 *.log
+*.ppm
 
 # Visual Studio files and folder
 .vs/

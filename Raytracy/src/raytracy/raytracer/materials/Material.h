@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Ray.h"
-#include "../shapes/Hitable.h"
+#include "../helper/Hit.h"
 
 namespace raytracy {
 

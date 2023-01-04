@@ -1,5 +1,6 @@
 #pragma once
 #include "Hitable.h"
+
 namespace raytracy {
 	class Sphere : public Hitable {
 	private:

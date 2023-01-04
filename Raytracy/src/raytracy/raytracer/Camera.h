@@ -13,8 +13,8 @@ namespace raytracy {
 		glm::vec3 u, v, w;
 		float lens_radius;
 	public:
-		Camera(const Point3& look_from, const Point3& look_at, const glm::vec3& up, float field_of_view, float aspect_ratio, float apperture, float focus);
+		Camera(const Point3& look_from, const Point3& look_at, const glm::vec3& up, float field_of_view, float aspect_ratio);
 
-		Ray ShootRay(float u, float v) const;
+		Ray ShootRay(float s, float t) const;
 	};
 }

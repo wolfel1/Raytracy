@@ -3,7 +3,7 @@
 #include "Camera.h"
 
 namespace raytracy {
-	Camera::Camera(const Point3& look_from, const Point3& look_at, const glm::vec3& up, float field_of_view, float aspect_ratio, float apperture, float focus) {
+	Camera::Camera(const Point3& look_from, const Point3& look_at, const glm::vec3& up, float field_of_view, float aspect_ratio) {
 		auto theta = glm::radians(field_of_view);
 		auto height = glm::tan(theta / 2);
 		auto viewport_height = 2.0f * height;
@@ -14,16 +14,12 @@ namespace raytracy {
 		v = glm::cross(w, u);
 
 		origin = look_from;
-		horizontal_axis = viewport_width * focus * u;
-		vertical_axis = viewport_height * focus * v;
-		lower_left_corner = origin - horizontal_axis / 2.0f - vertical_axis / 2.0f - w * focus;
-
-		lens_radius = apperture / 2.0f;
+		horizontal_axis = viewport_width  * u;
+		vertical_axis = viewport_height  * v;
+		lower_left_corner = origin - horizontal_axis / 2.0f - vertical_axis / 2.0f - w;
 	}
-	Ray Camera::ShootRay(float u, float v) const {
-		glm::vec3 random_vector = lens_radius * Random::RandomVectorInUnitDisk();
-		glm::vec3 offset = glm::vec3(u * random_vector.x, v * random_vector.y, 0);
 
-		return Ray(origin + offset, lower_left_corner + u * horizontal_axis + v * vertical_axis - origin - offset);
+	Ray Camera::ShootRay(float s, float t) const {
+		return Ray(origin , lower_left_corner + s * horizontal_axis + t * vertical_axis - origin);
 	}
 }

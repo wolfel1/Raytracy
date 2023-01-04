@@ -8,8 +8,8 @@
 namespace raytracy {
 
 	struct ImageData {
-		uint32_t image_width;
-		uint32_t image_height;
+		int32_t width;
+		int32_t height;
 		uint32_t samples_per_pixel;
 		uint32_t max_depth;
 	};
