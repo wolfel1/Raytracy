@@ -9,18 +9,22 @@ namespace raytracy {
 	}
 
 	void Raytracer::Submit(const HitableCollection& objects, const Camera& camera, const ImageData& data) {
+		RTY_PROFILE_FUNCTION();
+
 		std::ofstream output_stream("./image.ppm", std::ios::out | std::ios::binary);
 		output_stream << "P3\n" << data.width << ' ' << data.height << "\n255\n";
-		RTY_RAYTRACER_TRACE( "Start process");
+		RTY_RAYTRACER_TRACE("Start process");
 
 		// top to down
 		for (int32_t j = data.height - 1; j >= 0; --j) {
-			RTY_RAYTRACER_TRACE("Scanlines remaining: {0}", j);
+			RTY_PROFILE_SCOPE("Line")
+				RTY_RAYTRACER_TRACE("Scanlines remaining: {0}", j);
 			// left to right
 			for (int32_t i = 0; i < data.width; ++i) {
-				Color3 pixel_color(0);
+				RTY_PROFILE_SCOPE("Pixel")
+					Color3 pixel_color(0);
 				for (uint32_t sample = 0; sample < data.samples_per_pixel; ++sample) {
-					auto u = (float(i) + Random::RandomFloat()) / (data.width - 1);
+						auto u = (float(i) + Random::RandomFloat()) / (data.width - 1);
 					auto v = (float(j) + Random::RandomFloat()) / (data.height - 1);
 					Ray ray = camera.ShootRay(u, v);
 					pixel_color += ComputeRayColor(ray, objects, data.max_depth);
@@ -35,6 +39,7 @@ namespace raytracy {
 	}
 
 	Color3 Raytracer::ComputeRayColor(const Ray& ray, const HitableCollection& objects, uint32_t depth) {
+
 		Hit hit;
 		if (depth <= 0) {
 			return Color3(0.0f);
@@ -54,8 +59,9 @@ namespace raytracy {
 		return Color3(1.0f) * (1.0f - hit_value) +
 			Color3(0.5f, 0.7f, 1.0f) * hit_value;
 	}
-	
+
 	void Raytracer::WriteColor(std::ofstream& out, Color3 pixel_color, uint32_t samples_per_pixel) {
+
 		auto red = pixel_color.r;
 		auto green = pixel_color.g;
 		auto blue = pixel_color.b;
@@ -69,7 +75,7 @@ namespace raytracy {
 			<< static_cast<int>(256.0f * Clamp(green, 0.0f, 0.999f)) << ' '
 			<< static_cast<int>(256.0f * Clamp(blue, 0.0f, 0.999f)) << '\n';
 	}
-	
+
 	void Raytracer::Shutdown() {}
 }
 

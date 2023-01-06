@@ -17,6 +17,7 @@
 #include "raytracy/core/Core.h"
 #include "raytracy/core/Log.h"
 #include "raytracy/core/Random.h"
+#include "raytracy/debug/Instrumentor.h"
 
 #ifdef RTY_PLATFORM_WINDOWS
 #include <Windows.h>
