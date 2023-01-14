@@ -130,8 +130,8 @@ namespace raytracy {
 	class InstrumentationTimer
 	{
 	public:
-		InstrumentationTimer(const char* name)
-			: m_Name(name), m_Stopped(false) {
+		InstrumentationTimer(const char* name, bool console)
+			: m_Name(name), m_Stopped(false), console(console) {
 			m_StartTimepoint = std::chrono::high_resolution_clock::now();
 		}
 
@@ -146,7 +146,11 @@ namespace raytracy {
 			long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
 			long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
 
-			Instrumentor::Get().WriteProfile({ m_Name, start, end, std::this_thread::get_id() });
+			if (!console) {
+				Instrumentor::Get().WriteProfile({ m_Name, start, end, std::this_thread::get_id() });
+			} else {
+				RTY_BASE_TRACE("Duration of {}: {} ms", m_Name, (end - start) * 0.001);
+			}
 
 			m_Stopped = true;
 		}
@@ -154,11 +158,12 @@ namespace raytracy {
 		const char* m_Name;
 		std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
 		bool m_Stopped;
+		bool console;
 	};
 }
 
 
-#define RTY_PROFILE 1
+#define RTY_PROFILE 0
 #if RTY_PROFILE
 #if defined(__GNUC__) || (defined(__MWERKS__) && (__MWERKS__ >= 0x3000)) || (defined(__ICC) && (__ICC >= 600)) || defined(__ghs__)
 #define RTY_FUNC_SIG __PRETTY_FUNCTION__
@@ -180,11 +185,12 @@ namespace raytracy {
 
 #define RTY_PROFILE_BEGIN_SESSION(name, filepath) ::raytracy::Instrumentor::Get().BeginSession(name, filepath)
 #define RTY_PROFILE_END_SESSION() ::raytracy::Instrumentor::Get().EndSession()
-#define RTY_PROFILE_SCOPE(name) ::raytracy::InstrumentationTimer timer##__LINE__(name);
+#define RTY_PROFILE_SCOPE(name) ::raytracy::InstrumentationTimer timer##__LINE__(name, false);
 #define RTY_PROFILE_FUNCTION() RTY_PROFILE_SCOPE(RTY_FUNC_SIG)
 #else
 #define RTY_PROFILE_BEGIN_SESSION(name, filepath)
 #define RTY_PROFILE_END_SESSION()
 #define RTY_PROFILE_SCOPE(name)
+#define RTY_PROFILE_INLINE(name)
 #define RTY_PROFILE_FUNCTION()
 #endif

@@ -6,11 +6,6 @@
 namespace raytracy {
 	Ray::Ray(const Point3& origin, const glm::vec3 direction) : origin(origin), direction(direction) {}
 
-	glm::vec3 Ray::Reflect(const glm::vec3& normal) const {
-		auto unit_direction = glm::normalize(direction);
-
-		return unit_direction - 2.0f * glm::dot(unit_direction, normal) * normal;
-	}
 
 	glm::vec3 Ray::Refract(const glm::vec3& normal, float etai_over_etat) const {
 		auto unit_direction = glm::normalize(direction);

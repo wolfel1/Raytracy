@@ -5,6 +5,8 @@
 #include <utility>
 #include <algorithm>
 #include <functional>
+#include <thread>
+#include <future>
 
 #include <string>
 #include <fstream>

@@ -15,7 +15,7 @@ namespace raytracy {
 	}
 
 	bool Metal::Scatter(const Ray& incoming_ray, const Hit& hit, Color3& attenuation, Ray& scattered) const {
-		glm::vec3 reflected_ray = incoming_ray.Reflect(hit.normal);
+		glm::vec3 reflected_ray = glm::reflect(incoming_ray.GetDirection(), hit.normal);
 
 		scattered =
 			Ray(hit.point, reflected_ray + Random::RandomVectorInUnitSphere() * fuzzy);
@@ -39,9 +39,9 @@ namespace raytracy {
 		glm::vec3 refracted_direction;
 		if (cannot_refract ||
 			Reflectance(cos_theta, refraction_ratio) > Random::RandomFloat()) {
-			refracted_direction = incoming_ray.Reflect(hit.normal);
+			refracted_direction = glm::reflect(incoming_ray.GetDirection(), hit.normal);
 		} else {
-			refracted_direction = incoming_ray.Refract(hit.normal, refraction_ratio);
+			refracted_direction = glm::refract(incoming_ray.GetDirection(), hit.normal, refraction_ratio);
 		}
 		scattered = Ray(hit.point, refracted_direction);
 		return true;
