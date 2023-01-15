@@ -52,7 +52,7 @@ namespace raytracy {
 		float Reflectance(float cosine, float ratio) const {
 			auto reflectance = (1.0f - ratio) / (1.0f + ratio);
 			reflectance = reflectance * reflectance;
-			return reflectance + (1.0f - reflectance) * glm::pow((1.0f - cosine), 5);
+			return reflectance + (1.0f - reflectance) * glm::pow((1.0f - cosine), 5.0f);
 		}
 	};
 }
