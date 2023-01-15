@@ -1,8 +1,6 @@
 #include "raytracypch.h"
 #include "Raytracer.h"
 
-#include "helper/ColorHelper.h"
-
 namespace raytracy {
 	void Raytracer::Init() {
 
@@ -63,18 +61,13 @@ namespace raytracy {
 
 	void Raytracer::WriteColor(std::ofstream& out, Color3 pixel_color, uint32_t samples_per_pixel) {
 
-		auto red = pixel_color.r;
-		auto green = pixel_color.g;
-		auto blue = pixel_color.b;
-
 		auto scale = 1.0f / samples_per_pixel;
-		red = glm::sqrt(scale * red);
-		green = glm::sqrt(scale * green);
-		blue = glm::sqrt(scale * blue);
+		pixel_color = glm::sqrt(scale * pixel_color);
+		pixel_color = glm::clamp(pixel_color, 0.0f, 1.0f);
 
-		out << static_cast<int>(256.0f * Clamp(red, 0.0f, 0.999f)) << ' '
-			<< static_cast<int>(256.0f * Clamp(green, 0.0f, 0.999f)) << ' '
-			<< static_cast<int>(256.0f * Clamp(blue, 0.0f, 0.999f)) << '\n';
+		out << static_cast<int>(255.0f * pixel_color.r) << ' '
+			<< static_cast<int>(255.0f * pixel_color.g) << ' '
+			<< static_cast<int>(255.0f * pixel_color.b) << '\n';
 	}
 
 	void Raytracer::Shutdown() {}
