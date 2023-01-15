@@ -9,7 +9,8 @@ namespace raytracy {
 	}
 
 	void Raytracer::Submit(const HitableCollection& objects, const Camera& camera, const ImageData& data) {
-		RTY_PROFILE_FUNCTION();
+		RTY_PROFILE_FUNCTION(); 
+		InstrumentationTimer t("Raytracing", true);
 
 		std::ofstream output_stream("./image.ppm", std::ios::out | std::ios::binary);
 		output_stream << "P3\n" << data.width << ' ' << data.height << "\n255\n";
@@ -67,9 +68,9 @@ namespace raytracy {
 		auto blue = pixel_color.b;
 
 		auto scale = 1.0f / samples_per_pixel;
-		red = sqrt(scale * red);
-		green = sqrt(scale * green);
-		blue = sqrt(scale * blue);
+		red = glm::sqrt(scale * red);
+		green = glm::sqrt(scale * green);
+		blue = glm::sqrt(scale * blue);
 
 		out << static_cast<int>(256.0f * Clamp(red, 0.0f, 0.999f)) << ' '
 			<< static_cast<int>(256.0f * Clamp(green, 0.0f, 0.999f)) << ' '

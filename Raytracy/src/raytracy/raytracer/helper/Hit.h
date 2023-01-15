@@ -17,7 +17,7 @@ namespace raytracy {
 
 		inline void SetFaceNormal(const Ray& ray, const glm::vec3& outward_normal) {
 			front_face = glm::dot(ray.GetDirection(), outward_normal) < 0;
-			normal = front_face ? outward_normal : -outward_normal;
+			normal = glm::normalize(front_face ? outward_normal : -outward_normal);
 		}
 	};
 }

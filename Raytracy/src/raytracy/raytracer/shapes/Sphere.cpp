@@ -20,7 +20,7 @@ namespace raytracy {
 			return false;
 		}
 
-		auto sqrt_discriminant = sqrt(discriminant);
+		auto sqrt_discriminant = glm::sqrt(discriminant);
 		auto hit_value = (-bias - sqrt_discriminant) / a;
 		if (hit_value < min || hit_value > max) {
 			hit_value = (-bias + sqrt_discriminant) / a;

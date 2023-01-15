@@ -1,6 +1,8 @@
 #include "raytracypch.h"
 #include "Material.h"
 
+#include <glm/geometric.hpp>
+
 namespace raytracy {
 	bool LambertianDiffuse::Scatter(const Ray& incoming_ray, const Hit& hit, Color3& attenuation, Ray& scattered) const {
 		auto scatter_direction = hit.normal + Random::RandomUnitVector();
@@ -32,7 +34,7 @@ namespace raytracy {
 			glm::dot(
 				-(glm::normalize(incoming_ray.GetDirection())), hit.normal),
 			1.0f);
-		float sin_theta = sqrt(1.0f - cos_theta * cos_theta);
+		float sin_theta = glm::sqrt(1.0f - cos_theta * cos_theta);
 
 		bool cannot_refract = refraction_ratio * sin_theta > 1.0f;
 
@@ -47,9 +49,5 @@ namespace raytracy {
 		return true;
 	}
 	
-	float Dielectric::Reflectance(float cosine, float ratio) {
-		auto reflectance = (1.0f - ratio) / (1.0f + ratio);
-		reflectance = reflectance * reflectance;
-		return reflectance + (1.0f - reflectance) * powf((1.0f - cosine), 5);
-	}
+	
 }
