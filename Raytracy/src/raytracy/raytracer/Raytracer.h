@@ -10,7 +10,7 @@
 
 namespace raytracy {
 
-	struct ImageData {
+	struct Image {
 		int32_t width;
 		int32_t height;
 		uint32_t samples_per_pixel;
@@ -22,15 +22,18 @@ namespace raytracy {
 
 		std::thread raytracing_thread;
 
+		std::unique_ptr<Scene> active_scene;
+		std::unique_ptr<Camera> active_camera;
+		std::shared_ptr<Image> image;
+
 	public:
 		Raytracer();
 		~Raytracer();
-
-		void Submit(const Scene& objects, const Camera& camera, const ImageData& image_data);
+		void Submit(const Scene& objects, const Camera& camera, const Image& image_data);
 
 	private:
+		void RayTrace();
 		Color3 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth); 
-		
 		void WriteColor(std::ofstream& out, Color3 pixel_color, uint32_t samples_per_pixel);		
 	};
 }

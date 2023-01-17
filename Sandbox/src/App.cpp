@@ -10,7 +10,7 @@ private:
 public:
 	Sandbox() {
 		const auto aspect_ratio = 16.0f / 9.0f;
-		ImageData image_data{};
+		Image image_data{};
 		Scene scene;
 
 		image_data.width = 480;
