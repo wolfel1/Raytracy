@@ -1,8 +1,8 @@
 #include "raytracypch.h"
-#include "HitableCollection.h"
+#include "Scene.h"
 
 namespace raytracy {
-	bool HitableCollection::HitObjects(const Ray& ray, float min, float max, Hit& hit) const {
+	bool Scene::HitObjects(const Ray& ray, float min, float max, Hit& hit) const {
 		Hit temp;
 		bool hit_anything = false;
 		auto closest = max;

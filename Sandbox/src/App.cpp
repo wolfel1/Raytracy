@@ -7,9 +7,9 @@ using namespace raytracy;
 class Sandbox: public Application {
 	public:
 	Sandbox() {
-const auto aspect_ratio = 16.0f / 9.0f;
+		const auto aspect_ratio = 16.0f / 9.0f;
 		ImageData image_data{};
-		HitableCollection scene;
+		Scene scene;
 
 		image_data.width = 480;
 		image_data.height = static_cast<int>(image_data.width / aspect_ratio);
