@@ -1,5 +1,8 @@
 #pragma once
 
+
+#include <thread>
+
 #include "helper/Vector3.h"
 #include "Ray.h"
 #include "Scene.h"
@@ -15,18 +18,19 @@ namespace raytracy {
 	};
 
 	class Raytracer {
+	private:
+
+		std::thread raytracing_thread;
+
 	public:
-		static void Init();
+		Raytracer();
+		~Raytracer();
 
-		static void Submit(const Scene& objects, const Camera& camera, const ImageData& image_data);
-
-		static void Shutdown();
+		void Submit(const Scene& objects, const Camera& camera, const ImageData& image_data);
 
 	private:
-		static Color3 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth); 
+		Color3 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth); 
 		
-		static void WriteColor(std::ofstream& out, Color3 pixel_color, uint32_t samples_per_pixel);
-		
-		
+		void WriteColor(std::ofstream& out, Color3 pixel_color, uint32_t samples_per_pixel);		
 	};
 }

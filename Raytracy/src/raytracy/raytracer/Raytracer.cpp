@@ -1,7 +1,6 @@
 #include "raytracypch.h"
 #include "Raytracer.h"
 
-#include <thread>
 #include <execution>
 
 namespace raytracy {
@@ -9,7 +8,9 @@ namespace raytracy {
 	static std::mutex output_mutex;
 	static std::mutex hit_mutex;
 
-	void Raytracer::Init() {}
+	Raytracer::Raytracer() {}
+
+	Raytracer::~Raytracer() {}
 
 	void Raytracer::Submit(const Scene& objects, const Camera& camera,
 		const ImageData& data) {
@@ -110,5 +111,4 @@ namespace raytracy {
 		output_mutex.unlock();
 	}
 
-	void Raytracer::Shutdown() {}
 }  // namespace raytracy

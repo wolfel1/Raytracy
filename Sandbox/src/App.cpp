@@ -4,8 +4,10 @@
 #include <iostream>
 using namespace raytracy;
 
-class Sandbox: public Application {
-	public:
+class Sandbox : public Application {
+private:
+	Raytracer raytracer;
+public:
 	Sandbox() {
 		const auto aspect_ratio = 16.0f / 9.0f;
 		ImageData image_data{};
@@ -24,7 +26,7 @@ class Sandbox: public Application {
 		auto material_right = make_shared<Metal>(Color3(0.8f, 0.6f, 0.2f), 0.0f);
 
 		scene.Add(make_shared<Sphere>(Point3(0.0f, -100.5f, -1.0f), 100.0f,
-			material_ground));
+									  material_ground));
 		scene.Add(
 			make_shared<Sphere>(Point3(0.0f, 0.0f, -1.0f), 0.5f, material_center));
 		scene.Add(
@@ -40,7 +42,7 @@ class Sandbox: public Application {
 
 		Camera camera(look_from, look_at, up, 20.0f, aspect_ratio);
 
-		Raytracer::Submit(scene, camera, image_data);
+		raytracer.Submit(scene, camera, image_data);
 	}
 	~Sandbox() {}
 

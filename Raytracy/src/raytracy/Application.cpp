@@ -14,13 +14,10 @@ namespace raytracy {
 
 		instance = this;
 		running = true;
-
-		Raytracer::Init();
 	}
 
 	Application::~Application() {
 		RTY_PROFILE_FUNCTION();
-		Raytracer::Shutdown();
 	}
 
 	void Application::Run() {
