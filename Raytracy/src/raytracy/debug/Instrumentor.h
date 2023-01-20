@@ -149,7 +149,7 @@ namespace raytracy {
 			if (!console) {
 				Instrumentor::Get().WriteProfile({ m_Name, start, end, std::this_thread::get_id() });
 			} else {
-				RTY_BASE_TRACE("Duration of {}: {} ms", m_Name, (end - start) * 0.001);
+				RTY_BASE_TRACE("Duration of {}: {} ms\n", m_Name, (end - start) * 0.001);
 			}
 
 			m_Stopped = true;

@@ -11,8 +11,8 @@
 namespace raytracy {
 
 	struct Image {
-		int32_t width;
-		int32_t height;
+		uint32_t width;
+		uint32_t height;
 		uint32_t samples_per_pixel;
 		uint32_t max_depth;
 	};
@@ -26,7 +26,7 @@ namespace raytracy {
 		std::unique_ptr<Camera> active_camera;
 		std::shared_ptr<Image> image;
 
-		glm::vec3* accumalated_color = nullptr;
+		glm::vec3* accumalated_color_data = nullptr;
 
 	public:
 		Raytracer();
@@ -36,6 +36,6 @@ namespace raytracy {
 	private:
 		void RayTrace();
 		glm::vec3 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth);
-		void WriteColor(std::ofstream& out, glm::vec3 pixel_color, uint32_t samples_per_pixel);
+		void WriteImage();
 	};
 }
