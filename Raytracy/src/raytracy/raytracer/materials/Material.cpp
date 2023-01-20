@@ -4,7 +4,7 @@
 #include <glm/geometric.hpp>
 
 namespace raytracy {
-	bool LambertianDiffuse::Scatter(const Ray& incoming_ray, const Hit& hit, Color3& attenuation, Ray& scattered) const {
+	bool LambertianDiffuse::Scatter(const Ray& incoming_ray, const Hit& hit, glm::vec3& attenuation, Ray& scattered) const {
 		auto scatter_direction = hit.normal + Random::RandomUnitVector();
 
 		if (glm::all(glm::lessThan(glm::abs(scatter_direction), glm::vec3(1e-8f)))) {
@@ -16,7 +16,7 @@ namespace raytracy {
 		return true;
 	}
 
-	bool Metal::Scatter(const Ray& incoming_ray, const Hit& hit, Color3& attenuation, Ray& scattered) const {
+	bool Metal::Scatter(const Ray& incoming_ray, const Hit& hit, glm::vec3& attenuation, Ray& scattered) const {
 		glm::vec3 reflected_ray = glm::reflect(incoming_ray.GetDirection(), hit.normal);
 
 		scattered =
@@ -25,8 +25,8 @@ namespace raytracy {
 		return (glm::dot(scattered.GetDirection(), hit.normal)) > 0;
 	}
 
-	bool Dielectric::Scatter(const Ray& incoming_ray, const Hit& hit, Color3& attenuation, Ray& scattered) const {
-		attenuation = Color3(1.0f);
+	bool Dielectric::Scatter(const Ray& incoming_ray, const Hit& hit, glm::vec3& attenuation, Ray& scattered) const {
+		attenuation = glm::vec3(1.0f);
 
 		float refraction_ratio =
 			hit.front_face ? (1.0f / index_of_refraction) : index_of_refraction;

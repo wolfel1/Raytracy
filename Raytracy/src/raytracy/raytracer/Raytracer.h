@@ -3,7 +3,7 @@
 
 #include <thread>
 
-#include "helper/Vector3.h"
+#include <glm/glm.hpp>
 #include "Ray.h"
 #include "Scene.h"
 #include "Camera.h"
@@ -26,6 +26,8 @@ namespace raytracy {
 		std::unique_ptr<Camera> active_camera;
 		std::shared_ptr<Image> image;
 
+		glm::vec3* accumalated_color = nullptr;
+
 	public:
 		Raytracer();
 		~Raytracer();
@@ -33,7 +35,7 @@ namespace raytracy {
 
 	private:
 		void RayTrace();
-		Color3 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth); 
-		void WriteColor(std::ofstream& out, Color3 pixel_color, uint32_t samples_per_pixel);		
+		glm::vec3 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth);
+		void WriteColor(std::ofstream& out, glm::vec3 pixel_color, uint32_t samples_per_pixel);
 	};
 }

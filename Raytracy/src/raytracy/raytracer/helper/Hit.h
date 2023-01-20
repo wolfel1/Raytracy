@@ -1,7 +1,7 @@
 #pragma once
 
 #include "raytracy/core/Core.h"
-#include "Vector3.h"
+#include <glm/glm.hpp>
 #include "../Ray.h"
 
 namespace raytracy {
@@ -9,7 +9,7 @@ namespace raytracy {
 	class Material;
 
 	struct Hit {
-		Point3 point{};
+		glm::vec3 point{};
 		glm::vec3 normal{};
 		shared_ptr<Material> material;
 		float hit_value{};

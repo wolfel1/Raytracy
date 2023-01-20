@@ -6,7 +6,7 @@
 namespace raytracy {
 	Sphere::Sphere() : center({ 0.0f,0.0f,0.0f }), radius(1.0f) {}
 
-	Sphere::Sphere(Point3 center, float radius, shared_ptr<Material> material)
+	Sphere::Sphere(glm::vec3 center, float radius, shared_ptr<Material> material)
 		: center(center), radius(radius), material(material) {}
 
 	bool Sphere::HitsObject(const Ray& ray, float min, float max, Hit& hit) const {

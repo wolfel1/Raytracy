@@ -35,7 +35,7 @@ namespace raytracy {
 			// left to right
 			for (int32_t i = 0; i < image->width; ++i) {
 				RTY_PROFILE_SCOPE("Pixel")
-					Color3 pixel_color(0);
+					glm::vec3 pixel_color(0);
 				for (uint32_t sample = 0; sample < image->samples_per_pixel; ++sample) {
 					auto u = (float(i) + Random::RandomFloat()) / (image->width - 1);
 					auto v = (float(j) + Random::RandomFloat()) / (image->height - 1);
@@ -51,32 +51,32 @@ namespace raytracy {
 		RTY_RAYTRACER_TRACE("Done.");
 	}
 
-	Color3 Raytracer::ComputePixelColor(const Ray& ray,
+	glm::vec3 Raytracer::ComputePixelColor(const Ray& ray,
 		const Scene& objects,
 		uint32_t depth) {
 		Hit hit;
 		if (depth <= 0) {
-			return Color3(0.0f);
+			return glm::vec3(0.0f);
 		}
 
 		auto hit_anything = objects.HitObjects(ray, 0.001f, infinity, hit);
 		
 		if (hit_anything) {
 			Ray scattered_ray;
-			Color3 attenuation{};
+			glm::vec3 attenuation{};
 			if (hit.material->Scatter(ray, hit, attenuation, scattered_ray)) {
 				return ComputePixelColor(scattered_ray, objects, depth - 1) * attenuation;
 			}
-			return Color3(0.0f);
+			return glm::vec3(0.0f);
 		}
 
 		glm::vec3 unit_direction = glm::normalize(ray.GetDirection());
 		auto hit_value = 0.5f * (unit_direction.y + 1.0f);
-		return Color3(1.0f) * (1.0f - hit_value) +
-			Color3(0.5f, 0.7f, 1.0f) * hit_value;
+		return glm::vec3(1.0f) * (1.0f - hit_value) +
+			glm::vec3(0.5f, 0.7f, 1.0f) * hit_value;
 	}
 
-	void Raytracer::WriteColor(std::ofstream& out, Color3 pixel_color,
+	void Raytracer::WriteColor(std::ofstream& out, glm::vec3 pixel_color,
 		uint32_t samples_per_pixel) {
 		auto scale = 1.0f / samples_per_pixel;
 		pixel_color = glm::sqrt(scale * pixel_color);
