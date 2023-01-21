@@ -8,12 +8,11 @@ namespace raytracy {
 		auto closest = max;
 
 		for (const auto& object : objects) {
-			if (object->HitsObject(ray, min, max, temp)) {
+			if (object->HitsObject(ray, min, closest, temp)) {
+				closest = temp.hit_value;
 				hit_anything = true;
-				if (closest > temp.hit_value) {
-					closest = temp.hit_value;
-					hit = temp;
-				}
+				hit = temp;
+
 			}
 		}
 

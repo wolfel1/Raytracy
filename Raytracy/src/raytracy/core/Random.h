@@ -32,13 +32,7 @@ namespace raytracy {
 		}
 
 		static glm::vec3 RandomVectorInUnitSphere() {
-			while (true) {
-				auto point = RandomVector(-1.0f, 1.0f);
-				if (glm::length2(point) >= 1.0f) {
-					continue;
-				}
-				return point;
-			}
+			return glm::normalize(RandomVector(-1.0f, 1.0f));
 		}
 
 		static glm::vec3 RandomUnitVector() {
@@ -55,15 +49,8 @@ namespace raytracy {
 		}
 
 		static glm::vec3 RandomVectorInUnitDisk() {
-			while (true) {
-				auto point = glm::vec3(RandomFloat(-1, 1), RandomFloat(-1, 1), 0);
-				if (glm::length2(point) >= 1.0f) {
-					continue;
-				}
-				return point;
-			}
+			return glm::normalize( glm::vec3(RandomFloat(-1, 1), RandomFloat(-1, 1), 0));
 		}
 	};
-
 
 }

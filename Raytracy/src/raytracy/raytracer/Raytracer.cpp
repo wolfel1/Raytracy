@@ -8,7 +8,6 @@ namespace raytracy {
 	Raytracer::Raytracer() {}
 
 	Raytracer::~Raytracer() {
-
 		raytracing_thread.join();
 		delete[] accumulated_color_data;
 	}
@@ -43,8 +42,8 @@ namespace raytracy {
 
 			RTY_RAYTRACER_TRACE("Start process");
 #if MT
-
 			std::for_each(std::execution::par, vertical_iterator.begin(), vertical_iterator.end(), [this](uint32_t y) {
+				std::cout << "#";
 				std::for_each(std::execution::par, horizontal_iterator.begin(), horizontal_iterator.end(), [this, y](uint32_t x) {
 
 					glm::vec3 accumulated_color(0);
@@ -60,6 +59,7 @@ namespace raytracy {
 					accumulated_color_data[x + y * image->width] = accumulated_color;
 					});
 				});
+			std::cout << "\n";
 #else
 			// down to top
 			for (uint32_t y = 0; y < image->height; y++) {
@@ -92,7 +92,7 @@ namespace raytracy {
 	glm::vec3 Raytracer::ComputePixelColor(const Ray& ray,
 		const Scene& objects,
 		uint32_t depth) {
-#define RECURSIVE 1
+#define RECURSIVE 0
 #if RECURSIVE
 		Hit hit;
 		if (depth <= 0) {
