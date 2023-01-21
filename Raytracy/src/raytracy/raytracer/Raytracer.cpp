@@ -8,8 +8,8 @@ namespace raytracy {
 	Raytracer::Raytracer() {}
 
 	Raytracer::~Raytracer() {
-		raytracing_thread.join();
 
+		raytracing_thread.join();
 		delete[] accumulated_color_data;
 	}
 
@@ -19,6 +19,17 @@ namespace raytracy {
 		active_camera = std::make_unique<Camera>(camera);
 		image = std::make_shared<Image>(image_data);
 		accumulated_color_data = new glm::vec3[image->width * image->height];
+#define MT 1
+#if MT
+		horizontal_iterator.resize(image->width);
+		vertical_iterator.resize(image->height);
+		for (uint32_t i = 0; i < image->width; i++) {
+			horizontal_iterator[i] = i;
+		}
+		for (uint32_t i = 0; i < image->height; i++) {
+			vertical_iterator[i] = i;
+		}
+#endif
 
 		raytracing_thread = std::thread{ &Raytracer::RayTrace, this };
 	}
@@ -31,7 +42,25 @@ namespace raytracy {
 			memset(accumulated_color_data, 0, image->width * image->height * sizeof(glm::vec3));
 
 			RTY_RAYTRACER_TRACE("Start process");
+#if MT
 
+			std::for_each(std::execution::par, vertical_iterator.begin(), vertical_iterator.end(), [this](uint32_t y) {
+				std::for_each(std::execution::par, horizontal_iterator.begin(), horizontal_iterator.end(), [this, y](uint32_t x) {
+
+					glm::vec3 accumulated_color(0);
+					for (uint32_t sample = 0; sample < image->samples_per_pixel; ++sample) {
+						auto u = (float(x) + Random::RandomFloat()) / (image->width - 1);
+						auto v = (float(y) + Random::RandomFloat()) / (image->height - 1);
+						Ray ray = active_camera->ShootRay(u, v);
+						accumulated_color += ComputePixelColor(ray, *active_scene, image->max_depth);
+					}
+					accumulated_color /= image->samples_per_pixel;
+					accumulated_color = glm::sqrt(accumulated_color);
+					accumulated_color = glm::clamp(accumulated_color, glm::vec3(0.0f), glm::vec3(1.0f));
+					accumulated_color_data[x + y * image->width] = accumulated_color;
+					});
+				});
+#else
 			// down to top
 			for (uint32_t y = 0; y < image->height; y++) {
 				RTY_PROFILE_SCOPE("Line");
@@ -52,6 +81,7 @@ namespace raytracy {
 					accumulated_color_data[x + y * image->width] = accumulated_color;
 				}
 			}
+#endif
 
 			RTY_RAYTRACER_TRACE("Done.");
 		}
@@ -69,9 +99,7 @@ namespace raytracy {
 			return glm::vec3(0.0f);
 		}
 
-		auto hit_anything = objects.HitObjects(ray, 0.001f, infinity, hit);
-
-		if (hit_anything) {
+		if (objects.HitObjects(ray, 0.001f, infinity, hit)) {
 			Ray scattered_ray;
 			glm::vec3 attenuation{};
 			if (hit.material->Scatter(ray, hit, attenuation, scattered_ray)) {

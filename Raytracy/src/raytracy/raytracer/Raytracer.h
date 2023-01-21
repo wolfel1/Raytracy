@@ -28,6 +28,8 @@ namespace raytracy {
 
 		glm::vec3* accumulated_color_data = nullptr;
 
+		std::vector<uint32_t> horizontal_iterator, vertical_iterator;
+
 	public:
 		Raytracer();
 		~Raytracer();
