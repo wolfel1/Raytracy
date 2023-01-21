@@ -26,7 +26,7 @@ namespace raytracy {
 		std::unique_ptr<Camera> active_camera;
 		std::shared_ptr<Image> image;
 
-		glm::vec3* accumalated_color_data = nullptr;
+		glm::vec3* accumulated_color_data = nullptr;
 
 	public:
 		Raytracer();
