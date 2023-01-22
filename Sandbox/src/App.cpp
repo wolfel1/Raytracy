@@ -5,8 +5,6 @@
 using namespace raytracy;
 
 class Sandbox : public Application {
-private:
-	Raytracer raytracer;
 public:
 	Sandbox() {
 		const auto aspect_ratio = 16.0f / 9.0f;
@@ -30,19 +28,22 @@ public:
 		scene.Add(
 			make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, material_center));
 		scene.Add(
-			make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), 0.5f, material_left));
+			make_shared<Sphere>(glm::vec3(-1.1f, 0.0f, -1.0f), 0.5f, material_left));
 		scene.Add(
-			make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), -0.4f, material_left));
+			make_shared<Sphere>(glm::vec3(-1.1f, 0.0f, -1.0f), -0.4f, material_left));
 		scene.Add(
-			make_shared<Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, material_right));
+			make_shared<Sphere>(glm::vec3(1.1f, 0.0f, -1.0f), 0.5f, material_right));
 
-		glm::vec3 look_from(-2, 2, 1);
+		glm::vec3 look_from(0, 2, 7);
 		glm::vec3 look_at(0, 0, -1);
 		glm::vec3 up(0, 1, 0);
 
 		Camera camera(look_from, look_at, up, 20.0f, aspect_ratio);
 
+
+		Raytracer raytracer;
 		raytracer.Submit(scene, camera, image_data);
+		RTY_BASE_INFO("Successfully submitted!");
 	}
 	~Sandbox() {}
 
