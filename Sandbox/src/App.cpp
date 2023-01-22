@@ -17,11 +17,11 @@ public:
 		image_data.max_depth = 50;
 
 		auto material_ground =
-			make_shared<LambertianDiffuse>(glm::vec3(0.8f, 0.8f, 0.0f));
+			make_shared<LambertianDiffuse>(glm::vec4(0.8f, 0.8f, 0.0f, 1.0f));
 		auto material_center =
-			make_shared<LambertianDiffuse>(glm::vec3(0.7f, 0.3f, 0.3f));
+			make_shared<LambertianDiffuse>(glm::vec4(0.7f, 0.3f, 0.3f, 1.0f));
 		auto material_left = make_shared<Dielectric>(1.5f);
-		auto material_right = make_shared<Metal>(glm::vec3(0.8f, 0.6f, 0.2f), 0.0f);
+		auto material_right = make_shared<Metal>(glm::vec4(0.8f, 0.6f, 0.2f, 1.0f), 0.0f);
 
 		scene.Add(make_shared<Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f,
 									  material_ground));

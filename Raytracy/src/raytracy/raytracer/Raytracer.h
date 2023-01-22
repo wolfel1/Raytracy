@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <thread>
 
 #include <glm/glm.hpp>
@@ -26,7 +25,7 @@ namespace raytracy {
 		std::unique_ptr<Camera> active_camera;
 		std::shared_ptr<Image> image;
 
-		glm::vec3* accumulated_color_data = nullptr;
+		glm::vec4* accumulated_color_data = nullptr;
 
 		std::vector<uint32_t> horizontal_iterator, vertical_iterator;
 
@@ -37,7 +36,7 @@ namespace raytracy {
 
 	private:
 		void RayTrace();
-		glm::vec3 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth);
+		glm::vec4 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth);
 		void WriteImage();
 	};
 }

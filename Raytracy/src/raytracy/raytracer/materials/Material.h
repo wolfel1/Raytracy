@@ -8,32 +8,32 @@ namespace raytracy {
 	class Material {
 	public:
 		virtual bool Scatter(const Ray& incoming_ray, const Hit& hit,
-							 glm::vec3& attenuation, Ray& scattered) const = 0;
+							 glm::vec4& attenuation, Ray& scattered) const = 0;
 	};
 
 	class LambertianDiffuse : public Material {
 	private:
-		glm::vec3 albedo;
+		glm::vec4 albedo;
 
 	public:
-		LambertianDiffuse(const glm::vec3& albedo) : albedo(albedo) {}
+		LambertianDiffuse(const glm::vec4& albedo) : albedo(albedo) {}
 
 		virtual bool Scatter(const Ray& incoming_ray, const Hit& hit,
-							 glm::vec3& attenuation, Ray& scattered) const override;
+							 glm::vec4& attenuation, Ray& scattered) const override;
 	};
 
 	class Metal : public Material {
 	private:
-		glm::vec3 albedo;
+		glm::vec4 albedo;
 		float fuzzy;
 
 	public:
-		Metal(const glm::vec3& albedo, float fuzz)
+		Metal(const glm::vec4& albedo, float fuzz)
 			: albedo(albedo), fuzzy(fuzz < 1 ? fuzz : 1) {
 		}
 
 		virtual bool Scatter(const Ray& incoming_ray, const Hit& hit,
-							 glm::vec3& attenuation, Ray& scattered) const override;
+							 glm::vec4& attenuation, Ray& scattered) const override;
 	};
 
 	class Dielectric : public Material {
@@ -46,7 +46,7 @@ namespace raytracy {
 		}
 
 		virtual bool Scatter(const Ray& incoming_ray, const Hit& hit,
-							 glm::vec3& attenuation, Ray& scattered) const override;
+							 glm::vec4& attenuation, Ray& scattered) const override;
 
 	private:
 		float Reflectance(float cosine, float ratio) const {
