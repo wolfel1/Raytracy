@@ -17,6 +17,7 @@ namespace raytracy {
 
 	public:
 		LambertianDiffuse(const glm::vec4& albedo) : albedo(albedo) {}
+		~LambertianDiffuse() = default;
 
 		virtual bool Scatter(const Ray& incoming_ray, const Hit& hit,
 							 glm::vec4& attenuation, Ray& scattered) const override;
@@ -31,6 +32,7 @@ namespace raytracy {
 		Metal(const glm::vec4& albedo, float fuzz)
 			: albedo(albedo), fuzzy(fuzz < 1 ? fuzz : 1) {
 		}
+		~Metal() = default;
 
 		virtual bool Scatter(const Ray& incoming_ray, const Hit& hit,
 							 glm::vec4& attenuation, Ray& scattered) const override;
@@ -44,6 +46,7 @@ namespace raytracy {
 		Dielectric(float index_of_refraction)
 			: index_of_refraction(index_of_refraction) {
 		}
+		~Dielectric()= default;
 
 		virtual bool Scatter(const Ray& incoming_ray, const Hit& hit,
 							 glm::vec4& attenuation, Ray& scattered) const override;

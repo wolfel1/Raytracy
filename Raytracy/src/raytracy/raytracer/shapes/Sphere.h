@@ -11,6 +11,7 @@ namespace raytracy {
 	public:
 		Sphere();
 		Sphere(glm::vec3 center, float radius, shared_ptr<Material> material);
+		~Sphere() = default;
 
 		virtual bool HitsObject(const Ray& ray, float min, float max,
 								Hit& hit) const override;

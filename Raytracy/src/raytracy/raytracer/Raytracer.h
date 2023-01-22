@@ -6,15 +6,9 @@
 #include "Ray.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "Image.h"
 
 namespace raytracy {
-
-	struct Image {
-		uint32_t width;
-		uint32_t height;
-		uint32_t samples_per_pixel;
-		uint32_t max_depth;
-	};
 
 	class Raytracer {
 	private:
@@ -23,7 +17,7 @@ namespace raytracy {
 
 		std::unique_ptr<Scene> active_scene;
 		std::unique_ptr<Camera> active_camera;
-		std::shared_ptr<Image> image;
+		std::shared_ptr<Image> image_ptr;
 
 		glm::vec4* accumulated_color_data = nullptr;
 
@@ -32,11 +26,10 @@ namespace raytracy {
 	public:
 		Raytracer();
 		~Raytracer();
-		void Submit(const Scene& objects, const Camera& camera, const Image& image_data);
+		void Submit(const Scene& objects, const Camera& camera, const shared_ptr<Image> image);
 
 	private:
 		void RayTrace();
 		glm::vec4 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth);
-		void WriteImage();
 	};
 }

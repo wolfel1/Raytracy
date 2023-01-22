@@ -13,22 +13,24 @@ namespace raytracy {
 	}
 
 	void Raytracer::Submit(const Scene& scene, const Camera& camera,
-		const Image& image_data) {
+		const shared_ptr<Image> image) {
 		active_scene = std::make_unique<Scene>(scene);
 		active_camera = std::make_unique<Camera>(camera);
-		image = std::make_shared<Image>(image_data);
-		accumulated_color_data = new glm::vec4[image->width * image->height];
+		image_ptr = image;
+		accumulated_color_data = new glm::vec4[image_ptr->GetWidth() * image_ptr->GetHeight()];
 #define MT 1
 #if MT
-		horizontal_iterator.resize(image->width);
-		vertical_iterator.resize(image->height);
-		for (uint32_t i = 0; i < image->width; i++) {
+		horizontal_iterator.resize(image_ptr->GetWidth());
+		vertical_iterator.resize(image_ptr->GetHeight());
+		for (uint32_t i = 0; i < image_ptr->GetWidth(); i++) {
 			horizontal_iterator[i] = i;
 		}
-		for (uint32_t i = 0; i < image->height; i++) {
+		for (uint32_t i = 0; i < image_ptr->GetHeight(); i++) {
 			vertical_iterator[i] = i;
 		}
 #endif
+
+		RTY_RAYTRACER_INFO("Successfully submitted!");
 
 		raytracing_thread = std::thread{ &Raytracer::RayTrace, this };
 	}
@@ -38,7 +40,7 @@ namespace raytracy {
 		{
 			InstrumentationTimer t("Raytracing", true);
 
-			memset(accumulated_color_data, 0, image->width * image->height * sizeof(glm::vec4));
+			memset(accumulated_color_data, 0, image_ptr->GetWidth() * image_ptr->GetHeight() * sizeof(glm::vec4));
 
 			RTY_RAYTRACER_TRACE("Start process");
 #if MT
@@ -47,46 +49,44 @@ namespace raytracy {
 				std::for_each(std::execution::par, horizontal_iterator.begin(), horizontal_iterator.end(), [this, y](uint32_t x) {
 
 					glm::vec4 accumulated_color(0.0f);
-					for (uint32_t sample = 0; sample < image->samples_per_pixel; ++sample) {
-						auto u = (float(x) + Random::RandomFloat()) / (image->width - 1);
-						auto v = (float(y) + Random::RandomFloat()) / (image->height - 1);
+					for (uint32_t sample = 0; sample < image_ptr->GetSamplesPerPixel(); ++sample) {
+						auto u = (float(x) + Random::RandomFloat()) / (image_ptr->GetWidth() - 1);
+						auto v = (float(y) + Random::RandomFloat()) / (image_ptr->GetHeight() - 1);
 						Ray ray = active_camera->ShootRay(u, v);
-						accumulated_color += ComputePixelColor(ray, *active_scene, image->max_depth);
+						accumulated_color += ComputePixelColor(ray, *active_scene, image_ptr->GetMaxDepth());
 					}
-					accumulated_color /= (float) image->samples_per_pixel;
+					accumulated_color /= (float)image_ptr->GetSamplesPerPixel();
 					accumulated_color = glm::sqrt(accumulated_color);
 					accumulated_color = glm::clamp(accumulated_color, glm::vec4(0.0f), glm::vec4(1.0f));
-					accumulated_color_data[x + y * image->width] = accumulated_color;
+					accumulated_color_data[x + y * image_ptr->GetWidth()] = accumulated_color;
 					});
 				});
 			std::cout << "\n";
 #else
 			// down to top
-			for (uint32_t y = 0; y < image->height; y++) {
+			for (uint32_t y = 0; y < image_ptr->GetHeight(); y++) {
 				RTY_PROFILE_SCOPE("Line");
-				RTY_RAYTRACER_TRACE("Scanlines remaining: {0}", image->height - y);
+				RTY_RAYTRACER_TRACE("Scanlines remaining: {0}", image_ptr->GetHeight() - y);
 				// left to right
-				for (uint32_t x = 0; x < image->width; x++) {
+				for (uint32_t x = 0; x < image_ptr->GetWidth(); x++) {
 					RTY_PROFILE_SCOPE("Pixel");
 					glm::vec4 accumulated_color(0.0f);
-					for (uint32_t sample = 0; sample < image->samples_per_pixel; ++sample) {
-						auto u = (float(x) + Random::RandomFloat()) / (image->width - 1);
-						auto v = (float(y) + Random::RandomFloat()) / (image->height - 1);
+					for (uint32_t sample = 0; sample < image_ptr->GetSamplesPerPixel(); ++sample) {
+						auto u = (float(x) + Random::RandomFloat()) / (image_ptr->GetWidth() - 1);
+						auto v = (float(y) + Random::RandomFloat()) / (image_ptr->GetHeight() - 1);
 						Ray ray = active_camera->ShootRay(u, v);
-						accumulated_color += ComputePixelColor(ray, *active_scene, image->max_depth);
+						accumulated_color += ComputePixelColor(ray, *active_scene, image_ptr->GetMaxDepth());
 					}
-					accumulated_color /= (float) image->samples_per_pixel;
+					accumulated_color /= (float)image_ptr->GetSamplesPerPixel();
 					accumulated_color = glm::sqrt(accumulated_color);
 					accumulated_color = glm::clamp(accumulated_color, glm::vec4(0.0f), glm::vec4(1.0f));
-					accumulated_color_data[x + y * image->width] = accumulated_color;
+					accumulated_color_data[x + y * image_ptr->GetWidth()] = accumulated_color;
 				}
 			}
 #endif
-
+			image_ptr->SetData(accumulated_color_data);
 			RTY_RAYTRACER_TRACE("Done.");
 		}
-
-		WriteImage();
 	}
 
 	glm::vec4 Raytracer::ComputePixelColor(const Ray& ray,
@@ -137,28 +137,4 @@ namespace raytracy {
 		return glm::vec4(0);
 #endif
 	}
-
-	void Raytracer::WriteImage() {
-		RTY_PROFILE_FUNCTION();
-		InstrumentationTimer t("Save", true);
-
-		std::ofstream output_stream("./image.ppm", std::ios::out | std::ios::binary);
-		output_stream << "P3\n" << image->width << ' ' << image->height << "\n255\n";
-		RTY_RAYTRACER_TRACE("Save as PPM...");
-
-		for (int32_t j = (int32_t)image->height - 1; j >= 0; j--) {
-			// left to right
-			for (int32_t i = 0; i < (int32_t)image->width; i++) {
-				glm::vec4 pixel_color = accumulated_color_data[i + j * image->width];
-
-				output_stream << static_cast<int>(255.0f * pixel_color.r) << ' '
-					<< static_cast<int>(255.0f * pixel_color.g) << ' '
-					<< static_cast<int>(255.0f * pixel_color.b) << '\n';
-			}
-		}
-
-		output_stream.close();
-		RTY_RAYTRACER_TRACE("Done.");
-	}
-
 }  // namespace raytracy
