@@ -17,7 +17,6 @@ namespace raytracy {
 		RTY_ASSERT(image_raw_data, "No image data!");
 
 		if (image_raw_data) {
-			InstrumentationTimer t("Save", true);
 
 			std::ofstream output_stream("./image.ppm", std::ios::out | std::ios::binary);
 			output_stream << "P3\n" << width << ' ' << height << "\n255\n";

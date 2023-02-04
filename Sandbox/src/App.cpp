@@ -4,9 +4,11 @@
 #include <iostream>
 using namespace raytracy;
 
-class Sandbox : public Application {
+class SandboxLayer : public Layer {
 public:
-	Sandbox() {
+	SandboxLayer() : Layer("SandboxLayer") {}
+
+	void OnAttach() {
 		const auto aspect_ratio = 16.0f / 9.0f;
 
 		uint32_t width = 480;
@@ -48,10 +50,17 @@ public:
 
 		image->WriteImage();
 	}
-	~Sandbox() {}
+	~SandboxLayer() {}
 
 };
 
 raytracy::Application* raytracy::CreateApplication() {
-	return new Sandbox();
+	ApplicationSpecification spec;
+	spec.name = "Sandbox";
+
+	Application* app = new Application(spec);
+
+	app->PushLayer(make_shared<SandboxLayer>());
+
+	return app;
 }
