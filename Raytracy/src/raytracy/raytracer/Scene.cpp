@@ -8,7 +8,7 @@ namespace raytracy {
 		auto closest = max;
 
 		for (const auto& object : objects) {
-			if (object->HitsObject(ray, min, closest, temp)) {
+			if (object->IsHit(ray, min, closest, temp)) {
 				closest = temp.hit_value;
 				hit_anything = true;
 				hit = temp;

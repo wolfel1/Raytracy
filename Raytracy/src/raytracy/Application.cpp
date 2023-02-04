@@ -2,7 +2,6 @@
 
 #include "Application.h"
 #include "raytracer/Raytracer.h"
-#include "raytracer/shapes/Sphere.h"
 
 namespace raytracy {
 	Application* Application::instance = nullptr;

@@ -1,15 +1,20 @@
 #include "raytracypch.h"
-#include "Sphere.h"
+#include "Hitable.h"
 
 #include <glm/gtx/norm.hpp>
 
 namespace raytracy {
-	Sphere::Sphere() : center({ 0.0f,0.0f,0.0f }), radius(1.0f) {}
+	Sphere::Sphere() : radius(1.0f) {
+		center = { 0.0f,0.0f,0.0f };
+	}
 
 	Sphere::Sphere(glm::vec3 center, float radius, shared_ptr<Material> material)
-		: center(center), radius(radius), material(material) {}
+		: radius(radius) {
+		this->center = center; 
+		this->material = material;
+	}
 
-	bool Sphere::HitsObject(const Ray& ray, float min, float max, Hit& hit) const {
+	bool Sphere::IsHit(const Ray& ray, float min, float max, Hit& hit) const {
 		glm::vec3 origin_to_center = ray.GetOrigin() - center;
 		auto a = glm::length2(ray.GetDirection());
 		auto bias = glm::dot(origin_to_center, ray.GetDirection());
