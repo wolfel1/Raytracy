@@ -18,6 +18,20 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["spdlog"] = "Raytracy/vendor/spdlog/include"
 IncludeDir["glm"] = "Raytracy/vendor/glm"
+IncludeDir["GLFW"] = "Raytracy/vendor/glfw/include"
+
+group "Dependencies"
+	externalproject "GLFW"
+		location "Raytracy/vendor/glfw/build/src"
+		uuid "ee1748e0-155b-4b7f-aea8-afa1cb3b5326"
+		kind "StaticLib"
+		language "C"
+		staticruntime "off"
+
+		targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+		objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+group ""
 
 project "Raytracy"
 	location "Raytracy"
@@ -40,15 +54,20 @@ project "Raytracy"
 	}
 
 	defines {
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
 	}
 
 	includedirs {
 		"%{prj.name}/src",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.GLFW}"
 	}
 
+	links {
+		"GLFW"
+	}
 
 	filter "system:windows"
 		systemversion "latest"
@@ -87,6 +106,7 @@ project "Sandbox"
 
 	includedirs {
 		"Raytracy/src",
+		"Raytracy/vendor",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glm}"
 	}

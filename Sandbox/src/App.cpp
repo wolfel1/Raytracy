@@ -57,6 +57,8 @@ public:
 raytracy::Application* raytracy::CreateApplication() {
 	ApplicationSpecification spec;
 	spec.name = "Sandbox";
+	spec.width = 1200;
+	spec.height = 700;
 
 	Application* app = new Application(spec);
 

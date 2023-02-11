@@ -1,8 +1,11 @@
 #pragma once
 
 #include <vector>
+
 #include "core/Layer.h"
 #include "core/Core.h"
+
+struct GLFWwindow;
 
 namespace raytracy {
 	struct ApplicationSpecification {
@@ -14,7 +17,8 @@ namespace raytracy {
 	class Application {
 	private:
 		ApplicationSpecification application_specification;
-		bool running;
+		GLFWwindow* window_handle = nullptr;
+		bool running = false;
 
 		std::vector<shared_ptr<Layer>> layer_stack;
 
