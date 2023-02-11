@@ -28,16 +28,18 @@
 #endif
 
 #ifdef RTY_ENABLE_ASSERTS
-#define RTY_ASSERT(x, ...) { if(!(x)) { RTY_BASE_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
+#define RTY_BASE_ASSERT(x, ...) { if(!(x)) { RTY_BASE_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
 #define RTY_RAYTRACER_ASSERT(x, ...) { if(!(x)) { RTY_RAYTRACER_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
 #else
-#define RTY_ASSERT(x, ...)
+#define RTY_BASE_ASSERT(x, ...)
 #define RTY_RAYTRACER_ASSERT(x, ...)
 #endif
 
 using std::make_shared;
 using std::shared_ptr;
-using std::sqrt;
+using std::make_unique;
+using std::unique_ptr;
+
 
 const float infinity = std::numeric_limits<float>::infinity();
 const float pi = 3.1415926535897932385f;

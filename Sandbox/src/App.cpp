@@ -9,6 +9,10 @@ public:
 	SandboxLayer() : Layer("SandboxLayer") {}
 
 	void OnAttach() {
+		
+	}
+
+	void RaytraceScene() {
 		const auto aspect_ratio = 16.0f / 9.0f;
 
 		uint32_t width = 480;

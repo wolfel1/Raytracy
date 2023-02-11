@@ -4,8 +4,7 @@
 
 #include "core/Layer.h"
 #include "core/Core.h"
-
-struct GLFWwindow;
+#include "core/Window.h"
 
 namespace raytracy {
 	struct ApplicationSpecification {
@@ -17,7 +16,7 @@ namespace raytracy {
 	class Application {
 	private:
 		ApplicationSpecification application_specification;
-		GLFWwindow* window_handle = nullptr;
+		unique_ptr<Window> window;
 		bool running = false;
 
 		std::vector<shared_ptr<Layer>> layer_stack;
@@ -29,6 +28,7 @@ namespace raytracy {
 		~Application();
 
 		void Run();
+
 		void PushLayer(const shared_ptr<Layer>& layer) { layer_stack.emplace_back(layer); layer->OnAttach(); }
 
 		void Shutdown();
