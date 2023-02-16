@@ -1,5 +1,5 @@
 # Directories
-/bin/
+bin/
 bin-int/
 profiling/
 
@@ -13,6 +13,3 @@ profiling/
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
-
-# Exclude
-!vendor/bin

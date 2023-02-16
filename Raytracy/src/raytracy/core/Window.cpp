@@ -2,6 +2,7 @@
 #include "Window.h"
 
 #include <GLFW/glfw3.h>
+#include <glad/gl.h>
 
 namespace raytracy {
 
@@ -29,14 +30,18 @@ namespace raytracy {
 		}
 
 #ifdef RTY_DEBUG
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
 		window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
+		RTY_BASE_ASSERT(window_handle, "Could not create window!");
 
-		//glfwMakeContextCurrent(window_handle);
+		glfwMakeContextCurrent(window_handle);
+		int status = gladLoadGL(glfwGetProcAddress);
+		RTY_BASE_ASSERT(status, "Failed to initialize Glad!");
+		RTY_BASE_TRACE("Loaded OpenGL version {0}.{1}", GLAD_VERSION_MAJOR(status), GLAD_VERSION_MINOR(status));
 		
 		glfwSetWindowUserPointer(window_handle, &window_data);
-		//SetVSync(true);
+		SetVSync(true);
 	}
 
 	Window::~Window() {
@@ -49,7 +54,7 @@ namespace raytracy {
 	void Window::OnUpdate() {
 		glfwPollEvents();
 
-		//glfwSwapBuffers(window_handle);
+		glfwSwapBuffers(window_handle);
 	}
 
 

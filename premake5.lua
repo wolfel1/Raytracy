@@ -18,10 +18,13 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["spdlog"] = "Raytracy/vendor/spdlog/include"
 IncludeDir["glm"] = "Raytracy/vendor/glm"
-IncludeDir["GLFW"] = "Raytracy/vendor/glfw/include"
+IncludeDir["glfw"] = "Raytracy/vendor/glfw/include"
+IncludeDir["glad"] = "Raytracy/vendor/glad/include"
 
 group "Dependencies"
-	externalproject "GLFW"
+	include "Raytracy/vendor/glad"
+
+	externalproject "glfw"
 		location "Raytracy/vendor/glfw/build/src"
 		uuid "ee1748e0-155b-4b7f-aea8-afa1cb3b5326"
 		kind "StaticLib"
@@ -62,11 +65,14 @@ project "Raytracy"
 		"%{prj.name}/src",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.glfw}",
+		"%{IncludeDir.glad}"
 	}
 
 	links {
-		"GLFW"
+		"glfw",
+		"glad",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
