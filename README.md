@@ -13,6 +13,8 @@ Once you've cloned, run `Win-GenerateProjectVS.bat` to generate Visual Studio 20
 ### 3rd party libaries
 - [GLM](https://github.com/g-truc/glm)
 - [spdlog](https://github.com/gabime/spdlog)
+- [GLFW](https://github.com/glfw/glfw)
+- [glad](https://github.com/Dav1dde/glad/tree/glad2)
 
 ### Credits
 [Raytracing On One Weekend](https://raytracing.github.io/) series
