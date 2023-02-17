@@ -5,6 +5,9 @@
 #include "core/Layer.h"
 #include "core/Core.h"
 #include "core/Window.h"
+#include "event/ApplicationEvent.h"
+
+#define RTY_BIND_EVENT_FN(fn) [this]<class T>(T& e) { return fn(e); }
 
 namespace raytracy {
 	struct ApplicationSpecification {
@@ -36,6 +39,9 @@ namespace raytracy {
 		static Application& Get() {
 			return *instance;
 		}
+
+		private:
+			bool OnWindowClose(Event& e);
 	};
 
 	Application* CreateApplication();

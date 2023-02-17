@@ -1,5 +1,6 @@
 project "glad"
 	kind "StaticLib"
+	language "C"
 	staticruntime "on"
 	warnings "Off"
 

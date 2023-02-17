@@ -35,6 +35,8 @@
 #define RTY_RAYTRACER_ASSERT(x, ...)
 #endif
 
+
+
 using std::make_shared;
 using std::shared_ptr;
 using std::make_unique;

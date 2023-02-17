@@ -9,7 +9,7 @@ public:
 	SandboxLayer() : Layer("SandboxLayer") {}
 
 	void OnAttach() {
-		
+		EventBus::Get().Register<KeyPressedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyPressed));
 	}
 
 	void RaytraceScene() {
@@ -53,6 +53,12 @@ public:
 		}
 
 		image->WriteImage();
+	}
+
+	bool OnKeyPressed(Event& e) {
+		std::cout << e.ToString();
+
+		return true;
 	}
 	~SandboxLayer() {}
 

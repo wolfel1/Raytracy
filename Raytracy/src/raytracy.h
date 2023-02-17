@@ -6,6 +6,8 @@
 #include "raytracy/core/Log.h"
 #include "raytracy/core/Random.h"
 
+#include "raytracy/event/KeyEvent.h"
+
 #include "raytracy/raytracer/Scene.h"
 #include "raytracy/raytracer/Raytracer.h"
 #include "raytracy/raytracer/materials/Material.h"

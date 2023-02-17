@@ -1,6 +1,9 @@
 #include "raytracypch.h"
 #include "Window.h"
 
+#include "../event/ApplicationEvent.h"
+#include "../event/KeyEvent.h"
+
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>
 
@@ -42,6 +45,37 @@ namespace raytracy {
 		
 		glfwSetWindowUserPointer(window_handle, &window_data);
 		SetVSync(true);
+
+		glfwSetWindowCloseCallback(window_handle, [](GLFWwindow* window) {
+			WindowCloseEvent e;
+			EventBus::Get().Notify(e);
+		});
+
+		glfwSetKeyCallback(window_handle, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+
+			switch (action) {
+			case GLFW_PRESS:
+			{
+				KeyPressedEvent e(key, 0);
+				EventBus::Get().Notify(e);
+				break;
+			}
+
+			case GLFW_RELEASE:
+			{
+				KeyReleasedEvent e(key);
+				EventBus::Get().Notify(e);
+				break;
+			}
+
+			case GLFW_REPEAT:
+			{
+				KeyPressedEvent e(key, 1);
+				EventBus::Get().Notify(e);
+				break;
+			}
+			}
+		});
 	}
 
 	Window::~Window() {

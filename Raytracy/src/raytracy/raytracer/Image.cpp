@@ -14,7 +14,7 @@ namespace raytracy {
 
 	void Image::WriteImage() {
 		RTY_PROFILE_FUNCTION();
-		RTY_BASE_ASSERT(image_raw_data, "No image data!");
+		RTY_RAYTRACER_ASSERT(image_raw_data, "No image data!");
 
 		if (image_raw_data) {
 
