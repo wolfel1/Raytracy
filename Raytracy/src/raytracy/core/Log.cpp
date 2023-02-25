@@ -14,5 +14,7 @@ namespace raytracy {
 		base_logger->set_level(spdlog::level::trace);
 		auto raytracer_logger = spdlog::stdout_color_mt("Raytracer");
 		raytracer_logger->set_level(spdlog::level::trace);
+		auto renderer_logger = spdlog::stdout_color_mt("Renderer");
+		renderer_logger->set_level(spdlog::level::trace);
 	}
 }

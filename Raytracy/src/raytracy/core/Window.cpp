@@ -7,6 +7,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>
 
+
+
 namespace raytracy {
 
 	static bool is_glfw_initialized = false;
@@ -86,9 +88,8 @@ namespace raytracy {
 	}
 
 	void Window::OnUpdate() {
-		glfwPollEvents();
-
 		glfwSwapBuffers(window_handle);
+		glfwPollEvents();
 	}
 
 
@@ -101,9 +102,5 @@ namespace raytracy {
 
 		window_data.v_sync = enabled;
 	}
-
-
-
-
 
 }

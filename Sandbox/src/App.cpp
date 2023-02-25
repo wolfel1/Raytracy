@@ -6,10 +6,15 @@ using namespace raytracy;
 
 class SandboxLayer : public Layer {
 public:
-	SandboxLayer() : Layer("SandboxLayer") {}
+	SandboxLayer() : Layer("SandboxLayer") {
+	}
 
 	void OnAttach() {
 		EventBus::Get().Register<KeyPressedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyPressed));
+	}
+
+	void OnUpdate() {
+		Renderer::Get().Submit();
 	}
 
 	void RaytraceScene() {

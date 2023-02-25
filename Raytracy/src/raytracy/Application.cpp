@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "raytracer/Raytracer.h"
 #include "event/Event.h"
+#include "renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 
@@ -23,6 +24,8 @@ namespace raytracy {
 		window = Window::Create({ application_specification.name, application_specification.width, application_specification.height });
 
 		EventBus::Get().Register<WindowCloseEvent>(RTY_BIND_EVENT_FN(Application::OnWindowClose));
+
+		Renderer::Get().Init();
 
 		running = true;
 	}
@@ -52,6 +55,8 @@ namespace raytracy {
 	}
 
 	void Application::Shutdown() {
+		Renderer::Get().Shutdown();
+
 		for (auto& layer : layer_stack)
 			layer->OnDetach();
 

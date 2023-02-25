@@ -13,3 +13,5 @@
 #include "raytracy/raytracer/materials/Material.h"
 #include "raytracy/raytracer/shapes/Hitable.h"
 #include "raytracy/raytracer/Camera.h"
+
+#include "raytracy/renderer/Renderer.h"

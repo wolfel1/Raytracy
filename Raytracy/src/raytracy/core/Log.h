@@ -17,6 +17,14 @@ namespace raytracy {
 	};
 }
 
+
+#define RTY_RENDERER_TRACE(...)        spdlog::get("Renderer")->trace(__VA_ARGS__)
+#define RTY_RENDERER_DEBUG(...)        spdlog::get("Renderer")->debug(__VA_ARGS__)
+#define RTY_RENDERER_INFO(...)         spdlog::get("Renderer")->info(__VA_ARGS__)
+#define RTY_RENDERER_WARN(...)         spdlog::get("Renderer")->warn(__VA_ARGS__)
+#define RTY_RENDERER_ERROR(...)        spdlog::get("Renderer")->error(__VA_ARGS__)
+#define RTY_RENDERER_CRITICAL(...)     spdlog::get("Renderer")->critical(__VA_ARGS__)
+
 #define RTY_RAYTRACER_TRACE(...)        spdlog::get("Raytracer")->trace(__VA_ARGS__)
 #define RTY_RAYTRACER_DEBUG(...)        spdlog::get("Raytracer")->debug(__VA_ARGS__)
 #define RTY_RAYTRACER_INFO(...)         spdlog::get("Raytracer")->info(__VA_ARGS__)
