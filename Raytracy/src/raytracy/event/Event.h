@@ -55,6 +55,7 @@ namespace raytracy {
 
 		template<typename T>
 		void Register(const EventCallbackFn& callback) {
+			RTY_PROFILE_FUNCTION();
 			RTY_BASE_ASSERT((std::is_base_of<Event, T>::value), "Provided type is not a subclass of Event!");
 
 			auto node_handle = event_callback_map.extract((EventType) T::GetStaticType());
@@ -69,6 +70,7 @@ namespace raytracy {
 
 		template<typename T>
 		void Notify(T& evt) {
+			RTY_PROFILE_FUNCTION();
 			RTY_BASE_ASSERT((std::is_base_of<Event, T>::value), "Provided type is not a subclass of Event!");
 			if (!evt.is_handled) {
 				if(auto pair = event_callback_map.find(evt.GetEventType()); pair != event_callback_map.end()) {

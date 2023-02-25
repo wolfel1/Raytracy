@@ -55,6 +55,7 @@ namespace raytracy {
 	}
 
 	void Application::Shutdown() {
+		RTY_PROFILE_FUNCTION();
 		Renderer::Get().Shutdown();
 
 		for (auto& layer : layer_stack)

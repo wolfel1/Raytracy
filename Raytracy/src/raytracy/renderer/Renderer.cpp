@@ -30,6 +30,7 @@ namespace raytracy {
 	static const float clear_color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	void Renderer::Init() {
+		RTY_PROFILE_FUNCTION();
 		RTY_RENDERER_ASSERT(!is_initialized, "Renderer is already initialized!");
 
 		GLfloat  vertices[6][2] = {
@@ -56,16 +57,19 @@ namespace raytracy {
 
 
 	void Renderer::Submit() {
+		RTY_PROFILE_FUNCTION();
 		RTY_RENDERER_ASSERT(is_initialized, "Renderer is not initialized!");
 		Render();
 	}
 
 	void Renderer::Shutdown() {
+		RTY_PROFILE_FUNCTION();
 		GLCall(glDeleteVertexArrays(1, &vertex_array));
 		GLCall(glDeleteBuffers(1, &vertex_buffer));
 	}
 
 	void Renderer::Render() {
+		RTY_PROFILE_FUNCTION();
 		GLCall(glClearBufferfv(GL_COLOR, 0, clear_color));
 
 

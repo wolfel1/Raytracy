@@ -15,6 +15,7 @@ namespace raytracy {
 	}
 
 	ShaderProgram::ShaderProgram(const std::string& name) : name(name) {
+		RTY_PROFILE_FUNCTION();
 
 		std::string path = rootPath + name + ".glsl";
 		std::string source = ReadFile(path);
@@ -28,6 +29,7 @@ namespace raytracy {
 	}
 
 	ShaderProgram::ShaderProgram(const std::vector<std::string>& paths) {
+		RTY_PROFILE_FUNCTION();
 
 		std::unordered_map<GLenum, std::string> shaderSources;
 		for (auto path : paths) {
