@@ -36,22 +36,22 @@ namespace raytracy {
 			is_glfw_initialized = true;
 		}
 
+		{
 #ifdef RTY_DEBUG
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
-		{
 
 			RTY_PROFILE_SCOPE("CreateWindow");
-		window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
-		RTY_BASE_ASSERT(window_handle, "Could not create window!");
+			window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
+			RTY_BASE_ASSERT(window_handle, "Could not create window!");
 		}
 
 		glfwMakeContextCurrent(window_handle);
 		{
 			RTY_PROFILE_SCOPE("LoadGlad");
-		int status = gladLoadGL(glfwGetProcAddress);
-		RTY_BASE_ASSERT(status, "Failed to initialize OpenGL!");
-		RTY_BASE_TRACE("Loaded OpenGL version {0}.{1}", GLAD_VERSION_MAJOR(status), GLAD_VERSION_MINOR(status));
+			int status = gladLoadGL(glfwGetProcAddress);
+			RTY_BASE_ASSERT(status, "Failed to initialize OpenGL!");
+			RTY_BASE_TRACE("Loaded OpenGL version {0}.{1}", GLAD_VERSION_MAJOR(status), GLAD_VERSION_MINOR(status));
 		}
 		glfwSetWindowUserPointer(window_handle, &window_data);
 		SetVSync(true);
@@ -102,6 +102,7 @@ namespace raytracy {
 
 	void Window::OnUpdate() {
 		RTY_PROFILE_FUNCTION();
+
 		glfwSwapBuffers(window_handle);
 		glfwPollEvents();
 	}

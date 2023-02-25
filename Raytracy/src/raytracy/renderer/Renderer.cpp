@@ -57,7 +57,6 @@ namespace raytracy {
 
 
 	void Renderer::Submit() {
-		RTY_PROFILE_FUNCTION();
 		RTY_RENDERER_ASSERT(is_initialized, "Renderer is not initialized!");
 		Render();
 	}

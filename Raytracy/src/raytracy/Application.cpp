@@ -42,6 +42,7 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 
 		while (running) {
+			RTY_PROFILE_SCOPE("RenderLoop");
 			for (auto& layer : layer_stack) {
 				layer->OnUpdate();
 			}
