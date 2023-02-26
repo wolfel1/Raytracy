@@ -8,8 +8,6 @@ struct GLFWwindow;
 
 namespace raytracy {
 
-
-
 	class Window {
 	private:
 		struct WindowData {
@@ -36,6 +34,9 @@ namespace raytracy {
 
 		uint32_t GetWidth() const { return window_data.width; }
 		uint32_t GetHeight() const { return window_data.height; }
+
+		void SetTitle(const std::string& name);
+		std::string GetName() const { return window_data.name; }
 
 		void SetVSync(bool enabled);
 		bool IsVSync() const { return window_data.v_sync; }

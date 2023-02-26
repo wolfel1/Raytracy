@@ -28,24 +28,6 @@ namespace raytracy {
 		auto count = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;*/
 	}
 
-	ShaderProgram::ShaderProgram(const std::vector<std::string>& paths) {
-		RTY_PROFILE_FUNCTION();
-
-		std::unordered_map<GLenum, std::string> shaderSources;
-		for (auto path : paths) {
-			PreProcess(path, shaderSources);
-
-			if (name.size() == 0) {
-				auto lastSlash = path.find_last_of("/\\");
-				lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
-				auto lastDot = path.rfind('.');
-				auto count = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;
-				name = path.substr(lastSlash, count);
-			}
-		}
-		Compile(shaderSources);
-	}
-
 	ShaderProgram::~ShaderProgram() {
 		glDeleteProgram(renderer_id);
 	}
@@ -119,7 +101,6 @@ namespace raytracy {
 
 		GLuint program = glCreateProgram();
 		std::vector<GLenum> glShaderIDs;
-		glShaderIDs.resize(shaderSources.size());
 		for (auto& kv : shaderSources) {
 			GLenum type = kv.first;
 			const std::string& source = kv.second;

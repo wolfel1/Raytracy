@@ -27,6 +27,8 @@ namespace raytracy {
 		window_data.width = props.width;
 		window_data.height = props.height;
 
+
+
 		RTY_BASE_INFO("Creating window {0} ({1}, {2})", props.name, props.width, props.height);
 		if (!is_glfw_initialized) {
 			RTY_PROFILE_SCOPE("GLFWInit");
@@ -38,8 +40,9 @@ namespace raytracy {
 
 		{
 #ifdef RTY_DEBUG
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
+			glfwWindowHint(GLFW_SAMPLES, 4);
 
 			RTY_PROFILE_SCOPE("CreateWindow");
 			window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
@@ -51,7 +54,11 @@ namespace raytracy {
 			RTY_PROFILE_SCOPE("LoadGlad");
 			int status = gladLoadGL(glfwGetProcAddress);
 			RTY_BASE_ASSERT(status, "Failed to initialize OpenGL!");
-			RTY_BASE_TRACE("Loaded OpenGL version {0}.{1}", GLAD_VERSION_MAJOR(status), GLAD_VERSION_MINOR(status));
+			RTY_BASE_INFO("OpenGL Info:");
+			RTY_BASE_INFO("  Vendor: {0}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+			RTY_BASE_INFO("  Renderer: {0}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+			RTY_BASE_INFO("  Version: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+			RTY_BASE_TRACE("Loaded OpenGL version {0}.{1}\n", GLAD_VERSION_MAJOR(status), GLAD_VERSION_MINOR(status));
 		}
 		glfwSetWindowUserPointer(window_handle, &window_data);
 		SetVSync(true);
@@ -69,25 +76,30 @@ namespace raytracy {
 				switch (action) {
 				case GLFW_PRESS:
 				{
-					KeyPressedEvent e(key, 0);
+					KeyPressedEvent e(static_cast<KeyCode>(key), 0);
 					EventBus::Get().Notify(e);
 					break;
 				}
 
 				case GLFW_RELEASE:
 				{
-					KeyReleasedEvent e(key);
+					KeyReleasedEvent e(static_cast<KeyCode>(key));
 					EventBus::Get().Notify(e);
 					break;
 				}
 
 				case GLFW_REPEAT:
 				{
-					KeyPressedEvent e(key, 1);
+					KeyPressedEvent e(static_cast<KeyCode>(key), 1);
 					EventBus::Get().Notify(e);
 					break;
 				}
 				}
+			});
+
+			glfwSetWindowSizeCallback(window_handle, [](GLFWwindow* window, int width, int height) {
+				WindowResizeEvent e(width, height);
+				EventBus::Get().Notify(e);
 			});
 		}
 	}
@@ -108,6 +120,10 @@ namespace raytracy {
 	}
 
 
+	void Window::SetTitle(const std::string& name) {
+		glfwSetWindowTitle(window_handle, name.c_str());
+	}
+
 	void Window::SetVSync(bool enabled) {
 		if (enabled) {
 			glfwSwapInterval(1);
@@ -117,5 +133,6 @@ namespace raytracy {
 
 		window_data.v_sync = enabled;
 	}
+
 
 }

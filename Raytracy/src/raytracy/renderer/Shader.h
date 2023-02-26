@@ -13,12 +13,15 @@ namespace raytracy {
 	public:
 
 		ShaderProgram(const std::string& name);
-		ShaderProgram(const std::vector<std::string>& paths);
 		~ShaderProgram();
 
 		void Bind() const;
 
 		void Unbind() const;
+
+		static shared_ptr<ShaderProgram> Create(const std::string& name) {
+			return make_shared<ShaderProgram>(name);
+		}
 
 	private:
 		std::string ReadFile(const std::string& path);

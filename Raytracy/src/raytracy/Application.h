@@ -7,7 +7,7 @@
 #include "core/Window.h"
 #include "event/ApplicationEvent.h"
 
-#define RTY_BIND_EVENT_FN(fn) [this]<class T>(T& e) { return fn(e); }
+
 
 namespace raytracy {
 	struct ApplicationSpecification {
@@ -21,6 +21,8 @@ namespace raytracy {
 		ApplicationSpecification application_specification;
 		unique_ptr<Window> window;
 		bool running = false;
+		bool minimized = false;
+		float last_frame_time = 0.0f;
 
 		std::vector<shared_ptr<Layer>> layer_stack;
 
@@ -41,7 +43,9 @@ namespace raytracy {
 		}
 
 		private:
-			bool OnWindowClose(Event& e);
+			bool OnWindowClose(Event& e); 
+			bool OnWindowResize(Event& e);
+			bool OnAppTick(Event& e);
 	};
 
 	Application* CreateApplication();

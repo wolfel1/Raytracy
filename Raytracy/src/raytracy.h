@@ -8,6 +8,9 @@
 
 #include "raytracy/event/KeyEvent.h"
 
+#include "raytracy/core/Timestep.h"
+#include "raytracy/core/KeyCodes.h"
+
 #include "raytracy/raytracer/Scene.h"
 #include "raytracy/raytracer/Raytracer.h"
 #include "raytracy/raytracer/materials/Material.h"

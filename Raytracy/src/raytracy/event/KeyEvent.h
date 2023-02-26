@@ -1,54 +1,55 @@
 #pragma once
 
 #include "Event.h"
+#include "../core/KeyCodes.h"
 
 namespace raytracy {
 
 	class  KeyEvent : public Event {
 	public:
-		inline uint16_t GetKeyCode() const {
-			return m_KeyCode;
+		inline KeyCode GetKeyCode() const {
+			return key_code;
 		}
 
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 	protected:
-		KeyEvent(uint16_t keycode)
-			: m_KeyCode(keycode) {
+		KeyEvent(KeyCode keycode)
+			: key_code(keycode) {
 		}
 
-		uint16_t m_KeyCode;
+		KeyCode key_code;
 	};
 
 	class  KeyPressedEvent : public KeyEvent {
 	public:
-		KeyPressedEvent(uint16_t keycode, int repeatCount)
-			: KeyEvent(keycode), m_RepeatCount(repeatCount) {
+		KeyPressedEvent(KeyCode keycode, int repeatCount)
+			: KeyEvent(keycode), repeat_count(repeatCount) {
 		}
 
 		inline int GetRepeatCount() const {
-			return m_RepeatCount;
+			return repeat_count;
 		}
 
 		std::string ToString() const override {
 			std::stringstream ss;
-			ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << " repeats)" << "\n";
+			ss << "KeyPressedEvent: " << key_code << " (" << repeat_count << " repeats)" << "\n";
 			return ss.str();
 		}
 
 		EVENT_CLASS_TYPE(KeyPressed)
 	private:
-		int m_RepeatCount;
+		int repeat_count;
 	};
 
 	class  KeyReleasedEvent : public KeyEvent {
 	public:
-		KeyReleasedEvent(uint16_t keycode)
+		KeyReleasedEvent(KeyCode keycode)
 			: KeyEvent(keycode) {
 		}
 
 		std::string ToString() const override {
 			std::stringstream ss;
-			ss << "KeyReleasedEvent: " << m_KeyCode << "\n";
+			ss << "KeyReleasedEvent: " << key_code << "\n";
 			return ss.str();
 		}
 
@@ -57,13 +58,13 @@ namespace raytracy {
 
 	class  KeyTypedEvent : public KeyEvent {
 	public:
-		KeyTypedEvent(uint16_t keycode)
+		KeyTypedEvent(KeyCode keycode)
 			: KeyEvent(keycode) {
 		}
 
 		std::string ToString() const override {
 			std::stringstream ss;
-			ss << "KeyTypedEvent: " << m_KeyCode << "\n";
+			ss << "KeyTypedEvent: " << key_code << "\n";
 			return ss.str();
 		}
 

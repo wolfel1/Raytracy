@@ -9,11 +9,12 @@ public:
 	SandboxLayer() : Layer("SandboxLayer") {
 	}
 
-	void OnAttach() {
+	void OnAttach() override{
 		EventBus::Get().Register<KeyPressedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyPressed));
+		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
 	}
 
-	void OnUpdate() {
+	void OnUpdate(Timestep timestep) override{
 		Renderer::Get().Submit();
 	}
 
@@ -64,6 +65,15 @@ public:
 		std::cout << e.ToString();
 
 		return true;
+	}
+
+	bool OnKeyReleased(Event& e) {
+		KeyReleasedEvent evt = static_cast<KeyReleasedEvent&>(e);
+		if (evt.GetKeyCode() == Key::Escape) {
+			WindowCloseEvent e;
+			EventBus::Get().Notify(e);
+		}
+		return false;
 	}
 	~SandboxLayer() {}
 

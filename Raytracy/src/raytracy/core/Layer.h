@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Timestep.h"
+
 namespace raytracy {
 	
 	class Layer {
@@ -13,7 +15,7 @@ namespace raytracy {
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
 
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(Timestep timestep) {}
 		virtual void OnUIRender() {}
 
 		inline const std::string& GetName() const {

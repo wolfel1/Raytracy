@@ -17,7 +17,9 @@ namespace raytracy {
 
 		void Submit();
 
-		void Shutdown();
+		void Shutdown(); 
+		
+		bool OnWindowResize(uint32_t width, uint32_t height);
 
 	private:
 		Renderer() {}

@@ -36,7 +36,7 @@
 #define RTY_RAYTRACER_ASSERT(x, ...)
 #endif
 
-
+#define RTY_BIND_EVENT_FN(fn) [this]<class T>(T& e) { return fn(e); }
 
 using std::make_shared;
 using std::shared_ptr;

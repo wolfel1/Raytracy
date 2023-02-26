@@ -27,11 +27,43 @@ namespace raytracy {
 	GLuint vertex_array;
 	GLuint vertex_buffer;
 	shared_ptr<ShaderProgram> shader_program;
-	static const float clear_color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
+
+	void OpenGLMessageCallback(
+			unsigned source,
+			unsigned type,
+			unsigned id,
+			unsigned severity,
+			int length,
+			const char* message,
+			const void* userParam) {
+		switch (severity)
+		{
+		case GL_DEBUG_SEVERITY_HIGH:         RTY_RENDERER_CRITICAL(message); return;
+		case GL_DEBUG_SEVERITY_MEDIUM:       RTY_RENDERER_ERROR(message); return;
+		case GL_DEBUG_SEVERITY_LOW:          RTY_RENDERER_WARN(message); return;
+		case GL_DEBUG_SEVERITY_NOTIFICATION: RTY_RENDERER_TRACE(message); return;
+		}
+
+		RTY_RENDERER_ASSERT(false, "Unknown severity level!");
+	}
 
 	void Renderer::Init() {
 		RTY_PROFILE_FUNCTION();
 		RTY_RENDERER_ASSERT(!is_initialized, "Renderer is already initialized!");
+
+#ifdef RTY_DEBUG
+		GLCall(glEnable(GL_DEBUG_OUTPUT));
+		GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
+		GLCall(glDebugMessageCallback(OpenGLMessageCallback, nullptr));
+
+		GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE));
+#endif
+		GLCall(glEnable(GL_BLEND));
+		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+		GLCall(glEnable(GL_DEPTH_TEST));
+		GLCall(glDepthFunc(GL_LESS));
 
 		GLfloat  vertices[6][2] = {
 		{ -0.90f, -0.90f }, {  0.85f, -0.90f }, { -0.90f,  0.85f },  // Triangle 1
@@ -46,11 +78,13 @@ namespace raytracy {
 		GLCall(glBindVertexArray(vertex_array));
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer));
 
-		shader_program = make_shared<ShaderProgram>("Triangles");
+		shader_program = ShaderProgram::Create("Triangles");
 		shader_program->Bind();
 
 		GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0));
 		GLCall(glEnableVertexAttribArray(0));
+
+		GLCall(glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a));
 
 		is_initialized = true;
 	}
@@ -67,12 +101,18 @@ namespace raytracy {
 		GLCall(glDeleteBuffers(1, &vertex_buffer));
 	}
 
+
 	void Renderer::Render() {
 		RTY_PROFILE_FUNCTION();
-		GLCall(glClearBufferfv(GL_COLOR, 0, clear_color));
+		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 
 		GLCall(glBindVertexArray(vertex_array));
 		GLCall(glDrawArrays(GL_TRIANGLES, 0, 6));
+	}
+
+	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {
+		GLCall(glViewport(0, 0, width, height));
+		return true;
 	}
 }
