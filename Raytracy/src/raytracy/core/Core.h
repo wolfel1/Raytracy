@@ -28,12 +28,9 @@
 #endif
 
 #ifdef RTY_ENABLE_ASSERTS
-#define RTY_BASE_ASSERT(x, ...) { if(!(x)) { RTY_BASE_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
-#define RTY_RAYTRACER_ASSERT(x, ...) { if(!(x)) { RTY_RAYTRACER_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
-#define RTY_RENDERER_ASSERT(x, ...) { if(!(x)) { RTY_RENDERER_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
+#define RTY_ASSERT(x, ...) { if(!(x)) { RTY_BASE_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
 #else
-#define RTY_BASE_ASSERT(x, ...)
-#define RTY_RAYTRACER_ASSERT(x, ...)
+#define RTY_ASSERT(x, ...)
 #endif
 
 #define RTY_BIND_EVENT_FN(fn) [this]<class T>(T& e) { return fn(e); }

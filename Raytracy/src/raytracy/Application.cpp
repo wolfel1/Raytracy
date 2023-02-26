@@ -15,7 +15,7 @@ namespace raytracy {
 	Application::Application(const ApplicationSpecification& application_specification) : application_specification(application_specification) {
 		RTY_PROFILE_FUNCTION();
 
-		RTY_BASE_ASSERT(!instance, "App already exists!");
+		RTY_ASSERT(!instance, "App already exists!");
 
 		instance = this;
 
@@ -98,7 +98,7 @@ namespace raytracy {
 		AppTickEvent evt = static_cast<AppTickEvent&>(e);
 
 		std::stringstream ss;
-		ss << window->GetName() << " @ ms per frame: " << evt.GetTimeStep().GetMilliseconds();
+		ss << window->GetName() << " @ " << evt.GetTimeStep().GetMilliseconds() << " ms per frame";
 		window->SetTitle(ss.str());
 
 		return true;

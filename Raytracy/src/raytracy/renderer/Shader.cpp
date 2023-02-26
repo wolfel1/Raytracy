@@ -10,7 +10,7 @@ namespace raytracy {
 		if (type == "fragment" || type == "pixel" || type == ".frag")
 			return GL_FRAGMENT_SHADER;
 
-		RTY_RENDERER_ASSERT(false, "Unknown shader type!");
+		RTY_ASSERT(false, "Unknown shader type!");
 		return 0;
 	}
 
@@ -71,13 +71,13 @@ namespace raytracy {
 		size_t pos = source.find(typeToken, 0);
 		while (pos != std::string::npos) {
 			size_t eol = source.find_first_of("\r\n", pos);
-			RTY_RENDERER_ASSERT(eol != std::string::npos, "Syntax error");
+			RTY_ASSERT(eol != std::string::npos, "Syntax error");
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
-			RTY_RENDERER_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified");
+			RTY_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified");
 
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
-			RTY_RENDERER_ASSERT(nextLinePos != std::string::npos, "Syntax error");
+			RTY_ASSERT(nextLinePos != std::string::npos, "Syntax error");
 
 			pos = source.find(typeToken, nextLinePos);
 			shaderSources[ShaderTypeFromString(type)] = pos == std::string::npos ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
@@ -91,7 +91,7 @@ namespace raytracy {
 		auto lastDot = path.rfind('.');
 		auto count = path.size() - lastDot;
 		std::string type = path.substr(lastDot, count);
-		RTY_RENDERER_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified");
+		RTY_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified");
 
 		std::string source = ReadFile(path);
 		shaderSources[ShaderTypeFromString(type)] = source;
@@ -125,7 +125,7 @@ namespace raytracy {
 				glDeleteShader(shader);
 
 				RTY_RENDERER_ERROR("{0}", infoLog.data());
-				RTY_RENDERER_ASSERT(false, "Shader compilation failure!");
+				RTY_ASSERT(false, "Shader compilation failure!");
 				break;
 			}
 
@@ -155,7 +155,7 @@ namespace raytracy {
 			}
 
 			RTY_RENDERER_ERROR("{0}", infoLog.data());
-			RTY_RENDERER_ASSERT(false, "Shader link failure!");
+			RTY_ASSERT(false, "Shader link failure!");
 			return;
 		}
 

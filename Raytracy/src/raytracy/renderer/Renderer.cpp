@@ -45,12 +45,12 @@ namespace raytracy {
 		case GL_DEBUG_SEVERITY_NOTIFICATION: RTY_RENDERER_TRACE(message); return;
 		}
 
-		RTY_RENDERER_ASSERT(false, "Unknown severity level!");
+		RTY_ASSERT(false, "Unknown severity level!");
 	}
 
 	void Renderer::Init() {
 		RTY_PROFILE_FUNCTION();
-		RTY_RENDERER_ASSERT(!is_initialized, "Renderer is already initialized!");
+		RTY_ASSERT(!is_initialized, "Renderer is already initialized!");
 
 #ifdef RTY_DEBUG
 		GLCall(glEnable(GL_DEBUG_OUTPUT));
@@ -91,7 +91,7 @@ namespace raytracy {
 
 
 	void Renderer::Submit() {
-		RTY_RENDERER_ASSERT(is_initialized, "Renderer is not initialized!");
+		RTY_ASSERT(is_initialized, "Renderer is not initialized!");
 		Render();
 	}
 

@@ -33,7 +33,7 @@ namespace raytracy {
 		if (!is_glfw_initialized) {
 			RTY_PROFILE_SCOPE("GLFWInit");
 			auto success = glfwInit();
-			RTY_BASE_ASSERT(success, "Could not initialize GLFW!");
+			RTY_ASSERT(success, "Could not initialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
 			is_glfw_initialized = true;
 		}
@@ -46,14 +46,14 @@ namespace raytracy {
 
 			RTY_PROFILE_SCOPE("CreateWindow");
 			window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
-			RTY_BASE_ASSERT(window_handle, "Could not create window!");
+			RTY_ASSERT(window_handle, "Could not create window!");
 		}
 
 		glfwMakeContextCurrent(window_handle);
 		{
 			RTY_PROFILE_SCOPE("LoadGlad");
 			int status = gladLoadGL(glfwGetProcAddress);
-			RTY_BASE_ASSERT(status, "Failed to initialize OpenGL!");
+			RTY_ASSERT(status, "Failed to initialize OpenGL!");
 			RTY_BASE_INFO("OpenGL Info:");
 			RTY_BASE_INFO("  Vendor: {0}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
 			RTY_BASE_INFO("  Renderer: {0}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
