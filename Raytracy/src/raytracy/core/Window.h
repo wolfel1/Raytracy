@@ -45,6 +45,8 @@ namespace raytracy {
 			return window_handle;
 		}
 
-		static unique_ptr<Window> Create(const WindowProps& props);
+		static unique_ptr<Window> Create(const WindowProps& props) {
+			return make_unique<Window>(props);
+		}
 	};
 }

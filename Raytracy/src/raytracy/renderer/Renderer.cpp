@@ -78,7 +78,7 @@ namespace raytracy {
 		GLCall(glBindVertexArray(vertex_array));
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer));
 
-		shader_program = ShaderProgram::Create("Triangles");
+		shader_program = ShaderProgram::CreateFromDirectory("basic");
 		shader_program->Bind();
 
 		GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0));

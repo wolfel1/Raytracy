@@ -5,23 +5,24 @@ typedef unsigned int GLenum;
 namespace raytracy {
 	class ShaderProgram {
 	private:
-		const std::string rootPath = "resources/shaders/";
 
 		std::string name = "";
 		uint32_t renderer_id;
 
 	public:
+		static const std::string rootPath;
 
-		ShaderProgram(const std::string& name);
+		ShaderProgram(const std::string& name); 
+		ShaderProgram(const std::vector<std::string>& paths);
 		~ShaderProgram();
 
 		void Bind() const;
 
 		void Unbind() const;
 
-		static shared_ptr<ShaderProgram> Create(const std::string& name) {
-			return make_shared<ShaderProgram>(name);
-		}
+		static shared_ptr<ShaderProgram> CreateFromFile(const std::string& name);
+
+		static shared_ptr<ShaderProgram> CreateFromDirectory(const std::string& directory_name);
 
 	private:
 		std::string ReadFile(const std::string& path);

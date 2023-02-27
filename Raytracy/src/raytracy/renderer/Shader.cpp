@@ -1,9 +1,14 @@
 #include "raytracypch.h"
 #include "Shader.h"
 
+#include <filesystem>
+
 #include "glad/gl.h"
 
 namespace raytracy {
+
+	const std::string ShaderProgram::rootPath = "resources/shaders/";
+
 	static GLenum ShaderTypeFromString(const std::string& type) {
 		if (type == "vertex" || type == ".vert")
 			return GL_VERTEX_SHADER;
@@ -12,6 +17,21 @@ namespace raytracy {
 
 		RTY_ASSERT(false, "Unknown shader type!");
 		return 0;
+	}
+
+	static shared_ptr<ShaderProgram> CreateFromFile(const std::string& name) {
+		return make_shared<ShaderProgram>(name);
+	}
+
+	shared_ptr<ShaderProgram> ShaderProgram::CreateFromDirectory(const std::string& directory_name) {
+
+		std::string path = rootPath + directory_name;
+		std::vector<std::string> filepaths;
+		for (const auto& file : std::filesystem::directory_iterator(path)) {
+			filepaths.push_back(file.path().string());
+		}
+
+		return make_shared<ShaderProgram>(filepaths);
 	}
 
 	ShaderProgram::ShaderProgram(const std::string& name) : name(name) {
@@ -28,16 +48,18 @@ namespace raytracy {
 		auto count = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;*/
 	}
 
+	ShaderProgram::ShaderProgram(const std::vector<std::string>& paths) {
+		std::unordered_map<GLenum, std::string> shader_sources;
+
+		for (const auto path : paths) {
+			PreProcess(path, shader_sources);
+		}
+
+		Compile(shader_sources);
+	}
+
 	ShaderProgram::~ShaderProgram() {
 		glDeleteProgram(renderer_id);
-	}
-
-	void ShaderProgram::Bind() const {
-		glUseProgram(renderer_id);
-	}
-
-	void ShaderProgram::Unbind() const {
-		glUseProgram(0);
 	}
 
 	std::string ShaderProgram::ReadFile(const std::string& path) {
@@ -92,6 +114,11 @@ namespace raytracy {
 		auto count = path.size() - lastDot;
 		std::string type = path.substr(lastDot, count);
 		RTY_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified");
+
+		auto lastSlash = path.find_last_of("/\\");
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		count = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;
+		name = path.substr(lastSlash, count);
 
 		std::string source = ReadFile(path);
 		shaderSources[ShaderTypeFromString(type)] = source;
@@ -164,5 +191,13 @@ namespace raytracy {
 			glDeleteShader(id);
 		}
 		renderer_id = program;
+	}
+
+	void ShaderProgram::Bind() const {
+		glUseProgram(renderer_id);
+	}
+
+	void ShaderProgram::Unbind() const {
+		glUseProgram(0);
 	}
 }

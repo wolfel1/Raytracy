@@ -17,10 +17,6 @@ namespace raytracy {
 		RTY_BASE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	unique_ptr<Window> Window::Create(const WindowProps& props) {
-		return make_unique<Window>(props);
-	}
-
 	Window::Window(const WindowProps& props) {
 		RTY_PROFILE_FUNCTION();
 		window_data.name = props.name;
@@ -29,7 +25,7 @@ namespace raytracy {
 
 
 
-		RTY_BASE_INFO("Creating window {0} ({1}, {2})", props.name, props.width, props.height);
+		RTY_BASE_TRACE("Creating window {0} ({1}, {2})", props.name, props.width, props.height);
 		if (!is_glfw_initialized) {
 			RTY_PROFILE_SCOPE("GLFWInit");
 			auto success = glfwInit();
