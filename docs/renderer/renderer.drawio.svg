@@ -1,0 +1,35 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="541px" height="311px" viewBox="-0.5 -0.5 541 311" content="&lt;mxfile&gt;&lt;diagram id=&quot;9A-zGhWip2lHXSO5iyiZ&quot; name=&quot;Page-1&quot;&gt;xZVNc4IwEIZ/DXeTaNVjpdYe2kuZac8pWSAzQJw1KvTXF2X5MmXGS+mJ5N3dbJ43ATzhZ8UO5T55MwpSj89U4Yknj3PG+Kx6XJSyVlac1UKMWlFSJwT6G0ikuvioFRwGidaY1Or9UAxNnkNoB5pENOdhWmTSYde9jMERglCmrvqplU0aimWnv4COk6Yze1jXkUw2yURySKQy554ktp7w0Rhbj7LCh/RiXuNLXfc8Em03hpDbuwpWdcVJpkeCe4dcAQLSBm3ZUEcmtwFNmSc2bi9qfwK0UPQk6r0Dk4HFskqhaOsDXQSxoPm5s7W9LUnP0jlpkk4ybpfuYKsB8Y6wrx32j+vON8coupvfgf3FknH+1ZCfzybkb9Z1+B8RZTkF/vqGnk1Jzxz6oHoZpzn3BfvHe8/FCPmr/kKJk5z8rQHz5d8ZUE27D+o11vstie0P&lt;/diagram&gt;&lt;/mxfile&gt;">
+    <defs/>
+    <g>
+        <rect x="130" y="150" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
+            <text x="189.5" y="174.5">
+                Renderer
+            </text>
+        </g>
+        <rect x="190" y="0" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
+            <text x="249.5" y="24.5">
+                VertexBuffer
+            </text>
+        </g>
+        <rect x="0" y="10" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
+            <text x="59.5" y="34.5">
+                VertexArray
+            </text>
+        </g>
+        <rect x="420" y="150" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
+            <text x="479.5" y="174.5">
+                Shader
+            </text>
+        </g>
+        <rect x="420" y="270" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
+            <text x="479.5" y="294.5">
+                ShaderLibrary
+            </text>
+        </g>
+    </g>
+</svg>
