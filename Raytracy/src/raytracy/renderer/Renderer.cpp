@@ -26,6 +26,7 @@ namespace raytracy {
 
 	GLuint vertex_array;
 	GLuint vertex_buffer;
+	GLuint index_buffer;
 	GLuint vertex_color_buffer;
 	shared_ptr<ShaderProgram> shader_program;
 	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -39,10 +40,10 @@ namespace raytracy {
 			const char* message,
 			const void* userParam) {
 		switch (severity) {
-			case GL_DEBUG_SEVERITY_HIGH:         RTY_RENDERER_CRITICAL(message); return;
-			case GL_DEBUG_SEVERITY_MEDIUM:       RTY_RENDERER_ERROR(message); return;
-			case GL_DEBUG_SEVERITY_LOW:          RTY_RENDERER_WARN(message); return;
-			case GL_DEBUG_SEVERITY_NOTIFICATION: RTY_RENDERER_TRACE(message); return;
+		case GL_DEBUG_SEVERITY_HIGH:         RTY_RENDERER_CRITICAL(message); return;
+		case GL_DEBUG_SEVERITY_MEDIUM:       RTY_RENDERER_ERROR(message); return;
+		case GL_DEBUG_SEVERITY_LOW:          RTY_RENDERER_WARN(message); return;
+		case GL_DEBUG_SEVERITY_NOTIFICATION: RTY_RENDERER_TRACE(message); return;
 		}
 
 		RTY_ASSERT(false, "Unknown severity level!");
@@ -68,33 +69,44 @@ namespace raytracy {
 		GLfloat  vertices[] = {
 			-0.5f, -0.5f, 0.0f,
 			0.5f, -0.5f, 0.0f,
-			0.0f, 0.5, 0.0f,
+			0.5f, 0.5f, 0.0f,
+			-0.5f, 0.5f, 0.0f
 		};
 
 		GLfloat vertex_colors[] = {
-			0.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f,
-			1.0f, 0.0f, 0.0f
+			0.0f, 0.0f, 0.0f, 1.0f,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			0.0f, 1.0f, 0.0f, 1.0f,
+			1.0f, 0.0f, 0.0f, 1.0f
+		};
+
+		GLuint indices[] = {
+			0, 1, 2,
+			2, 3, 0
 		};
 
 		GLCall(glCreateVertexArrays(1, &vertex_array));
 
 		GLCall(glCreateBuffers(1, &vertex_buffer));
-		GLCall(glNamedBufferStorage(vertex_buffer, sizeof(vertices), vertices, NULL));
+		GLCall(glNamedBufferStorage(vertex_buffer, sizeof(vertices) + sizeof(vertex_colors) + sizeof(indices), nullptr, GL_DYNAMIC_STORAGE_BIT));
+		GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), vertices));
+		GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
-		GLCall(glCreateBuffers(1, &vertex_color_buffer));
-		GLCall(glNamedBufferStorage(vertex_color_buffer, sizeof(vertex_colors), vertex_colors, NULL));
-
+		GLCall(glCreateBuffers(1, &index_buffer));
+		GLCall(glNamedBufferStorage(index_buffer, sizeof(indices), indices, NULL));
 
 		shader_program = ShaderProgram::CreateFromDirectory("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");
 		shader_program->Bind();
 
 		GLCall(glBindVertexArray(vertex_array));
+
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer));
 		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertex_color_buffer));
-		GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+		GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(vertices)));
+
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer));
+
 		GLCall(glEnableVertexAttribArray(0));
 		GLCall(glEnableVertexAttribArray(1));
 
@@ -118,7 +130,7 @@ namespace raytracy {
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 		GLCall(glBindVertexArray(vertex_array));
-		GLCall(glDrawArrays(GL_TRIANGLES, 0, 3));
+		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0));
 	}
 
 	void Renderer::Shutdown() {

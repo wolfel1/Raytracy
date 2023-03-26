@@ -42,7 +42,6 @@ namespace raytracy {
 			shader_program = make_shared<ShaderProgram>(filepaths);
 		}
 
-
 		return shader_program;
 	}
 
