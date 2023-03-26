@@ -9,13 +9,12 @@ namespace raytracy {
 		uint32_t renderer_id;
 
 	public:
-		static const std::string rootPath;
 
 		ShaderProgram(const std::string& name);
 		ShaderProgram(const std::vector<std::string>& paths);
 		~ShaderProgram();
 
-		std::string GetName() const { return name; }
+		const std::string& GetName() const { return name; }
 
 		void Bind() const;
 
@@ -35,11 +34,26 @@ namespace raytracy {
 
 	class ShaderLibrary {
 	private:
-		static std::vector<shared_ptr<ShaderProgram>> shader_programs;
+		std::unordered_map<std::string, shared_ptr<ShaderProgram>> shader_programs;
 
 	public:
-		static shared_ptr<ShaderProgram> Search(const std::string& name);
-		static void Add(const shared_ptr<ShaderProgram> shader_program);
-		static void Remove(const std::string& name);
+		static const std::string rootPath;
+
+	public:
+		ShaderLibrary(const ShaderLibrary&) = delete;
+
+		static ShaderLibrary& Get() {
+			static ShaderLibrary library;
+			return library;
+		}
+
+		shared_ptr<ShaderProgram> Load(const std::string& name);
+		void Add(const shared_ptr<ShaderProgram>& shader_program);
+		void Remove(const std::string& name);
+
+		bool Exist(const std::string& name);
+
+	private:
+		ShaderLibrary() {};
 	};
 }

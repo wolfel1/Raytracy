@@ -1,29 +1,43 @@
-<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="501px" height="191px" viewBox="-0.5 -0.5 501 191" content="&lt;mxfile&gt;&lt;diagram id=&quot;9A-zGhWip2lHXSO5iyiZ&quot; name=&quot;Page-1&quot;&gt;vZRNb4MwDIZ/DXdC2ArHlXXdDrsMaTtHxHxIQFAaCuzXjxbzkWZI62Gckry2Yz+OFYsGRXuUrErfBYfccmzeWvTZchxCHLtfLko3KJ5DBiGRGUenWQizb0AR45I643DSHJUQucoqXYxEWUKkNI1JKRrdLRa5nrViCRhCGLHcVL8yrtKRYjfrr5Al6ZiZPPqDpWCjM5KcUsZFs5DowaKBFEINu6INIL80b+zLEPeyYp0Kk1CqPwV4Q8SZ5TXCfUDJQYLEAlU3UseiVCEeiUX3Zi5MfwapoF1ImPsIogAlu94FrVMfcBDoA56bua3TtKSLlrqoMXzJZLp6hu03yLvC7hvsn9fK93Ucb8Tv6fyOvSH/eK/B/yQl67bA92/oyZb01KB/6wf/vsc3UH9pyCq9u7vBd/8Pvz/On8rVtvia6eEH&lt;/diagram&gt;&lt;/mxfile&gt;">
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="531px" height="281px" viewBox="-0.5 -0.5 531 281" content="&lt;mxfile&gt;&lt;diagram id=&quot;9A-zGhWip2lHXSO5iyiZ&quot; name=&quot;Page-1&quot;&gt;xVfbjpswEP0aXlfY3uySxybspQ+VVorUdh+tMAFLgCPHSaBfXxOPw8WJus228ITneC4+cyaGBGxZVC+Kb7NvMoE8oGFSBSwOKCWEhubRILVFIkoskCqRoFMLrMQvQBDj0r1IYNdz1FLmWmz74FqWJax1D+NKyWPfbSPzftUtT8EDVmue++gPkejMsXhs8VcQaeYqk4e53Sm4c0Ymu4wn8tiB2FPAlkpKbVdFtYS8aZ7ri417vrJ7PpiCUn8oILIRB57vkVys+DHmmuMBde1Yb2SpV2iSgC38Wlj+AEpD1YGw9gvIArSqjQvuzrENOAeUoX1su3oelqzT0XvEOAqZnjO3XM0C6V6mzuYedY8yJEZ3NEtZmsci00Xea0Djc7X7CO3kXq2dF9bVXKWAbiy63CYFOdfi0M//GdLEJ/39pNZiv9mAGkPzWdgXnZARRb8nHv9RRKfMF52MJbor3iH9tUz+UnNP4Aucr2pOoyl/6P4dZ2f+i1K8noL+uCMfevRX5q0D6k3JVPFiigaw2ZgNoJ/9zUMl9E+zDnH93qzvZmjFVWcrrp1RmmOegu4eZ85+dwkbo407WS7wtgvGNeqfXjAY+iaFqdyKOXxrPwxEsufCqO7HxzAR/UMiS8ZLdBL8zOdjM+BfgVPOQPhfZsBddBPMAItunAEyHKZhoptnwJjtd7R1b/+NsKff&lt;/diagram&gt;&lt;/mxfile&gt;">
     <defs/>
     <g>
-        <rect x="130" y="150" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <rect x="0" y="120" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
         <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
-            <text x="189.5" y="174.5">
-                Renderer
+            <text x="59.5" y="144.5">
+                DrawData
+            </text>
+        </g>
+        <path d="M 410 20 L 316.37 20" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 311.12 20 L 318.12 16.5 L 316.37 20 L 318.12 23.5 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <rect x="410" y="0" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
+            <text x="469.5" y="24.5">
+                VertexBuffer
+            </text>
+        </g>
+        <path d="M 190 140 L 126.37 140" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 121.12 140 L 128.12 136.5 L 126.37 140 L 128.12 143.5 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <rect x="190" y="120" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
+            <text x="249.5" y="144.5">
+                IndexBuffer
             </text>
         </g>
         <rect x="190" y="0" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
         <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
             <text x="249.5" y="24.5">
-                VertexBuffer
-            </text>
-        </g>
-        <rect x="0" y="10" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
-        <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
-            <text x="59.5" y="34.5">
                 VertexArray
             </text>
         </g>
-        <rect x="380" y="40" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <rect x="190" y="240" width="120" height="40" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
         <g fill="rgb(0, 0, 0)" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="12px">
-            <text x="439.5" y="64.5">
-                IndexBuffer
+            <text x="249.5" y="264.5">
+                ShaderProgram
             </text>
         </g>
+        <path d="M 190 260 L 94.5 164.5" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 90.79 160.79 L 98.22 163.27 L 94.5 164.5 L 93.27 168.22 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 190 20 L 94.5 115.5" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 90.79 119.21 L 93.27 111.78 L 94.5 115.5 L 98.22 116.73 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
     </g>
 </svg>

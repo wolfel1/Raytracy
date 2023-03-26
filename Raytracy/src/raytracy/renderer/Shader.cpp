@@ -7,7 +7,7 @@
 
 namespace raytracy {
 
-	const std::string ShaderProgram::rootPath = "resources/shaders/";
+	const std::string ShaderLibrary::rootPath = "resources/shaders/";
 
 	static GLenum ShaderTypeFromString(const std::string& type) {
 		if (type == "vertex" || type == ".vert")
@@ -19,36 +19,25 @@ namespace raytracy {
 		return 0;
 	}
 
-	shared_ptr<ShaderProgram> CreateFromFile(const std::string& name) {
-		auto shader_program = ShaderLibrary::Search(name);
-
-		if (shader_program == nullptr) {
-			shader_program = make_shared<ShaderProgram>(name);
-		}
-		return shader_program;
+	shared_ptr<ShaderProgram> ShaderProgram::CreateFromFile(const std::string& name) {
+		return make_shared<ShaderProgram>(name);
 	}
 
-	// All shader files in the directory must have the same name as the directory
 	shared_ptr<ShaderProgram> ShaderProgram::CreateFromDirectory(const std::string& directory_name) {
-		auto shader_program = ShaderLibrary::Search(directory_name);
-
-		if (shader_program == nullptr) {
-			std::string path = rootPath + directory_name;
-			std::vector<std::string> filepaths;
-			for (const auto& file : std::filesystem::directory_iterator(path)) {
-				filepaths.push_back(file.path().string());
-			}
-
-			shader_program = make_shared<ShaderProgram>(filepaths);
+		std::string path = ShaderLibrary::rootPath + directory_name;
+		std::vector<std::string> filepaths;
+		for (const auto& file : std::filesystem::directory_iterator(path)) {
+			filepaths.push_back(file.path().string());
 		}
 
-		return shader_program;
+		return make_shared<ShaderProgram>(filepaths);
+
 	}
 
 	ShaderProgram::ShaderProgram(const std::string& name) : name(name) {
 		RTY_PROFILE_FUNCTION();
 
-		std::string path = rootPath + name + ".glsl";
+		std::string path = ShaderLibrary::rootPath + name + ".glsl";
 		std::string source = ReadFile(path);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
@@ -197,8 +186,6 @@ namespace raytracy {
 			glDeleteShader(id);
 		}
 		renderer_id = program;
-
-		ShaderLibrary::Add(shared_ptr<ShaderProgram>(this));
 	}
 
 	void ShaderProgram::Bind() const {
@@ -209,32 +196,35 @@ namespace raytracy {
 		glUseProgram(0);
 	}
 
-	std::vector<shared_ptr<ShaderProgram>> ShaderLibrary::shader_programs;
 
-	shared_ptr<ShaderProgram> ShaderLibrary::Search(const std::string& name) {
-		if (!(shader_programs.empty() || name.empty())) {
-			for (auto& shader_program : shader_programs) {
-				if (shader_program->GetName() == name) {
-					return shader_program;
-				}
-			}
+	shared_ptr<ShaderProgram> ShaderLibrary::Load(const std::string& name) {
+		std::string path = rootPath + name;
+		shared_ptr<ShaderProgram> shader = nullptr;
+		if (Exist(name)) {
+			return shader_programs[name];
 		}
-		return nullptr;
+		if (std::filesystem::is_directory(path)) {
+			shader = ShaderProgram::CreateFromDirectory(name);
+		} else {
+			shader = ShaderProgram::CreateFromFile(name);
+		}
+		RTY_ASSERT(shader, "Could not create shader {0}!", name);
+		Add(shader);
+		return shader;
 	}
 
-	void ShaderLibrary::Add(const shared_ptr<ShaderProgram> shader_program) {
-		shader_programs.push_back(shader_program);
+	void ShaderLibrary::Add(const shared_ptr<ShaderProgram>& shader_program) {
+		shader_programs[shader_program->GetName()] = shader_program;
 		RTY_RENDERER_TRACE("{0} shader successfully added!", shader_program->GetName());
 	}
 
 	void ShaderLibrary::Remove(const std::string& name) {
-		for (auto iterator = shader_programs.cbegin(); iterator != shader_programs.cend(); iterator++) {
-			if (iterator->get()->GetName() == name) {
-				shader_programs.erase(iterator);
-				RTY_RENDERER_TRACE("{0} shader successfully removed!", name);
-				return;
-			}
+		if (Exist(name)) {
+			shader_programs.erase(name);
 		}
-		RTY_RENDERER_ERROR("Could not find any shader program refered as {0}!", name);
+		RTY_RENDERER_ERROR("Could not remove shader program refered as {0}!", name);
+	}
+	bool ShaderLibrary::Exist(const std::string& name) {
+		return shader_programs.find(name) != shader_programs.end();
 	}
 }

@@ -3,31 +3,16 @@
 
 #include <glad/gl.h>
 
+#include "RendererAPI.h"
 #include "Shader.h"
 
-#ifdef RTY_DEBUG
-#define GLCall(x) GLClearError();x;GLLogCall(#x, __FILE__, __LINE__)
-static void GLClearError() {
-	while (glGetError() != GL_NO_ERROR);
-}
 
-static bool GLLogCall(const char* function, const char* file, int line) {
-	while (GLenum error = glGetError()) {
-		RTY_RENDERER_ERROR("[OpenGL Error] ({0}) in {1}, {2} at {3}", error, function, file, line);
-		return false;
-	}
-	return true;
-}
-#else
-#define GLCall(x) x
-#endif
 
 namespace raytracy {
 
 	GLuint vertex_array;
 	GLuint vertex_buffer;
 	GLuint index_buffer;
-	GLuint vertex_color_buffer;
 	shared_ptr<ShaderProgram> shader_program;
 	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
 
@@ -65,6 +50,12 @@ namespace raytracy {
 
 		GLCall(glEnable(GL_DEPTH_TEST));
 		GLCall(glDepthFunc(GL_LESS));
+		
+		GLCall(glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a));
+
+		GLCall(glEnable(GL_CULL_FACE));
+		GLCall(glCullFace(GL_BACK));
+		GLCall(glFrontFace(GL_CCW));
 
 		GLfloat  vertices[] = {
 			-0.5f, -0.5f, 0.0f,
@@ -95,26 +86,22 @@ namespace raytracy {
 		GLCall(glCreateBuffers(1, &index_buffer));
 		GLCall(glNamedBufferStorage(index_buffer, sizeof(indices), indices, NULL));
 
-		shader_program = ShaderProgram::CreateFromDirectory("basic");
+		shader_program = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");
-		shader_program->Bind();
 
 		GLCall(glBindVertexArray(vertex_array));
 
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer));
+		GLCall(glEnableVertexAttribArray(0));
+		GLCall(glEnableVertexAttribArray(1));
 		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
 		GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(vertices)));
 
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer));
 
-		GLCall(glEnableVertexAttribArray(0));
-		GLCall(glEnableVertexAttribArray(1));
-
-		GLCall(glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a));
-
-		GLCall(glEnable(GL_CULL_FACE));
-		GLCall(glCullFace(GL_BACK));
-		GLCall(glFrontFace(GL_CCW));
+		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+		GLCall(glBindVertexArray(0));
 
 		is_initialized = true;
 	}
@@ -130,6 +117,8 @@ namespace raytracy {
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 		GLCall(glBindVertexArray(vertex_array));
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer));
+		shader_program->Bind();
 		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0));
 	}
 
@@ -137,6 +126,7 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 		GLCall(glDeleteVertexArrays(1, &vertex_array));
 		GLCall(glDeleteBuffers(1, &vertex_buffer));
+		GLCall(glDeleteBuffers(1, &index_buffer));
 	}
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {
