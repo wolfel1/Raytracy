@@ -5,14 +5,14 @@
 
 #include "RendererAPI.h"
 #include "Shader.h"
-
+#include "Buffer.h"
 
 
 namespace raytracy {
 
 	GLuint vertex_array;
-	GLuint vertex_buffer;
-	GLuint index_buffer;
+	shared_ptr<VertexBuffer> vertex_buffer;
+	shared_ptr<IndexBuffer> index_buffer;
 	shared_ptr<ShaderProgram> shader_program;
 	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
 
@@ -58,12 +58,17 @@ namespace raytracy {
 		GLCall(glFrontFace(GL_CCW));
 
 		GLfloat  vertices[] = {
-			-0.5f, -0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-			0.5f, 0.5f, 0.0f,
-			-0.5f, 0.5f, 0.0f
-		};
+			-0.5f, -0.5f, 0.0f,		
+			0.5f, -0.5f, 0.0f,		
+			0.5f, 0.5f, 0.0f,		
+			-0.5f, 0.5f, 0.0f,		
 
+			0.0f, 0.0f, 0.0f, 1.0f,
+			0.0f, 0.0f, 1.0f, 1.0f,	
+			0.0f, 1.0f, 0.0f, 1.0f,
+			1.0f, 0.0f, 0.0f, 1.0f		
+		};	
+		
 		GLfloat vertex_colors[] = {
 			0.0f, 0.0f, 0.0f, 1.0f,
 			0.0f, 0.0f, 1.0f, 1.0f,
@@ -78,30 +83,26 @@ namespace raytracy {
 
 		GLCall(glCreateVertexArrays(1, &vertex_array));
 
-		GLCall(glCreateBuffers(1, &vertex_buffer));
-		GLCall(glNamedBufferStorage(vertex_buffer, sizeof(vertices), vertices, NULL));
+		vertex_buffer = make_shared<VertexBuffer>(vertices, sizeof(vertices));
+		//GLCall(glCreateBuffers(1, &vertex_buffer));
+		//GLCall(glNamedBufferData(vertex_buffer, sizeof(vertices), vertices, GL_STATIC_DRAW));
 		//GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), ));
 		//GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
-		GLCall(glCreateBuffers(1, &index_buffer));
-		GLCall(glNamedBufferStorage(index_buffer, sizeof(indices), indices, NULL));
+		index_buffer = make_shared<IndexBuffer>(indices, 6);
+		//GLCall(glCreateBuffers(1, &index_buffer));
+		//GLCall(glNamedBufferData(index_buffer, sizeof(indices), indices, GL_STATIC_DRAW));
 
 		shader_program = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");
 
 		GLCall(glBindVertexArray(vertex_array));
-
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer));
+//GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer));
+		vertex_buffer->Bind();
 		GLCall(glEnableVertexAttribArray(0));
-		//GLCall(glEnableVertexAttribArray(1));
+		GLCall(glEnableVertexAttribArray(1));
 		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
-		//GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(vertices)));
-
-		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer));
-
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
-		GLCall(glBindVertexArray(0));
+		GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)(3* 4* sizeof(float))));
 
 		is_initialized = true;
 	}
@@ -117,16 +118,16 @@ namespace raytracy {
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 		GLCall(glBindVertexArray(vertex_array));
-		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer));
+		index_buffer->Bind();
 		shader_program->Bind();
-		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0));
+		GLCall(glDrawElements(GL_TRIANGLES, index_buffer->GetCount(), GL_UNSIGNED_INT, (void*)0));
 	}
 
 	void Renderer::Shutdown() {
 		RTY_PROFILE_FUNCTION();
 		GLCall(glDeleteVertexArrays(1, &vertex_array));
-		GLCall(glDeleteBuffers(1, &vertex_buffer));
-		GLCall(glDeleteBuffers(1, &index_buffer));
+		vertex_buffer.reset();
+		index_buffer.reset();
 	}
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {

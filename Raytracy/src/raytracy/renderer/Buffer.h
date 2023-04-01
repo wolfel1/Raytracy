@@ -6,23 +6,26 @@ namespace raytracy {
 		uint32_t renderer_id{};
 
 	public:
-		VertexBuffer(uint32_t size);
-		VertexBuffer(float* vertices);
+		VertexBuffer(size_t size);
+		VertexBuffer(float* vertices, size_t size);
 		~VertexBuffer();
 
-		const void Bind() const;
-		const void Unbind() const;
+		void Bind() const;
+		void Unbind() const;
 	};
 
 	class IndexBuffer {
 	private:
 		uint32_t renderer_id{};
+		uint32_t count{};
 
 	public:
 		IndexBuffer(uint32_t* indices, uint32_t count);
 		~IndexBuffer();
 
-		const void Bind() const;
-		const void Unbind() const;
+		uint32_t GetCount() { return count; }
+
+		 void Bind() const;
+		 void Unbind() const;
 	};
 }
