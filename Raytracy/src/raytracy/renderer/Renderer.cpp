@@ -79,9 +79,9 @@ namespace raytracy {
 		GLCall(glCreateVertexArrays(1, &vertex_array));
 
 		GLCall(glCreateBuffers(1, &vertex_buffer));
-		GLCall(glNamedBufferStorage(vertex_buffer, sizeof(vertices) + sizeof(vertex_colors) + sizeof(indices), nullptr, GL_DYNAMIC_STORAGE_BIT));
-		GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), vertices));
-		GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
+		GLCall(glNamedBufferStorage(vertex_buffer, sizeof(vertices), vertices, NULL));
+		//GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), ));
+		//GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
 		GLCall(glCreateBuffers(1, &index_buffer));
 		GLCall(glNamedBufferStorage(index_buffer, sizeof(indices), indices, NULL));
@@ -93,9 +93,9 @@ namespace raytracy {
 
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer));
 		GLCall(glEnableVertexAttribArray(0));
-		GLCall(glEnableVertexAttribArray(1));
+		//GLCall(glEnableVertexAttribArray(1));
 		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
-		GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(vertices)));
+		//GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(vertices)));
 
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer));
 
