@@ -84,20 +84,15 @@ namespace raytracy {
 		GLCall(glCreateVertexArrays(1, &vertex_array));
 
 		vertex_buffer = make_shared<VertexBuffer>(vertices, sizeof(vertices));
-		//GLCall(glCreateBuffers(1, &vertex_buffer));
-		//GLCall(glNamedBufferData(vertex_buffer, sizeof(vertices), vertices, GL_STATIC_DRAW));
 		//GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), ));
 		//GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
 		index_buffer = make_shared<IndexBuffer>(indices, 6);
-		//GLCall(glCreateBuffers(1, &index_buffer));
-		//GLCall(glNamedBufferData(index_buffer, sizeof(indices), indices, GL_STATIC_DRAW));
 
 		shader_program = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");
 
 		GLCall(glBindVertexArray(vertex_array));
-//GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer));
 		vertex_buffer->Bind();
 		GLCall(glEnableVertexAttribArray(0));
 		GLCall(glEnableVertexAttribArray(1));
