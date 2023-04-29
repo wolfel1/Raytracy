@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Core.h"
+#include "../renderer/api/opengl/OpenGLContext.h"
 
 struct GLFWwindow;
 
@@ -20,7 +21,11 @@ namespace raytracy {
 
 		WindowData window_data;
 
+		unique_ptr<OpenGLContext> graphics_context;
+
 	public:
+
+		static bool is_glfw_initialized;
 
 		struct WindowProps {
 			std::string name;

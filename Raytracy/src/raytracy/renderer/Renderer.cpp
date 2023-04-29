@@ -3,9 +3,9 @@
 
 #include <glad/gl.h>
 
-#include "OpenGLRendererAPI.h"
-#include "OpenGLShader.h"
-#include "OpenGLBuffer.h"
+#include "api/opengl/OpenGLRendererAPI.h"
+#include "api/opengl/OpenGLShader.h"
+#include "api/opengl/OpenGLBuffer.h"
 
 
 namespace raytracy {
@@ -16,46 +16,16 @@ namespace raytracy {
 	shared_ptr<OpenGLShaderProgram> shader_program;
 	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-	void OpenGLMessageCallback(
-			unsigned source,
-			unsigned type,
-			unsigned id,
-			unsigned severity,
-			int length,
-			const char* message,
-			const void* userParam) {
-		switch (severity) {
-		case GL_DEBUG_SEVERITY_HIGH:         RTY_RENDERER_CRITICAL(message); return;
-		case GL_DEBUG_SEVERITY_MEDIUM:       RTY_RENDERER_ERROR(message); return;
-		case GL_DEBUG_SEVERITY_LOW:          RTY_RENDERER_WARN(message); return;
-		case GL_DEBUG_SEVERITY_NOTIFICATION: RTY_RENDERER_TRACE(message); return;
-		}
-
-		RTY_ASSERT(false, "Unknown severity level!");
-	}
+	OpenGLRendererAPI::API OpenGLRendererAPI::graphics_api = OpenGLRendererAPI::API::OpenGL;
 
 	void Renderer::Init() {
 		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(!is_initialized, "Renderer is already initialized!");
 
-#ifdef RTY_DEBUG
-		GLCall(glEnable(GL_DEBUG_OUTPUT));
-		GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
-		GLCall(glDebugMessageCallback(OpenGLMessageCallback, nullptr));
-
-		GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE));
-#endif
-		GLCall(glEnable(GL_BLEND));
-		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-		GLCall(glEnable(GL_DEPTH_TEST));
-		GLCall(glDepthFunc(GL_LESS));
+		renderer_api = make_unique<OpenGLRendererAPI>();
+		renderer_api->Init();
 		
-		GLCall(glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a));
-
-		GLCall(glEnable(GL_CULL_FACE));
-		GLCall(glCullFace(GL_BACK));
-		GLCall(glFrontFace(GL_CCW));
+		renderer_api->SetClearColor(clear_color);
 
 		GLfloat  vertices[] = {
 			-0.5f, -0.5f, 0.0f,		
@@ -110,12 +80,12 @@ namespace raytracy {
 
 	void Renderer::Render() {
 		RTY_PROFILE_FUNCTION();
-		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+		renderer_api->ClearViewport();
 
 		GLCall(glBindVertexArray(vertex_array));
 		index_buffer->Bind();
 		shader_program->Bind();
-		GLCall(glDrawElements(GL_TRIANGLES, index_buffer->GetCount(), GL_UNSIGNED_INT, (void*)0));
+		renderer_api->DrawIndexed(index_buffer);
 	}
 
 	void Renderer::Shutdown() {
@@ -126,7 +96,7 @@ namespace raytracy {
 	}
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {
-		GLCall(glViewport(0, 0, width, height));
+		renderer_api->SetViewport(0, 0, width, height);
 		return true;
 	}
 }
