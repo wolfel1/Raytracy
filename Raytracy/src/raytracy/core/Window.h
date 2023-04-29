@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Core.h"
-#include "../renderer/api/opengl/OpenGLContext.h"
+#include "../renderer/api/GraphicsContext.h"
 
 struct GLFWwindow;
 
@@ -21,7 +21,7 @@ namespace raytracy {
 
 		WindowData window_data;
 
-		unique_ptr<OpenGLContext> graphics_context;
+		unique_ptr<GraphicsContext> graphics_context;
 
 	public:
 

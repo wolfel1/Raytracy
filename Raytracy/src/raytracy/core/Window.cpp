@@ -43,7 +43,7 @@ namespace raytracy {
 			RTY_ASSERT(window_handle, "Could not create window!");
 		}
 
-		graphics_context = make_unique<OpenGLContext>(window_handle);
+		graphics_context = GraphicsContext::Create(window_handle);
 		graphics_context->Init();
 
 		glfwSetWindowUserPointer(window_handle, &window_data);
@@ -101,7 +101,7 @@ namespace raytracy {
 	void Window::OnUpdate() {
 		RTY_PROFILE_FUNCTION();
 
-		glfwSwapBuffers(window_handle);
+		graphics_context->SwapBuffers();
 		glfwPollEvents();
 	}
 

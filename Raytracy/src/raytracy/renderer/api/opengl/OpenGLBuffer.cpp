@@ -25,7 +25,7 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	}
 
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count) : count(count) {
+	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count) : IndexBuffer(count) {
 		GLCall(glCreateBuffers(1, &renderer_id));
 		GLCall(glNamedBufferData(renderer_id, count * sizeof(uint32_t), indices, GL_STATIC_DRAW));
 	}

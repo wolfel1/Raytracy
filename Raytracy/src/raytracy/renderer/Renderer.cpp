@@ -4,25 +4,25 @@
 #include <glad/gl.h>
 
 #include "api/opengl/OpenGLRendererAPI.h"
-#include "api/opengl/OpenGLShader.h"
-#include "api/opengl/OpenGLBuffer.h"
+#include "api/Shader.h"
+#include "api/Buffer.h"
 
 
 namespace raytracy {
 
 	GLuint vertex_array;
-	shared_ptr<OpenGLVertexBuffer> vertex_buffer;
-	shared_ptr<OpenGLIndexBuffer> index_buffer;
-	shared_ptr<OpenGLShaderProgram> shader_program;
+	shared_ptr<VertexBuffer> vertex_buffer;
+	shared_ptr<IndexBuffer> index_buffer;
+	shared_ptr<ShaderProgram> shader_program;
 	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-	OpenGLRendererAPI::API OpenGLRendererAPI::graphics_api = OpenGLRendererAPI::API::OpenGL;
+	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
 
 	void Renderer::Init() {
 		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(!is_initialized, "Renderer is already initialized!");
 
-		renderer_api = make_unique<OpenGLRendererAPI>();
+		renderer_api = RendererAPI::Create();
 		renderer_api->Init();
 		
 		renderer_api->SetClearColor(clear_color);
@@ -53,11 +53,11 @@ namespace raytracy {
 
 		GLCall(glCreateVertexArrays(1, &vertex_array));
 
-		vertex_buffer = make_shared<OpenGLVertexBuffer>(vertices, sizeof(vertices));
+		vertex_buffer = VertexBuffer::Create(vertices, sizeof(vertices));
 		//GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), ));
 		//GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
-		index_buffer = make_shared<OpenGLIndexBuffer>(indices, 6);
+		index_buffer = IndexBuffer::Create(indices, 6);
 
 		shader_program = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");

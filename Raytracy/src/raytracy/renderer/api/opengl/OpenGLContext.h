@@ -1,17 +1,14 @@
 #pragma once
 
-struct GLFWwindow;
+#include "../GraphicsContext.h"
 
 namespace raytracy {
-	class OpenGLContext {
-
-	private:
-		GLFWwindow* window_handle;
+	class OpenGLContext : public GraphicsContext {
 
 	public:
-		OpenGLContext(GLFWwindow* window_handle);
+		OpenGLContext(void* window_handle);
 
-		void Init();
-
+		virtual void Init() override;
+		virtual void SwapBuffers() override;
 	};
 }

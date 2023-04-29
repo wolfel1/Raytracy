@@ -1,6 +1,7 @@
 #pragma once
 
-#include "OpenGLBuffer.h"
+#include "../RendererAPI.h"
+#include "../Buffer.h"
 namespace raytracy {
 #ifdef RTY_DEBUG
 #define GLCall(x) GLClearError();x;GLLogCall(#x, __FILE__, __LINE__)
@@ -11,27 +12,20 @@ namespace raytracy {
 #define GLCall(x) x
 #endif
 
-	class OpenGLRendererAPI {
-	public:
-		enum class API {
-			None = 0, OpenGL = 1, Vulkan = 2
-		};
-	private:
-
-		static API graphics_api;
+	class OpenGLRendererAPI : public RendererAPI {
 
 	public:
 
-		void Init();
+		virtual void Init() override;
 
-		void ClearViewport();
+		virtual void ClearViewport() override;
 
-		void SetClearColor(const glm::vec4& clear_color);
+		virtual void SetClearColor(const glm::vec4& clear_color) override;
 
-		void DrawIndexed(const shared_ptr<OpenGLIndexBuffer>& index_buffer);
+		virtual void DrawIndexed(const shared_ptr<IndexBuffer>& index_buffer) override;
 
-		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
-		void Shutdown() {}
+		virtual void Shutdown() override {}
 	};
 }

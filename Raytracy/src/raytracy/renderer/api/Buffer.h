@@ -28,5 +28,8 @@ namespace raytracy {
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
+
+		protected:
+		IndexBuffer(uint32_t count) : count(count) {}
 	};
 }

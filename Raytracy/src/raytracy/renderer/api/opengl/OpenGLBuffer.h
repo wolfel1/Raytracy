@@ -1,7 +1,9 @@
 #pragma once
 
+#include "../Buffer.h"
+
 namespace raytracy {
-	class OpenGLVertexBuffer {
+	class OpenGLVertexBuffer : public VertexBuffer {
 	private:
 		uint32_t renderer_id{};
 
@@ -10,11 +12,11 @@ namespace raytracy {
 		OpenGLVertexBuffer(float* vertices, size_t size);
 		~OpenGLVertexBuffer();
 
-		void Bind() const;
-		void Unbind() const;
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
 	};
 
-	class OpenGLIndexBuffer {
+	class OpenGLIndexBuffer : public IndexBuffer {
 	private:
 		uint32_t renderer_id{};
 		uint32_t count{};
@@ -23,9 +25,7 @@ namespace raytracy {
 		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
 		~OpenGLIndexBuffer();
 
-		uint32_t GetCount() { return count; }
-
-		 void Bind() const;
-		 void Unbind() const;
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
 	};
 }

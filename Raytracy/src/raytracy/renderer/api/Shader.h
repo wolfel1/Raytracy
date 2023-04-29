@@ -6,9 +6,10 @@ namespace raytracy {
 	class ShaderProgram {
 	protected:
 		std::string name = "";
-		uint32_t renderer_id;
+		uint32_t renderer_id{};
 
 	public:
+	
 		virtual ~ShaderProgram() = default;
 
 		const std::string& GetName() const { return name; }
@@ -19,6 +20,10 @@ namespace raytracy {
 
 		static shared_ptr<ShaderProgram> CreateFromFile(const std::string& name);
 		static shared_ptr<ShaderProgram> CreateFromDirectory(const std::string& directory_name);
+		
+		protected:
+		ShaderProgram() = default;
+		ShaderProgram(const std::string& name) : name(name) {};
 
 	};
 

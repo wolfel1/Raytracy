@@ -12,6 +12,10 @@ namespace raytracy {
 		static API graphics_api;
 
 	public:
+		static unique_ptr<RendererAPI> Create();
+
+		static API GetAPI() { return graphics_api; }
+		static void SetAPI(API api) { graphics_api = api; }
 
 		virtual void Init() = 0;
 

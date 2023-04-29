@@ -1,13 +1,14 @@
 #pragma once
 
-#include "api/opengl/OpenGLRendererAPI.h"
+#include "api/RendererAPI.h"
+
 namespace raytracy {
 
 	class Renderer {
 	private:
 		bool is_initialized = false;
 
-		unique_ptr<OpenGLRendererAPI> renderer_api = nullptr;
+		unique_ptr<RendererAPI> renderer_api = nullptr;
 	public:
 		Renderer(const Renderer&) = delete;
 
