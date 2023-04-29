@@ -1,43 +1,43 @@
 #include "raytracypch.h"
-#include "Buffer.h"
+#include "OpenGLBuffer.h"
 
 #include <glad/gl.h>
 
-#include "RendererAPI.h"
+#include "OpenGLRendererAPI.h"
 
 namespace raytracy {
-	VertexBuffer::VertexBuffer(size_t size) {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(size_t size) {
 		GLCall(glCreateBuffers(1, &renderer_id));
 		GLCall(glNamedBufferData(renderer_id, size, nullptr, GL_DYNAMIC_DRAW));
 	}
 
-	VertexBuffer::VertexBuffer(float* vertices, size_t size) {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, size_t size) {
 		GLCall(glCreateBuffers(1, &renderer_id));
 		GLCall(glNamedBufferData(renderer_id, size * sizeof(float), vertices, GL_STATIC_DRAW));
     }
-	VertexBuffer::~VertexBuffer() {
+	OpenGLVertexBuffer::~OpenGLVertexBuffer() {
 		GLCall(glDeleteBuffers(1, &renderer_id));
 	}
-	 void VertexBuffer::Bind() const {
+	 void OpenGLVertexBuffer::Bind() const {
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, renderer_id));
 	}
-	 void VertexBuffer::Unbind() const {
+	 void OpenGLVertexBuffer::Unbind() const {
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	}
 
-	IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count) : count(count) {
+	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count) : count(count) {
 		GLCall(glCreateBuffers(1, &renderer_id));
 		GLCall(glNamedBufferData(renderer_id, count * sizeof(uint32_t), indices, GL_STATIC_DRAW));
 	}
 
-	IndexBuffer::~IndexBuffer() {
+	OpenGLIndexBuffer::~OpenGLIndexBuffer() {
 		GLCall(glDeleteBuffers(1, &renderer_id));
 	}
 
-	 void IndexBuffer::Bind() const {
+	 void OpenGLIndexBuffer::Bind() const {
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id));
 	}
-	 void IndexBuffer::Unbind() const {
+	 void OpenGLIndexBuffer::Unbind() const {
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 	}
 }

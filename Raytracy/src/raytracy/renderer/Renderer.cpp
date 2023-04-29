@@ -3,17 +3,17 @@
 
 #include <glad/gl.h>
 
-#include "RendererAPI.h"
-#include "Shader.h"
-#include "Buffer.h"
+#include "OpenGLRendererAPI.h"
+#include "OpenGLShader.h"
+#include "OpenGLBuffer.h"
 
 
 namespace raytracy {
 
 	GLuint vertex_array;
-	shared_ptr<VertexBuffer> vertex_buffer;
-	shared_ptr<IndexBuffer> index_buffer;
-	shared_ptr<ShaderProgram> shader_program;
+	shared_ptr<OpenGLVertexBuffer> vertex_buffer;
+	shared_ptr<OpenGLIndexBuffer> index_buffer;
+	shared_ptr<OpenGLShaderProgram> shader_program;
 	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 	void OpenGLMessageCallback(
@@ -83,11 +83,11 @@ namespace raytracy {
 
 		GLCall(glCreateVertexArrays(1, &vertex_array));
 
-		vertex_buffer = make_shared<VertexBuffer>(vertices, sizeof(vertices));
+		vertex_buffer = make_shared<OpenGLVertexBuffer>(vertices, sizeof(vertices));
 		//GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), ));
 		//GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
-		index_buffer = make_shared<IndexBuffer>(indices, 6);
+		index_buffer = make_shared<OpenGLIndexBuffer>(indices, 6);
 
 		shader_program = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");

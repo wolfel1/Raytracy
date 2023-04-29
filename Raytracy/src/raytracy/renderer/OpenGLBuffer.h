@@ -1,27 +1,27 @@
 #pragma once
 
 namespace raytracy {
-	class VertexBuffer {
+	class OpenGLVertexBuffer {
 	private:
 		uint32_t renderer_id{};
 
 	public:
-		VertexBuffer(size_t size);
-		VertexBuffer(float* vertices, size_t size);
-		~VertexBuffer();
+		OpenGLVertexBuffer(size_t size);
+		OpenGLVertexBuffer(float* vertices, size_t size);
+		~OpenGLVertexBuffer();
 
 		void Bind() const;
 		void Unbind() const;
 	};
 
-	class IndexBuffer {
+	class OpenGLIndexBuffer {
 	private:
 		uint32_t renderer_id{};
 		uint32_t count{};
 
 	public:
-		IndexBuffer(uint32_t* indices, uint32_t count);
-		~IndexBuffer();
+		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
+		~OpenGLIndexBuffer();
 
 		uint32_t GetCount() { return count; }
 

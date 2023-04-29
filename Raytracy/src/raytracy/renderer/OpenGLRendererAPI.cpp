@@ -1,5 +1,5 @@
 #include "raytracypch.h"
-#include "RendererAPI.h"
+#include "OpenGLRendererAPI.h"
 
 #include <glad/gl.h>
 

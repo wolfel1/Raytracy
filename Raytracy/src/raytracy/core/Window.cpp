@@ -23,8 +23,6 @@ namespace raytracy {
 		window_data.width = props.width;
 		window_data.height = props.height;
 
-
-
 		RTY_BASE_TRACE("Creating window {0} ({1}, {2})", props.name, props.width, props.height);
 		if (!is_glfw_initialized) {
 			RTY_PROFILE_SCOPE("GLFWInit");

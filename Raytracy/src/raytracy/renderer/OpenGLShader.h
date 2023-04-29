@@ -3,16 +3,16 @@
 typedef unsigned int GLenum;
 
 namespace raytracy {
-	class ShaderProgram {
+	class OpenGLShaderProgram {
 	private:
 		std::string name = "";
 		uint32_t renderer_id;
 
 	public:
 
-		ShaderProgram(const std::string& name);
-		ShaderProgram(const std::vector<std::string>& paths);
-		~ShaderProgram();
+		OpenGLShaderProgram(const std::string& name);
+		OpenGLShaderProgram(const std::vector<std::string>& paths);
+		~OpenGLShaderProgram();
 
 		const std::string& GetName() const { return name; }
 
@@ -20,9 +20,9 @@ namespace raytracy {
 
 		void Unbind() const;
 
-		static shared_ptr<ShaderProgram> CreateFromFile(const std::string& name);
+		static shared_ptr<OpenGLShaderProgram> CreateFromFile(const std::string& name);
 
-		static shared_ptr<ShaderProgram> CreateFromDirectory(const std::string& directory_name);
+		static shared_ptr<OpenGLShaderProgram> CreateFromDirectory(const std::string& directory_name);
 
 	private:
 
@@ -34,7 +34,7 @@ namespace raytracy {
 
 	class ShaderLibrary {
 	private:
-		std::unordered_map<std::string, shared_ptr<ShaderProgram>> shader_programs;
+		std::unordered_map<std::string, shared_ptr<OpenGLShaderProgram>> shader_programs;
 
 	public:
 		static const std::string rootPath;
@@ -47,8 +47,8 @@ namespace raytracy {
 			return library;
 		}
 
-		shared_ptr<ShaderProgram> Load(const std::string& name);
-		void Add(const shared_ptr<ShaderProgram>& shader_program);
+		shared_ptr<OpenGLShaderProgram> Load(const std::string& name);
+		void Add(const shared_ptr<OpenGLShaderProgram>& shader_program);
 		void Remove(const std::string& name);
 
 		bool Exist(const std::string& name);

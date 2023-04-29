@@ -1,5 +1,5 @@
 #include "raytracypch.h"
-#include "Shader.h"
+#include "OpenGLShader.h"
 
 #include <filesystem>
 
@@ -19,22 +19,22 @@ namespace raytracy {
 		return 0;
 	}
 
-	shared_ptr<ShaderProgram> ShaderProgram::CreateFromFile(const std::string& name) {
-		return make_shared<ShaderProgram>(name);
+	shared_ptr<OpenGLShaderProgram> OpenGLShaderProgram::CreateFromFile(const std::string& name) {
+		return make_shared<OpenGLShaderProgram>(name);
 	}
 
-	shared_ptr<ShaderProgram> ShaderProgram::CreateFromDirectory(const std::string& directory_name) {
+	shared_ptr<OpenGLShaderProgram> OpenGLShaderProgram::CreateFromDirectory(const std::string& directory_name) {
 		std::string path = ShaderLibrary::rootPath + directory_name;
 		std::vector<std::string> filepaths;
 		for (const auto& file : std::filesystem::directory_iterator(path)) {
 			filepaths.push_back(file.path().string());
 		}
 
-		return make_shared<ShaderProgram>(filepaths);
+		return make_shared<OpenGLShaderProgram>(filepaths);
 
 	}
 
-	ShaderProgram::ShaderProgram(const std::string& name) : name(name) {
+	OpenGLShaderProgram::OpenGLShaderProgram(const std::string& name) : name(name) {
 		RTY_PROFILE_FUNCTION();
 
 		std::string path = ShaderLibrary::rootPath + name + ".glsl";
@@ -43,7 +43,7 @@ namespace raytracy {
 		Compile(shaderSources);
 	}
 
-	ShaderProgram::ShaderProgram(const std::vector<std::string>& paths) {
+	OpenGLShaderProgram::OpenGLShaderProgram(const std::vector<std::string>& paths) {
 		std::unordered_map<GLenum, std::string> shader_sources;
 
 		for (const auto path : paths) {
@@ -53,11 +53,11 @@ namespace raytracy {
 		Compile(shader_sources);
 	}
 
-	ShaderProgram::~ShaderProgram() {
+	OpenGLShaderProgram::~OpenGLShaderProgram() {
 		glDeleteProgram(renderer_id);
 	}
 
-	std::string ShaderProgram::ReadFile(const std::string& path) {
+	std::string OpenGLShaderProgram::ReadFile(const std::string& path) {
 
 		std::string result;
 		std::ifstream in(path, std::ios::in | std::ios::binary);
@@ -79,7 +79,7 @@ namespace raytracy {
 		return result;
 	}
 
-	std::unordered_map<GLenum, std::string> ShaderProgram::PreProcess(const std::string& source) {
+	std::unordered_map<GLenum, std::string> OpenGLShaderProgram::PreProcess(const std::string& source) {
 
 		std::unordered_map<GLenum, std::string> shaderSources;
 
@@ -103,7 +103,7 @@ namespace raytracy {
 		return shaderSources;
 	}
 
-	void ShaderProgram::PreProcess(const std::string& path, std::unordered_map<GLenum, std::string>& shaderSources) {
+	void OpenGLShaderProgram::PreProcess(const std::string& path, std::unordered_map<GLenum, std::string>& shaderSources) {
 
 		auto lastDot = path.rfind('.');
 		auto count = path.size() - lastDot;
@@ -119,7 +119,7 @@ namespace raytracy {
 		shaderSources[ShaderTypeFromString(type)] = source;
 	}
 
-	void ShaderProgram::Compile(std::unordered_map<GLenum, std::string> shaderSources) {
+	void OpenGLShaderProgram::Compile(std::unordered_map<GLenum, std::string> shaderSources) {
 
 		GLuint program = glCreateProgram();
 		std::vector<GLenum> glShaderIDs;
@@ -188,32 +188,32 @@ namespace raytracy {
 		renderer_id = program;
 	}
 
-	void ShaderProgram::Bind() const {
+	void OpenGLShaderProgram::Bind() const {
 		glUseProgram(renderer_id);
 	}
 
-	void ShaderProgram::Unbind() const {
+	void OpenGLShaderProgram::Unbind() const {
 		glUseProgram(0);
 	}
 
 
-	shared_ptr<ShaderProgram> ShaderLibrary::Load(const std::string& name) {
+	shared_ptr<OpenGLShaderProgram> ShaderLibrary::Load(const std::string& name) {
 		std::string path = rootPath + name;
-		shared_ptr<ShaderProgram> shader = nullptr;
+		shared_ptr<OpenGLShaderProgram> shader = nullptr;
 		if (Exist(name)) {
 			return shader_programs[name];
 		}
 		if (std::filesystem::is_directory(path)) {
-			shader = ShaderProgram::CreateFromDirectory(name);
+			shader = OpenGLShaderProgram::CreateFromDirectory(name);
 		} else {
-			shader = ShaderProgram::CreateFromFile(name);
+			shader = OpenGLShaderProgram::CreateFromFile(name);
 		}
 		RTY_ASSERT(shader, "Could not create shader {0}!", name);
 		Add(shader);
 		return shader;
 	}
 
-	void ShaderLibrary::Add(const shared_ptr<ShaderProgram>& shader_program) {
+	void ShaderLibrary::Add(const shared_ptr<OpenGLShaderProgram>& shader_program) {
 		shader_programs[shader_program->GetName()] = shader_program;
 		RTY_RENDERER_TRACE("{0} shader successfully added!", shader_program->GetName());
 	}
