@@ -1,16 +1,14 @@
 #include "raytracypch.h"
 #include "Renderer.h"
 
-#include <glad/gl.h>
-
-#include "api/opengl/OpenGLRendererAPI.h"
 #include "api/Shader.h"
 #include "api/Buffer.h"
+#include "api/VertexArray.h"
 
 
 namespace raytracy {
 
-	GLuint vertex_array;
+	shared_ptr<VertexArray> vertex_array;
 	shared_ptr<VertexBuffer> vertex_buffer;
 	shared_ptr<IndexBuffer> index_buffer;
 	shared_ptr<ShaderProgram> shader_program;
@@ -24,36 +22,28 @@ namespace raytracy {
 
 		renderer_api = RendererAPI::Create();
 		renderer_api->Init();
-		
+
 		renderer_api->SetClearColor(clear_color);
 
-		GLfloat  vertices[] = {
-			-0.5f, -0.5f, 0.0f,		
-			0.5f, -0.5f, 0.0f,		
-			0.5f, 0.5f, 0.0f,		
-			-0.5f, 0.5f, 0.0f,		
-
-			0.0f, 0.0f, 0.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,	
-			0.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f		
-		};	
-		
-		GLfloat vertex_colors[] = {
-			0.0f, 0.0f, 0.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f
+		float  vertices[] = {
+			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 0.0f, 1.0f,
+			0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f, 1.0f,
+			0.5f, 0.5f, 0.0f,     0.0f, 1.0f, 0.0f, 1.0f,
+			-0.5f, 0.5f, 0.0f,    1.0f, 0.0f, 0.0f, 1.0f
 		};
 
-		GLuint indices[] = {
+		uint32_t indices[] = {
 			0, 1, 2,
 			2, 3, 0
 		};
 
-		GLCall(glCreateVertexArrays(1, &vertex_array));
+		vertex_array = VertexArray::Create();
 
 		vertex_buffer = VertexBuffer::Create(vertices, sizeof(vertices));
+		vertex_buffer->SetLayout({
+			{ "position", VertexDataType::Float3 },
+			{ "color", VertexDataType::Float4 }
+		});
 		//GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), ));
 		//GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
@@ -62,12 +52,8 @@ namespace raytracy {
 		shader_program = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");
 
-		GLCall(glBindVertexArray(vertex_array));
-		vertex_buffer->Bind();
-		GLCall(glEnableVertexAttribArray(0));
-		GLCall(glEnableVertexAttribArray(1));
-		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
-		GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)(3* 4* sizeof(float))));
+		vertex_array->SetVertexBuffer(vertex_buffer);
+		vertex_array->SetIndexBuffer(index_buffer);
 
 		is_initialized = true;
 	}
@@ -82,15 +68,14 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 		renderer_api->ClearViewport();
 
-		GLCall(glBindVertexArray(vertex_array));
-		index_buffer->Bind();
+		vertex_array->Bind();
 		shader_program->Bind();
 		renderer_api->DrawIndexed(index_buffer);
 	}
 
 	void Renderer::Shutdown() {
 		RTY_PROFILE_FUNCTION();
-		GLCall(glDeleteVertexArrays(1, &vertex_array));
+		vertex_array.reset();
 		vertex_buffer.reset();
 		index_buffer.reset();
 	}

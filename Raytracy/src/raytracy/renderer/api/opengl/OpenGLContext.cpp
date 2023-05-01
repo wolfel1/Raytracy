@@ -7,7 +7,6 @@
 
 namespace raytracy {
 	OpenGLContext::OpenGLContext(void* window_handle) : GraphicsContext(window_handle) {
-		RTY_ASSERT(window_handle, "Window handle is null!");
 	}
 
 	void OpenGLContext::Init() {

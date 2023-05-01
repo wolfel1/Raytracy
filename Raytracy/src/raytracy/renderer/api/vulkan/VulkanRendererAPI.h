@@ -5,16 +5,8 @@
 
 namespace raytracy {
 
-#ifdef RTY_DEBUG
-#define GLCall(x) GLClearError();x;GLLogCall(#x, __FILE__, __LINE__)
-	void GLClearError();
-
-	bool GLLogCall(const char* function, const char* file, int line);
-#else
-#define GLCall(x) x
-#endif
-
-	class OpenGLRendererAPI : public RendererAPI {
+	class VulkanRendererAPI : public RendererAPI {
+		
 
 	public:
 
@@ -28,6 +20,6 @@ namespace raytracy {
 
 		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
-		virtual void Shutdown() override {}
+		virtual void Shutdown() override;
 	};
 }

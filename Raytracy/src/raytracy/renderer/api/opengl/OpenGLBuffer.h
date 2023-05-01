@@ -4,8 +4,6 @@
 
 namespace raytracy {
 	class OpenGLVertexBuffer : public VertexBuffer {
-	private:
-		uint32_t renderer_id{};
 
 	public:
 		OpenGLVertexBuffer(size_t size);
@@ -17,9 +15,6 @@ namespace raytracy {
 	};
 
 	class OpenGLIndexBuffer : public IndexBuffer {
-	private:
-		uint32_t renderer_id{};
-		uint32_t count{};
 
 	public:
 		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);

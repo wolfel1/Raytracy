@@ -3,11 +3,9 @@
 
 #include "../event/ApplicationEvent.h"
 #include "../event/KeyEvent.h"
+#include "../renderer/api/RendererAPI.h"
 
 #include <GLFW/glfw3.h>
-#include <glad/gl.h>
-
-
 
 namespace raytracy {
 
@@ -35,8 +33,11 @@ namespace raytracy {
 		{
 			RTY_PROFILE_SCOPE("CreateWindow");
 #ifdef RTY_DEBUG
-			//if api == opengl
-			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+			if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL) {
+				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+			} else if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan) {
+				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			}
 #endif
 			glfwWindowHint(GLFW_SAMPLES, 4);
 			window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
