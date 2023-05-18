@@ -3,7 +3,6 @@
 
 #include "RendererAPI.h"
 #include "opengl/OpenGLContext.h"
-#include "vulkan/VulkanContext.h"
 
 namespace raytracy {
 	unique_ptr<GraphicsContext> GraphicsContext::Create(void* window_handle) {
@@ -13,8 +12,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return make_unique<OpenGLContext>(window_handle);
-		case RendererAPI::API::Vulkan:
-			return make_unique<VulkanContext>(window_handle);
 		default:
 			break;
 		}
