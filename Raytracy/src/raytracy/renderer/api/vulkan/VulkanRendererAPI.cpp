@@ -2,7 +2,8 @@
 #include "VulkanRendererAPI.h"
 
 namespace raytracy {
-	void VulkanRendererAPI::Init() {
+	void VulkanRendererAPI::Init(shared_ptr<GraphicsContext> context) {
+		graphics_context = context;
 	}
 	void VulkanRendererAPI::ClearViewport() {
 	}

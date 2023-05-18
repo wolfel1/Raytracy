@@ -25,7 +25,7 @@ namespace raytracy {
 		EventBus::Get().Register<WindowResizeEvent>(RTY_BIND_EVENT_FN(Application::OnWindowResize)); 
 		EventBus::Get().Register<AppTickEvent>(RTY_BIND_EVENT_FN(Application::OnAppTick));
 
-		Renderer::Get().Init();
+		Renderer::Get().Init(window->GetGraphicsContext());
 
 		running = true;
 	}

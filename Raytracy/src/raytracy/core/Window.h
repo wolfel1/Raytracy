@@ -21,7 +21,7 @@ namespace raytracy {
 
 		WindowData window_data;
 
-		unique_ptr<GraphicsContext> graphics_context;
+		shared_ptr<GraphicsContext> graphics_context;
 
 	public:
 
@@ -42,6 +42,10 @@ namespace raytracy {
 
 		void SetTitle(const std::string& name);
 		std::string GetName() const { return window_data.name; }
+
+		shared_ptr<GraphicsContext> GetGraphicsContext() const {
+			return graphics_context;
+		}
 
 		void SetVSync(bool enabled);
 		bool IsVSync() const { return window_data.v_sync; }

@@ -17,7 +17,7 @@ namespace raytracy {
 			return renderer;
 		}
 
-		void Init();
+		void Init(shared_ptr<GraphicsContext> context);
 
 		void Submit();
 

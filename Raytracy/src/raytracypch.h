@@ -16,6 +16,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <set>
 
 #include "raytracy/core/Core.h"
 #include "raytracy/core/Log.h"

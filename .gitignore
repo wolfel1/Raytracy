@@ -14,3 +14,5 @@ profiling/
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
+
+compile.bat

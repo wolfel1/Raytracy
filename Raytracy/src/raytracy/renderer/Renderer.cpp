@@ -4,6 +4,7 @@
 #include "api/Shader.h"
 #include "api/Buffer.h"
 #include "api/VertexArray.h"
+#include "api/GraphicsContext.h"
 
 
 namespace raytracy {
@@ -11,17 +12,17 @@ namespace raytracy {
 	shared_ptr<VertexArray> vertex_array;
 	shared_ptr<VertexBuffer> vertex_buffer;
 	shared_ptr<IndexBuffer> index_buffer;
-	shared_ptr<ShaderProgram> shader_program;
+	shared_ptr<Shader> shader_program;
 	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
+	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
 
-	void Renderer::Init() {
+	void Renderer::Init(shared_ptr<GraphicsContext> context) {
 		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(!is_initialized, "Renderer is already initialized!");
 
 		renderer_api = RendererAPI::Create();
-		renderer_api->Init();
+		renderer_api->Init(context);
 
 		renderer_api->SetClearColor(clear_color);
 
