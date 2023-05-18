@@ -67,6 +67,8 @@ namespace raytracy {
 	public:
 		VulkanContext(void* window_handle);
 
+		VkExtent2D& GetSwapChainExtent() { return swap_chain_extent; }
+
 		virtual void Init() override {
 			CreateInstance();
 			InitDebugMessenger();
