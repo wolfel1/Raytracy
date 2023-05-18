@@ -1,27 +1,27 @@
 #include "raytracypch.h"
 #include "Renderer.h"
 
-#include "api/Shader.h"
-#include "api/Buffer.h"
-#include "api/VertexArray.h"
-#include "api/GraphicsContext.h"
+#include "api/vulkan/VulkanShader.h"
+#include "api/vulkan/VulkanBuffer.h"
+#include "api/vulkan/VulkanVertexArray.h"
+#include "api/vulkan/VulkanContext.h"
 
 
 namespace raytracy {
 
-	shared_ptr<VertexArray> vertex_array;
-	shared_ptr<VertexBuffer> vertex_buffer;
-	shared_ptr<IndexBuffer> index_buffer;
-	shared_ptr<Shader> shader_program;
+	shared_ptr<VulkanVertexArray> vertex_array;
+	shared_ptr<VulkanVertexBuffer> vertex_buffer;
+	shared_ptr<VulkanIndexBuffer> index_buffer;
+	shared_ptr<VulkanShader> shader_program;
 	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
+	//RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
 
-	void Renderer::Init(shared_ptr<GraphicsContext> context) {
+	void Renderer::Init(shared_ptr<VulkanContext> context) {
 		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(!is_initialized, "Renderer is already initialized!");
 
-		renderer_api = RendererAPI::Create();
+		renderer_api = make_unique<VulkanRendererAPI>();
 		renderer_api->Init(context);
 
 		renderer_api->SetClearColor(clear_color);
@@ -38,9 +38,9 @@ namespace raytracy {
 			2, 3, 0
 		};
 
-		vertex_array = VertexArray::Create();
+		vertex_array = make_shared<VulkanVertexArray>();
 
-		vertex_buffer = VertexBuffer::Create(vertices, sizeof(vertices));
+		vertex_buffer = make_shared<VulkanVertexBuffer>(vertices, sizeof(vertices));
 		vertex_buffer->SetLayout({
 			{ "position", VertexDataType::Float3 },
 			{ "color", VertexDataType::Float4 }
@@ -48,7 +48,7 @@ namespace raytracy {
 		//GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), ));
 		//GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
-		index_buffer = IndexBuffer::Create(indices, 6);
+		index_buffer = make_shared<VulkanIndexBuffer>(indices, 6);
 
 		shader_program = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");

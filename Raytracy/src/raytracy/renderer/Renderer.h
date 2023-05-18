@@ -1,6 +1,6 @@
 #pragma once
 
-#include "api/RendererAPI.h"
+#include "api/vulkan/VulkanRendererAPI.h"
 
 namespace raytracy {
 
@@ -8,7 +8,7 @@ namespace raytracy {
 	private:
 		bool is_initialized = false;
 
-		unique_ptr<RendererAPI> renderer_api = nullptr;
+		unique_ptr<VulkanRendererAPI> renderer_api = nullptr;
 	public:
 		Renderer(const Renderer&) = delete;
 
@@ -17,7 +17,7 @@ namespace raytracy {
 			return renderer;
 		}
 
-		void Init(shared_ptr<GraphicsContext> context);
+		void Init(shared_ptr<VulkanContext> context);
 
 		void Submit();
 

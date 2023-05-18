@@ -12,7 +12,7 @@ namespace raytracy {
 	}
 	void VulkanVertexBuffer::Unbind() const {
 	}
-	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* indices, uint32_t count) : IndexBuffer(count) {
+	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* indices, uint32_t count) {
 	}
 	VulkanIndexBuffer::~VulkanIndexBuffer() {
 	}

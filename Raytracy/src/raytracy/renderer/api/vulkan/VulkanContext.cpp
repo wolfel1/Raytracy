@@ -2,6 +2,6 @@
 #include "VulkanContext.h"
 
 namespace raytracy {
-	VulkanContext::VulkanContext(void* window_handle) : GraphicsContext(window_handle) {
+	VulkanContext::VulkanContext(void* window_handle) : window_handle(window_handle) {
 	}
 }

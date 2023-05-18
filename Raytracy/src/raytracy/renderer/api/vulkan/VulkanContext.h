@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../GraphicsContext.h"
 
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
@@ -18,7 +17,7 @@ namespace raytracy {
 	}
 
 	
-	class VulkanContext : public GraphicsContext {
+	class VulkanContext {
 
 		struct QueueFamilyIndices {
 			std::optional<uint32_t> graphics_family;
@@ -35,6 +34,8 @@ namespace raytracy {
 			std::vector<VkPresentModeKHR> presentation_modes;
 		};
 	private:
+		void* window_handle;
+
 		VkInstance instance{};
 		VkDebugUtilsMessengerEXT debug_messenger{};
 		VkSurfaceKHR surface{};
@@ -67,9 +68,13 @@ namespace raytracy {
 	public:
 		VulkanContext(void* window_handle);
 
-		VkExtent2D& GetSwapChainExtent() { return swap_chain_extent; }
+		const VkExtent2D& GetSwapChainExtent() { return swap_chain_extent; }
 
-		virtual void Init() override {
+		const VkDevice& GetLogicalDevice() { return logical_device; }
+
+		const VkRenderPass& GetRenderPass() { return render_pass; }
+
+		 void Init()  {
 			CreateInstance();
 			InitDebugMessenger();
 			CreateSurface();
@@ -80,9 +85,9 @@ namespace raytracy {
 			CreateRenderPass();
 			CreateFramebuffers();
 		};
-		virtual void SwapBuffers() override {};
+		 void SwapBuffers() {};
 
-		virtual void Shutdown() override {
+		 void Shutdown()  {
 			CleanupSwapChain();
 			vkDestroyRenderPass(logical_device, render_pass, nullptr);
 			vkDestroyDevice(logical_device, nullptr);

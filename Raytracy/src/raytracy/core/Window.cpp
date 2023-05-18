@@ -3,8 +3,7 @@
 
 #include "../event/ApplicationEvent.h"
 #include "../event/KeyEvent.h"
-#include "../renderer/api/RendererAPI.h"
-
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 namespace raytracy {
@@ -33,18 +32,14 @@ namespace raytracy {
 		{
 			RTY_PROFILE_SCOPE("CreateWindow");
 #ifdef RTY_DEBUG
-			if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL) {
-				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-			} else if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan) {
-				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-			}
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 #endif
 			glfwWindowHint(GLFW_SAMPLES, 4);
 			window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
 			RTY_ASSERT(window_handle, "Could not create window!");
 		}
 
-		graphics_context = GraphicsContext::Create(window_handle);
+		graphics_context = make_shared<VulkanContext>(window_handle);
 		graphics_context->Init();
 
 		glfwSetWindowUserPointer(window_handle, &window_data);

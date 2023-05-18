@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../RendererAPI.h"
-#include "../Buffer.h"
+#include <vulkan/vulkan.h>
 
 #include "VulkanContext.h"
+#include "VulkanBuffer.h"
 
-#include <vulkan/vulkan.h>
 
 namespace raytracy {
 
@@ -55,12 +54,17 @@ namespace raytracy {
 		}
 	};
 
-	class VulkanRendererAPI : public RendererAPI {
+	class VulkanRendererAPI {
 		
+	private:
+		shared_ptr<VulkanContext> graphics_context;
+
+		VkPipelineLayout pipeline_layout{};
+		VkPipeline graphics_pipeline{};
 
 	public:
 
-		virtual void Init(shared_ptr<GraphicsContext> context) override;
+		void Init(shared_ptr<VulkanContext> context);
 
 		void CreateGraphicsPipeline() {
 			auto vertex_shader_code = ReadFile("basicspirv/basicvert.spv");
@@ -99,7 +103,7 @@ namespace raytracy {
 			input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 			input_assembly_info.primitiveRestartEnable = VK_FALSE;
 
-			auto swap_chain_extent = static_cast<shared_ptr<VulkanContext>>(graphics_context)
+			auto swap_chain_extent = graphics_context->GetSwapChainExtent();
 			VkViewport viewport{};
 			viewport.x = 0.0f;
 			viewport.y = 0.0f;
@@ -179,6 +183,7 @@ namespace raytracy {
 			pipeline_layout_info.pushConstantRangeCount = 0;
 			pipeline_layout_info.pPushConstantRanges = nullptr;
 
+			auto logical_device = graphics_context->GetLogicalDevice();
 			if (vkCreatePipelineLayout(logical_device, &pipeline_layout_info, nullptr, &pipeline_layout) != VK_SUCCESS) {
 				throw std::runtime_error("Failed to create pipeline layout!");
 			}
@@ -196,7 +201,7 @@ namespace raytracy {
 			pipeline_info.pColorBlendState = &color_blending_info;
 			pipeline_info.pDynamicState = &dynamic_state_info;
 			pipeline_info.layout = pipeline_layout;
-			pipeline_info.renderPass = render_pass;
+			pipeline_info.renderPass = graphics_context->GetRenderPass();
 			pipeline_info.subpass = 0;
 			pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 			pipeline_info.basePipelineIndex = -1;
@@ -217,21 +222,21 @@ namespace raytracy {
 			create_info.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
 			VkShaderModule shader_module;
-			if (vkCreateShaderModule(logical_device, &create_info, nullptr, &shader_module) != VK_SUCCESS) {
+			if (vkCreateShaderModule(graphics_context->GetLogicalDevice(), &create_info, nullptr, &shader_module) != VK_SUCCESS) {
 				throw std::runtime_error("Failed to create shader_module!");
 			}
 
 			return shader_module;
 		}
 
-		virtual void ClearViewport() override;
+		 void ClearViewport() ;
 
-		virtual void SetClearColor(const glm::vec4& clear_color) override;
+		 void SetClearColor(const glm::vec4& clear_color);
 
-		virtual void DrawIndexed(const shared_ptr<IndexBuffer>& index_buffer) override;
+		 void DrawIndexed(const shared_ptr<VulkanIndexBuffer>& index_buffer) ;
 
-		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
+		 void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) ;
 
-		virtual void Shutdown() override;
+		 void Shutdown() ;
 	};
 }
