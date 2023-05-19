@@ -1,9 +1,11 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
-
+#include "../RendererAPI.h"
 #include "VulkanContext.h"
+#include "VulkanVertexArray.h"
 #include "VulkanBuffer.h"
+
+#include <vulkan/vulkan.h>
 
 
 namespace raytracy {
@@ -54,21 +56,35 @@ namespace raytracy {
 		}
 	};
 
-	class VulkanRendererAPI {
-		
+	class VulkanRendererAPI : public RendererAPI {
+
 	private:
+		const int MAX_FRAMES_IN_FLIGHT = 2;
+
+		bool framebuffer_resized = false;
+		uint32_t current_frame = 0;
+
 		shared_ptr<VulkanContext> graphics_context;
 
 		VkPipelineLayout pipeline_layout{};
 		VkPipeline graphics_pipeline{};
+		VkCommandPool command_pool{};
+		std::vector<VkCommandBuffer> command_buffers;
 
+		std::vector<VkSemaphore> image_available_semaphores;
+		std::vector<VkSemaphore> render_finished_semaphores;
+		std::vector<VkFence> in_flight_fences;
 	public:
 
-		void Init(shared_ptr<VulkanContext> context);
+		virtual void Init(const shared_ptr<GraphicsContext>& context) override;
+
+		const shared_ptr<VulkanContext> GetContext() const { return graphics_context; }
+
+		const VkCommandPool GetCommandPool() const { return command_pool; }
 
 		void CreateGraphicsPipeline() {
-			auto vertex_shader_code = ReadFile("basicspirv/basicvert.spv");
-			auto fragment_shader_code = ReadFile("basicspirv/basicfrag.spv");
+			auto vertex_shader_code = ReadFile("resources/shaders/basicspirv/basicvert.spv");
+			auto fragment_shader_code = ReadFile("resources/shaders/basicspirv/basicfrag.spv");
 
 			VkShaderModule vertex_shader_module = CreateShaderModule(vertex_shader_code);
 			VkShaderModule fragment_shader_module = CreateShaderModule(fragment_shader_code);
@@ -229,14 +245,129 @@ namespace raytracy {
 			return shader_module;
 		}
 
-		 void ClearViewport() ;
+		void CreateCommandPool() {
+			QueueFamilyIndices queue_family_indices = graphics_context->FindQueueFamilyIndices(graphics_context->GetPhysicalDevice());
+			auto logical_device = graphics_context->GetLogicalDevice();
 
-		 void SetClearColor(const glm::vec4& clear_color);
+			VkCommandPoolCreateInfo pool_info{};
+			pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+			pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+			pool_info.queueFamilyIndex = queue_family_indices.graphics_family.value();
 
-		 void DrawIndexed(const shared_ptr<VulkanIndexBuffer>& index_buffer) ;
+			if (vkCreateCommandPool(logical_device, &pool_info, nullptr, &command_pool) != VK_SUCCESS) {
+				throw std::runtime_error("Failed to create command pool!");
+			}
+		}
 
-		 void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) ;
+		void CreateCommandBuffers() {
+			auto logical_device = graphics_context->GetLogicalDevice();
 
-		 void Shutdown() ;
+			command_buffers.resize(MAX_FRAMES_IN_FLIGHT);
+			VkCommandBufferAllocateInfo alloc_info{};
+			alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			alloc_info.commandPool = command_pool;
+			alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+			alloc_info.commandBufferCount = (uint32_t)command_buffers.size();
+
+			if (vkAllocateCommandBuffers(logical_device, &alloc_info, command_buffers.data()) != VK_SUCCESS) {
+				throw std::runtime_error("Failed to allocate command buffers!");
+			}
+		}
+
+		void CreateSyncObjects() {
+			auto logical_device = graphics_context->GetLogicalDevice();
+			image_available_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
+			render_finished_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
+			in_flight_fences.resize(MAX_FRAMES_IN_FLIGHT);
+
+			VkSemaphoreCreateInfo semaphore_info{};
+			semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+			VkFenceCreateInfo fence_info{};
+			fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+			for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+				if (vkCreateSemaphore(logical_device, &semaphore_info, nullptr, &image_available_semaphores[i]) != VK_SUCCESS ||
+					vkCreateSemaphore(logical_device, &semaphore_info, nullptr, &render_finished_semaphores[i]) != VK_SUCCESS ||
+					vkCreateFence(logical_device, &fence_info, nullptr, &in_flight_fences[i]) != VK_SUCCESS) {
+					throw std::runtime_error("Failed to create sync objects");
+				}
+			}
+		}
+
+		void RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VulkanVertexArray>& vertex_array) {
+			RTY_ASSERT(vertex_array, "Vertex array suits not to vulkan!");
+			auto render_pass = graphics_context->GetRenderPass();
+			auto& swap_chain_extent = graphics_context->GetSwapChainExtent();
+			auto& swap_chain_framebuffers = graphics_context->GetSwapChainFrameBuffers();
+
+			VkCommandBufferBeginInfo begin_info{};
+			begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			begin_info.flags = 0;
+			begin_info.pInheritanceInfo = nullptr;
+
+			if (vkBeginCommandBuffer(command_buffer, &begin_info) != VK_SUCCESS) {
+				throw std::runtime_error("Failed to begin recording command buffer!");
+			}
+
+			VkRenderPassBeginInfo render_pass_info{};
+			render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			render_pass_info.renderPass = render_pass;
+			render_pass_info.framebuffer = swap_chain_framebuffers[image_index];
+			render_pass_info.renderArea.offset = { 0, 0 };
+			render_pass_info.renderArea.extent = swap_chain_extent;
+
+			VkClearValue clear_color = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+			render_pass_info.clearValueCount = 1;
+			render_pass_info.pClearValues = &clear_color;
+
+			vkCmdBeginRenderPass(command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+
+			vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphics_pipeline);
+
+			VkViewport viewport{};
+			viewport.x = 0.0f;
+			viewport.y = 0.0f;
+			viewport.width = (float)swap_chain_extent.width;
+			viewport.height = (float)swap_chain_extent.height;
+			viewport.minDepth = 0.0f;
+			viewport.maxDepth = 1.0f;
+			vkCmdSetViewport(command_buffer, 0, 1, &viewport);
+
+			VkRect2D scissor{};
+			scissor.offset = { 0, 0 };
+			scissor.extent = swap_chain_extent;
+			vkCmdSetScissor(command_buffer, 0, 1, &scissor);
+
+			auto vertex_buffer = std::dynamic_pointer_cast<VulkanVertexBuffer>(vertex_array->GetVertexBuffer());
+			RTY_ASSERT(vertex_buffer, "Vertex buffer suits not to vulkan!");
+			VkBuffer vertex_buffers[] = { vertex_buffer->GetBuffer() };
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
+
+			auto index_buffer = std::dynamic_pointer_cast<VulkanIndexBuffer>(vertex_array->GetIndexBuffer());
+			RTY_ASSERT(index_buffer, "Index buffer suits not to vulkan!");
+			
+			vkCmdBindIndexBuffer(command_buffer, index_buffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+			vkCmdDrawIndexed(command_buffer, index_buffer->GetCount(), 1, 0, 0, 0);
+
+			vkCmdEndRenderPass(command_buffer);
+
+			if (vkEndCommandBuffer(command_buffer) != VK_SUCCESS) {
+				throw std::runtime_error("Failed to record command buffer!");
+			}
+		}
+
+		virtual void ClearViewport() override;
+
+		virtual void SetClearColor(const glm::vec4& clear_color) override;
+
+		virtual void DrawIndexed(const shared_ptr<VertexArray>& vertex_array) override;
+
+		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
+
+		virtual void Shutdown() override;
 	};
 }

@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Core.h"
-#include "../renderer/api/vulkan/VulkanContext.h"
+#include "../renderer/api/GraphicsContext.h"
 
 struct GLFWwindow;
 
@@ -21,7 +21,7 @@ namespace raytracy {
 
 		WindowData window_data;
 
-		shared_ptr<VulkanContext> graphics_context;
+		shared_ptr<GraphicsContext> graphics_context;
 
 	public:
 
@@ -43,7 +43,7 @@ namespace raytracy {
 		void SetTitle(const std::string& name);
 		std::string GetName() const { return window_data.name; }
 
-		shared_ptr<VulkanContext> GetGraphicsContext() const {
+		shared_ptr<GraphicsContext> GetGraphicsContext() const {
 			return graphics_context;
 		}
 

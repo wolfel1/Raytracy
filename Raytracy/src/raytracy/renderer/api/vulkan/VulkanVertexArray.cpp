@@ -10,8 +10,10 @@ namespace raytracy {
 	}
 	void VulkanVertexArray::Unbind() {
 	}
-	void VulkanVertexArray::SetVertexBuffer(const shared_ptr<VulkanVertexBuffer>& vertex_buffer) {
+	void VulkanVertexArray::SetVertexBuffer(const shared_ptr<VertexBuffer>& vertex_buffer) {
+		this->vertex_buffer = vertex_buffer;
 	}
-	void VulkanVertexArray::SetIndexBuffer(const shared_ptr<VulkanIndexBuffer>& vertex_buffer) {
+	void VulkanVertexArray::SetIndexBuffer(const shared_ptr<IndexBuffer>& index_buffer) {
+		this->index_buffer = index_buffer;
 	}
 }

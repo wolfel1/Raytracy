@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../GraphicsContext.h"
 
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
@@ -15,26 +16,26 @@ namespace raytracy {
 
 		return VK_FALSE;
 	}
+	struct QueueFamilyIndices {
+		std::optional<uint32_t> graphics_family;
+		std::optional<uint32_t> presentation_family;
 
-	
-	class VulkanContext {
+		bool IsComplete() {
+			return graphics_family.has_value() && presentation_family.has_value();
+		}
+	};
 
-		struct QueueFamilyIndices {
-			std::optional<uint32_t> graphics_family;
-			std::optional<uint32_t> presentation_family;
+	struct SwapChainSupportDetails {
+		VkSurfaceCapabilitiesKHR capabilities{};
+		std::vector<VkSurfaceFormatKHR> formats;
+		std::vector<VkPresentModeKHR> presentation_modes;
+	};
 
-			bool IsComplete() {
-				return graphics_family.has_value() && presentation_family.has_value();
-			}
-		};
 
-		struct SwapChainSupportDetails {
-			VkSurfaceCapabilitiesKHR capabilities{};
-			std::vector<VkSurfaceFormatKHR> formats;
-			std::vector<VkPresentModeKHR> presentation_modes;
-		};
+	class VulkanContext : public GraphicsContext {
+
+
 	private:
-		void* window_handle;
 
 		VkInstance instance{};
 		VkDebugUtilsMessengerEXT debug_messenger{};
@@ -69,12 +70,18 @@ namespace raytracy {
 		VulkanContext(void* window_handle);
 
 		const VkExtent2D& GetSwapChainExtent() { return swap_chain_extent; }
+		const std::vector<VkFramebuffer>& GetSwapChainFrameBuffers() { return swap_chain_framebuffers; }
 
+		const VkPhysicalDevice& GetPhysicalDevice() { return physical_device; }
 		const VkDevice& GetLogicalDevice() { return logical_device; }
 
 		const VkRenderPass& GetRenderPass() { return render_pass; }
+		const VkQueue& GetGraphicsQueue() { return graphics_queue; }
+		const VkQueue& GetPresentationQueue() { return presentation_queue; }
 
-		 void Init()  {
+		const VkSwapchainKHR& GetSwapchain() { return swap_chain; }
+
+		virtual void Init() override {
 			CreateInstance();
 			InitDebugMessenger();
 			CreateSurface();
@@ -85,9 +92,46 @@ namespace raytracy {
 			CreateRenderPass();
 			CreateFramebuffers();
 		};
-		 void SwapBuffers() {};
+		QueueFamilyIndices FindQueueFamilyIndices(VkPhysicalDevice device) {
+			QueueFamilyIndices indices;
+			uint32_t queue_family_count = 0;
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, nullptr);
+			std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, queue_families.data());
 
-		 void Shutdown()  {
+			VkBool32 present_support = false;
+			int i = 0;
+			while (!indices.IsComplete() && i < queue_families.size()) {
+				vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &present_support);
+				if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+					indices.graphics_family = i;
+				}
+				if (present_support) {
+					indices.presentation_family = i;
+				}
+				i++;
+			}
+
+			return indices;
+		}
+		void RecreateSwapChain() {
+			int width = 0, height = 0;
+			glfwGetFramebufferSize(static_cast<GLFWwindow*>(window_handle), &width, &height);
+			while (width == 0 || height == 0) {
+				glfwGetFramebufferSize(static_cast<GLFWwindow*>(window_handle), &width, &height);
+				glfwWaitEvents();
+			}
+			vkDeviceWaitIdle(logical_device);
+
+			CleanupSwapChain();
+			CreateSwapChain();
+			CreateImageViews();
+			CreateFramebuffers();
+		}
+
+		virtual void SwapBuffers() override {};
+
+		virtual void Shutdown() override {
 			CleanupSwapChain();
 			vkDestroyRenderPass(logical_device, render_pass, nullptr);
 			vkDestroyDevice(logical_device, nullptr);
@@ -200,7 +244,7 @@ namespace raytracy {
 				throw std::runtime_error("Failed to init debug messenger!");
 			}
 		}
-		
+
 		VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
 			auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
 			if (func != nullptr) {
@@ -292,28 +336,7 @@ namespace raytracy {
 			return required_extensions.empty();
 		}
 
-		QueueFamilyIndices FindQueueFamilyIndices(VkPhysicalDevice device) {
-			QueueFamilyIndices indices;
-			uint32_t queue_family_count = 0;
-			vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, nullptr);
-			std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
-			vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, queue_families.data());
 
-			VkBool32 present_support = false;
-			int i = 0;
-			while (!indices.IsComplete() && i < queue_families.size()) {
-				vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &present_support);
-				if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-					indices.graphics_family = i;
-				}
-				if (present_support) {
-					indices.presentation_family = i;
-				}
-				i++;
-			}
-
-			return indices;
-		}
 
 		void CreateLogicalDevice() {
 			QueueFamilyIndices indices = FindQueueFamilyIndices(physical_device);
@@ -555,20 +578,7 @@ namespace raytracy {
 				}
 			}
 		}
-		void RecreateSwapChain() {
-			int width = 0, height = 0;
-			glfwGetFramebufferSize(static_cast<GLFWwindow*>(window_handle), &width, &height);
-			while (width == 0 || height == 0) {
-				glfwGetFramebufferSize(static_cast<GLFWwindow*>(window_handle), &width, &height);
-				glfwWaitEvents();
-			}
-			vkDeviceWaitIdle(logical_device);
-
-			CleanupSwapChain();
-			CreateSwapChain();
-			CreateImageViews();
-			CreateFramebuffers();
-		}
+		
 
 		void CleanupSwapChain() {
 			for (auto framebuffer : swap_chain_framebuffers) {

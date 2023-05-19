@@ -3,7 +3,7 @@
 
 #include "../event/ApplicationEvent.h"
 #include "../event/KeyEvent.h"
-#define GLFW_INCLUDE_VULKAN
+
 #include <GLFW/glfw3.h>
 
 namespace raytracy {
@@ -39,7 +39,7 @@ namespace raytracy {
 			RTY_ASSERT(window_handle, "Could not create window!");
 		}
 
-		graphics_context = make_shared<VulkanContext>(window_handle);
+		graphics_context = GraphicsContext::Create(window_handle);
 		graphics_context->Init();
 
 		glfwSetWindowUserPointer(window_handle, &window_data);
