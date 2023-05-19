@@ -5,16 +5,11 @@
 namespace raytracy {
 	class VulkanVertexArray : public VertexArray {
 
-	private:
-		shared_ptr<VertexBuffer> vertex_buffer;
-		shared_ptr<IndexBuffer> index_buffer;
 
 	public:
 		VulkanVertexArray();
 		~VulkanVertexArray();
 
-		const shared_ptr<VertexBuffer>& GetVertexBuffer() const { return vertex_buffer; }
-		const shared_ptr<IndexBuffer>& GetIndexBuffer() const { return index_buffer; }
 
 		virtual void Bind() override;
 		virtual void Unbind() override;

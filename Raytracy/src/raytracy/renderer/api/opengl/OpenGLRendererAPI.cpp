@@ -35,7 +35,7 @@ namespace raytracy {
 	}
 
 
-	void OpenGLRendererAPI::Init() {
+	void OpenGLRendererAPI::Init(const shared_ptr<GraphicsContext>& context) {
 		RTY_PROFILE_FUNCTION();
 
 #ifdef RTY_DEBUG
@@ -64,7 +64,8 @@ namespace raytracy {
 		GLCall(glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a));
 	}
 
-	void OpenGLRendererAPI::DrawIndexed(const shared_ptr<IndexBuffer>& index_buffer) {
+	void OpenGLRendererAPI::DrawIndexed(const shared_ptr<VertexArray>& vertex_array) {
+		auto& index_buffer = vertex_array->GetIndexBuffer();
 		GLCall(glDrawElements(GL_TRIANGLES, index_buffer->GetCount(), GL_UNSIGNED_INT, (void*)0));
 	}
 

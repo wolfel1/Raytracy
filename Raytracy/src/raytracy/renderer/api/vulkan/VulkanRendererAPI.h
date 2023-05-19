@@ -296,8 +296,7 @@ namespace raytracy {
 			}
 		}
 
-		void RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VulkanVertexArray>& vertex_array) {
-			RTY_ASSERT(vertex_array, "Vertex array suits not to vulkan!");
+		void RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray>& vertex_array) {
 			auto render_pass = graphics_context->GetRenderPass();
 			auto& swap_chain_extent = graphics_context->GetSwapChainExtent();
 			auto& swap_chain_framebuffers = graphics_context->GetSwapChainFrameBuffers();

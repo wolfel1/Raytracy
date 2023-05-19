@@ -12,7 +12,7 @@ namespace raytracy {
 			RTY_ASSERT(false, "Renderer API None is not supported!");
 			return nullptr;
 		case RendererAPI::API::OpenGL:
-			return make_unique<OpenGLContext>(window_handle);
+			return make_shared<OpenGLContext>(window_handle);
 		case RendererAPI::API::Vulkan:
 			return make_shared<VulkanContext>(window_handle);
 		default:

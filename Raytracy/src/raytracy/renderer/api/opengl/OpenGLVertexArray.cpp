@@ -61,12 +61,13 @@ namespace raytracy {
 										 (const void*)elements[i].offset
 			));
 		}
+		VertexArray::vertex_buffer = vertex_buffer;
 	}
 
 	void OpenGLVertexArray::SetIndexBuffer(const shared_ptr<IndexBuffer>& index_buffer) {
 		GLCall(glBindVertexArray(renderer_id));
 		index_buffer->Bind();
-		this->index_buffer = index_buffer;
+		VertexArray::index_buffer = index_buffer;
 	}
 
 

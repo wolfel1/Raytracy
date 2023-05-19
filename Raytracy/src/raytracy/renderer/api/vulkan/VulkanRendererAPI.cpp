@@ -34,7 +34,7 @@ namespace raytracy {
 		vkResetFences(logical_device, 1, &in_flight_fences[current_frame]);
 
 		vkResetCommandBuffer(command_buffers[current_frame], 0);
-		RecordCommandBuffer(command_buffers[current_frame], image_index, std::dynamic_pointer_cast<VulkanVertexArray>(vertex_array));
+		RecordCommandBuffer(command_buffers[current_frame], image_index, vertex_array);
 
 		VkSubmitInfo submit_info{};
 		submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

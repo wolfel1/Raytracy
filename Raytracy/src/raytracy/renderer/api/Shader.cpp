@@ -1,7 +1,9 @@
 #include "raytracypch.h"
 #include "Shader.h"
 
+#include "RendererAPI.h"
 #include "vulkan/VulkanShader.h"
+#include "opengl/OpenGLShader.h"
 #include <filesystem>
 
 namespace raytracy {
@@ -9,7 +11,20 @@ namespace raytracy {
 	const std::string ShaderLibrary::rootPath = "resources/shaders/";
 
 	shared_ptr<Shader> Shader::CreateFromFile(const std::string& name) {
+		switch (RendererAPI::GetAPI()) {
+		case RendererAPI::API::None:
+			RTY_ASSERT(false, "Renderer API None is not supported!");
+			return nullptr;
+		case RendererAPI::API::OpenGL:
+			return make_shared<OpenGLShader>(name);
+		case RendererAPI::API::Vulkan:
 		return make_shared<VulkanShader>(name);
+		default:
+			break;
+		}
+
+		RTY_ASSERT(false, "Unknown RendereAPI!");
+		return nullptr;
 	}
 
 	shared_ptr<Shader> Shader::CreateFromDirectory(const std::string& directory_name) {
@@ -19,7 +34,21 @@ namespace raytracy {
 			filepaths.push_back(file.path().string());
 		}
 
+
+		switch (RendererAPI::GetAPI()) {
+		case RendererAPI::API::None:
+			RTY_ASSERT(false, "Renderer API None is not supported!");
+			return nullptr;
+		case RendererAPI::API::OpenGL:
+			return make_shared<OpenGLShader>(filepaths);
+		case RendererAPI::API::Vulkan:
 		return make_shared<VulkanShader>(filepaths);
+		default:
+			break;
+		}
+
+		RTY_ASSERT(false, "Unknown RendereAPI!");
+		return nullptr;
 
 	}
 

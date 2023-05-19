@@ -17,22 +17,22 @@ namespace raytracy {
 		return 0;
 	}
 
-	shared_ptr<OpenGLShaderProgram> OpenGLShaderProgram::CreateFromFile(const std::string& name) {
-		return make_shared<OpenGLShaderProgram>(name);
+	shared_ptr<OpenGLShader> OpenGLShader::CreateFromFile(const std::string& name) {
+		return make_shared<OpenGLShader>(name);
 	}
 
-	shared_ptr<OpenGLShaderProgram> OpenGLShaderProgram::CreateFromDirectory(const std::string& directory_name) {
+	shared_ptr<OpenGLShader> OpenGLShader::CreateFromDirectory(const std::string& directory_name) {
 		std::string path = ShaderLibrary::rootPath + directory_name;
 		std::vector<std::string> filepaths;
 		for (const auto& file : std::filesystem::directory_iterator(path)) {
 			filepaths.push_back(file.path().string());
 		}
 
-		return make_shared<OpenGLShaderProgram>(filepaths);
+		return make_shared<OpenGLShader>(filepaths);
 
 	}
 
-	OpenGLShaderProgram::OpenGLShaderProgram(const std::string& name) : ShaderProgram(name) {
+	OpenGLShader::OpenGLShader(const std::string& name) : Shader(name) {
 		RTY_PROFILE_FUNCTION();
 
 		std::string path = ShaderLibrary::rootPath + name + ".glsl";
@@ -41,7 +41,7 @@ namespace raytracy {
 		Compile(shaderSources);
 	}
 
-	OpenGLShaderProgram::OpenGLShaderProgram(const std::vector<std::string>& paths) {
+	OpenGLShader::OpenGLShader(const std::vector<std::string>& paths) {
 		std::unordered_map<GLenum, std::string> shader_sources;
 
 		for (const auto path : paths) {
@@ -51,11 +51,11 @@ namespace raytracy {
 		Compile(shader_sources);
 	}
 
-	OpenGLShaderProgram::~OpenGLShaderProgram() {
+	OpenGLShader::~OpenGLShader() {
 		glDeleteProgram(renderer_id);
 	}
 
-	std::string OpenGLShaderProgram::ReadFile(const std::string& path) {
+	std::string OpenGLShader::ReadFile(const std::string& path) {
 
 		std::string result;
 		std::ifstream in(path, std::ios::in | std::ios::binary);
@@ -77,7 +77,7 @@ namespace raytracy {
 		return result;
 	}
 
-	std::unordered_map<GLenum, std::string> OpenGLShaderProgram::PreProcess(const std::string& source) {
+	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source) {
 
 		std::unordered_map<GLenum, std::string> shaderSources;
 
@@ -101,7 +101,7 @@ namespace raytracy {
 		return shaderSources;
 	}
 
-	void OpenGLShaderProgram::PreProcess(const std::string& path, std::unordered_map<GLenum, std::string>& shaderSources) {
+	void OpenGLShader::PreProcess(const std::string& path, std::unordered_map<GLenum, std::string>& shaderSources) {
 
 		auto lastDot = path.rfind('.');
 		auto count = path.size() - lastDot;
@@ -117,7 +117,7 @@ namespace raytracy {
 		shaderSources[ShaderTypeFromString(type)] = source;
 	}
 
-	void OpenGLShaderProgram::Compile(std::unordered_map<GLenum, std::string> shaderSources) {
+	void OpenGLShader::Compile(std::unordered_map<GLenum, std::string> shaderSources) {
 
 		GLuint program = glCreateProgram();
 		std::vector<GLenum> glShaderIDs;
@@ -186,11 +186,11 @@ namespace raytracy {
 		renderer_id = program;
 	}
 
-	void OpenGLShaderProgram::Bind() const {
+	void OpenGLShader::Bind() const {
 		glUseProgram(renderer_id);
 	}
 
-	void OpenGLShaderProgram::Unbind() const {
+	void OpenGLShader::Unbind() const {
 		glUseProgram(0);
 	}
 }

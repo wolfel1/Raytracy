@@ -10,5 +10,6 @@ namespace raytracy {
 
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
+		virtual void Shutdown() override {};
 	};
 }

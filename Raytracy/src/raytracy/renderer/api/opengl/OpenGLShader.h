@@ -5,20 +5,20 @@
 typedef unsigned int GLenum;
 
 namespace raytracy {
-	class OpenGLShaderProgram : public ShaderProgram {
+	class OpenGLShader : public Shader {
 
 	public:
-		OpenGLShaderProgram(const std::string& name);
-		OpenGLShaderProgram(const std::vector<std::string>& paths);
-		~OpenGLShaderProgram();
+		OpenGLShader(const std::string& name);
+		OpenGLShader(const std::vector<std::string>& paths);
+		~OpenGLShader();
 
 		virtual void Bind() const override;
 
 		virtual void Unbind() const override;
 
-		static shared_ptr<OpenGLShaderProgram> CreateFromFile(const std::string& name);
+		static shared_ptr<OpenGLShader> CreateFromFile(const std::string& name);
 
-		static shared_ptr<OpenGLShaderProgram> CreateFromDirectory(const std::string& directory_name);
+		static shared_ptr<OpenGLShader> CreateFromDirectory(const std::string& directory_name);
 
 	private:
 
