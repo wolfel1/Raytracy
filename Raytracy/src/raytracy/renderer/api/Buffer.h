@@ -2,6 +2,8 @@
 
 namespace raytracy {
 
+	class RendererAPI;
+
 	enum class VertexDataType {
 		None = 0, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4
 	};
@@ -89,7 +91,7 @@ namespace raytracy {
 
 	private:
 		void CalculateOffsetAndStride() {
-			size_t offset = 0;
+			uint32_t offset = 0;
 			stride = 0;
 			for (auto& element : elements) {
 				element.offset = offset;
@@ -108,8 +110,8 @@ namespace raytracy {
 	public:
 		virtual ~VertexBuffer() = default;
 
-		static shared_ptr<VertexBuffer> Create(size_t size);
-		static shared_ptr<VertexBuffer> Create(float* vertices, size_t size);
+		static shared_ptr<VertexBuffer> Create(size_t size, shared_ptr<RendererAPI>& api);
+		static shared_ptr<VertexBuffer> Create(float* vertices, size_t size, shared_ptr<RendererAPI>& api);
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
@@ -128,7 +130,7 @@ namespace raytracy {
 		uint32_t count{};
 
 	public:
-		static shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+		static shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count, shared_ptr<RendererAPI>& api);
 		virtual ~IndexBuffer() = default;
 
 		uint32_t GetCount() { return count; }

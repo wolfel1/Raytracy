@@ -1,10 +1,10 @@
 #include "raytracypch.h"
 #include "VertexArray.h"
 
-#include "opengl/OpenGLVertexArray.h"
+#include "vulkan/VulkanVertexArray.h"
 
 namespace raytracy {
 	shared_ptr<VertexArray> VertexArray::Create() {
-		return make_shared<OpenGLVertexArray>();
+		return make_shared<VulkanVertexArray>();
 	}
 }

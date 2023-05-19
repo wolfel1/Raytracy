@@ -4,6 +4,7 @@
 #include "api/Shader.h"
 #include "api/Buffer.h"
 #include "api/VertexArray.h"
+#include "api/GraphicsContext.h"
 
 
 namespace raytracy {
@@ -11,17 +12,17 @@ namespace raytracy {
 	shared_ptr<VertexArray> vertex_array;
 	shared_ptr<VertexBuffer> vertex_buffer;
 	shared_ptr<IndexBuffer> index_buffer;
-	shared_ptr<ShaderProgram> shader_program;
+	shared_ptr<Shader> shader_program;
 	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
+	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
 
-	void Renderer::Init() {
+	void Renderer::Init(const shared_ptr<GraphicsContext>& context) {
 		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(!is_initialized, "Renderer is already initialized!");
 
 		renderer_api = RendererAPI::Create();
-		renderer_api->Init();
+		renderer_api->Init(context);
 
 		renderer_api->SetClearColor(clear_color);
 
@@ -39,7 +40,7 @@ namespace raytracy {
 
 		vertex_array = VertexArray::Create();
 
-		vertex_buffer = VertexBuffer::Create(vertices, sizeof(vertices));
+		vertex_buffer = VertexBuffer::Create(vertices, sizeof(vertices), renderer_api);
 		vertex_buffer->SetLayout({
 			{ "position", VertexDataType::Float3 },
 			{ "color", VertexDataType::Float4 }
@@ -47,7 +48,7 @@ namespace raytracy {
 		//GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), ));
 		//GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
-		index_buffer = IndexBuffer::Create(indices, 6);
+		index_buffer = IndexBuffer::Create(indices, 6, renderer_api);
 
 		shader_program = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");
@@ -70,7 +71,7 @@ namespace raytracy {
 
 		vertex_array->Bind();
 		shader_program->Bind();
-		renderer_api->DrawIndexed(index_buffer);
+		renderer_api->DrawIndexed(vertex_array);
 	}
 
 	void Renderer::Shutdown() {

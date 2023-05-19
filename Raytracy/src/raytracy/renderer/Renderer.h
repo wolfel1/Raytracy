@@ -8,7 +8,7 @@ namespace raytracy {
 	private:
 		bool is_initialized = false;
 
-		unique_ptr<RendererAPI> renderer_api = nullptr;
+		shared_ptr<RendererAPI> renderer_api = nullptr;
 	public:
 		Renderer(const Renderer&) = delete;
 
@@ -17,7 +17,7 @@ namespace raytracy {
 			return renderer;
 		}
 
-		void Init();
+		void Init(const shared_ptr<GraphicsContext>& context);
 
 		void Submit();
 

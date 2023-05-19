@@ -1,10 +1,10 @@
 #include "raytracypch.h"
 #include "RendererAPI.h"
 
-#include "opengl/OpenGLRendererAPI.h"
+#include "vulkan/VulkanRendererAPI.h"
 
 namespace raytracy {
-	unique_ptr<RendererAPI> RendererAPI::Create() {
-		return make_unique<OpenGLRendererAPI>();
+	shared_ptr<RendererAPI> RendererAPI::Create() {
+		return make_shared<VulkanRendererAPI>();
 	}
 }

@@ -9,10 +9,11 @@ namespace raytracy {
 	public:
 		virtual ~GraphicsContext() = default;
 
-		static unique_ptr<GraphicsContext> Create(void* window_handle);
+		static shared_ptr<GraphicsContext> Create(void* window_handle);
 
 		virtual void Init() = 0;
 		virtual void SwapBuffers() = 0;
+		virtual void Shutdown() = 0;
 
 	protected:
 		GraphicsContext(void* window_handle);

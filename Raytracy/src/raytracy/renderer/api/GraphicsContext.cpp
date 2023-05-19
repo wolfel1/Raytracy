@@ -3,15 +3,18 @@
 
 #include "RendererAPI.h"
 #include "opengl/OpenGLContext.h"
+#include "vulkan/VulkanContext.h"
 
 namespace raytracy {
-	unique_ptr<GraphicsContext> GraphicsContext::Create(void* window_handle) {
+	shared_ptr<GraphicsContext> GraphicsContext::Create(void* window_handle) {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::None:
 			RTY_ASSERT(false, "Renderer API None is not supported!");
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return make_unique<OpenGLContext>(window_handle);
+		case RendererAPI::API::Vulkan:
+			return make_shared<VulkanContext>(window_handle);
 		default:
 			break;
 		}
