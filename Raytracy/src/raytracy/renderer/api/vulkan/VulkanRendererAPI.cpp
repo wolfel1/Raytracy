@@ -2,6 +2,10 @@
 #include "VulkanRendererAPI.h"
 
 namespace raytracy {
+
+	VulkanRendererAPI::VulkanRendererAPI() : clear_color({0.0f, 0.0f, 0.0f, 1.0f}) {
+	}
+
 	void VulkanRendererAPI::Init(const shared_ptr<GraphicsContext>& context) {
 		graphics_context = std::dynamic_pointer_cast<VulkanContext>(context);
 		RTY_ASSERT(graphics_context, "Context is not Vulkan!");
@@ -11,10 +15,15 @@ namespace raytracy {
 		CreateCommandBuffers();
 		CreateSyncObjects();
 	}
+
+
 	void VulkanRendererAPI::ClearViewport() {
 	}
+
 	void VulkanRendererAPI::SetClearColor(const glm::vec4& clear_color) {
+		this->clear_color = clear_color;
 	}
+
 	void VulkanRendererAPI::DrawIndexed(const shared_ptr<VertexArray>& vertex_array) {
 		auto logical_device = graphics_context->GetLogicalDevice();
 		auto swap_chain = graphics_context->GetSwapchain();

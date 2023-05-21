@@ -13,7 +13,7 @@ namespace raytracy {
 	shared_ptr<VertexBuffer> vertex_buffer;
 	shared_ptr<IndexBuffer> index_buffer;
 	shared_ptr<Shader> shader_program;
-	static const glm::vec4 clear_color = { 0.1f, 0.1f, 0.1f, 1.0f };
+	static const glm::vec4 clear_color = { 0.01f, 0.01f, 0.01f, 1.0f };
 
 	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
 
@@ -26,11 +26,11 @@ namespace raytracy {
 
 		renderer_api->SetClearColor(clear_color);
 
-		float  vertices[] = {
-			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 0.0f, 1.0f,
-			0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f, 1.0f,
-			0.5f, 0.5f, 0.0f,     0.0f, 1.0f, 0.0f, 1.0f,
-			-0.5f, 0.5f, 0.0f,    1.0f, 0.0f, 0.0f, 1.0f
+		std::vector<Vertex> vertices = {
+			{{-0.5f, -0.5f, 0.0f,},  { 0.0f, 0.0f, 0.0f, 1.0f},},
+			{{0.5f, -0.5f, 0.0f, },  { 0.0f, 0.0f, 1.0f, 1.0f},},
+			{{1.0f, 0.5f, 0.0f,  },  { 0.0f, 1.0f, 0.0f, 1.0f},},
+			{{-0.5f, 0.5f, 0.0f, },  { 1.0f, 0.0f, 0.0f, 1.0f} },
 		};
 
 		uint32_t indices[] = {
@@ -40,7 +40,7 @@ namespace raytracy {
 
 		vertex_array = VertexArray::Create();
 
-		vertex_buffer = VertexBuffer::Create(vertices, sizeof(vertices), renderer_api);
+		vertex_buffer = VertexBuffer::Create(vertices, renderer_api);
 		vertex_buffer->SetLayout({
 			{ "position", VertexDataType::Float3 },
 			{ "color", VertexDataType::Float4 }
@@ -52,6 +52,8 @@ namespace raytracy {
 
 		shader_program = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader_program, "Could not create a shader program!");
+		vertex_array->Bind();
+		shader_program->Bind();
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 		vertex_array->SetIndexBuffer(index_buffer);
@@ -69,8 +71,7 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 		renderer_api->ClearViewport();
 
-		vertex_array->Bind();
-		shader_program->Bind();
+		
 		renderer_api->DrawIndexed(vertex_array);
 	}
 

@@ -7,7 +7,7 @@
 
 
 namespace raytracy {
-	shared_ptr<VertexBuffer> VertexBuffer::Create(size_t size, shared_ptr<RendererAPI>& api) {
+	shared_ptr<VertexBuffer> VertexBuffer::Create(size_t size, const shared_ptr<RendererAPI>& api) {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::None:
 			RTY_ASSERT(false, "Renderer API None is not supported!");
@@ -24,15 +24,15 @@ namespace raytracy {
 		return nullptr;
 	}
 
-	shared_ptr<VertexBuffer> VertexBuffer::Create(float* vertices, size_t size, shared_ptr<RendererAPI>& api) {
+	shared_ptr<VertexBuffer> VertexBuffer::Create(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI>& api) {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::None:
 			RTY_ASSERT(false, "Renderer API None is not supported!");
 			return nullptr;
 		case RendererAPI::API::OpenGL:
-			return make_shared<OpenGLVertexBuffer>(vertices, size);
+			return make_shared<OpenGLVertexBuffer>(vertices);
 		case RendererAPI::API::Vulkan:
-			return make_shared<VulkanVertexBuffer>(vertices, size, api);
+			return make_shared<VulkanVertexBuffer>(vertices, api);
 		default:
 			break;
 		}

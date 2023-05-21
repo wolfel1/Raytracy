@@ -2,6 +2,7 @@
 #include "VulkanBuffer.h"
 
 #include "VulkanRendererAPI.h"
+#include "../../Renderer.h"
 
 
 namespace raytracy {
@@ -16,6 +17,7 @@ namespace raytracy {
 		}
 		throw std::runtime_error("Failed to find suitable memory type!");
 	}
+
 	static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer,
 		VkDeviceMemory& buffer_memory, const shared_ptr<VulkanContext>& context) {
 
@@ -47,6 +49,7 @@ namespace raytracy {
 
 		vkBindBufferMemory(logical_device, buffer, buffer_memory, 0);
 	}
+
 	static void CopyBuffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size, const shared_ptr<VulkanRendererAPI>& api) {
 		auto command_pool = api->GetCommandPool();
 		auto vulkan_context = api->GetContext();
@@ -87,16 +90,18 @@ namespace raytracy {
 		vkFreeCommandBuffers(logical_device, command_pool, 1, &command_buffer);
 	}
 
-	
-
-	VulkanVertexBuffer::VulkanVertexBuffer(size_t size, shared_ptr<RendererAPI>& api) {
+	VulkanVertexBuffer::VulkanVertexBuffer(size_t size, const shared_ptr<RendererAPI>& api) {
 	}
-	VulkanVertexBuffer::VulkanVertexBuffer(float* vertices, size_t size, shared_ptr<RendererAPI>& api) {
+
+	VulkanVertexBuffer::VulkanVertexBuffer(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI>& api) {
 		auto vulkan_api = std::dynamic_pointer_cast<VulkanRendererAPI>(api);
-		RTY_ASSERT(api, "Api is not Vulkan!");
+		RTY_ASSERT(vulkan_api, "Api is not Vulkan!");
 		auto vulkan_context = vulkan_api->GetContext();
 
-		VkDeviceSize buffer_size = sizeof(float) * size;
+		for (auto& vertex : vertices) {
+			vertex.position.y *= -1;
+		}
+		VkDeviceSize buffer_size = sizeof(Vertex) * vertices.size();
 		logical_device = vulkan_context->GetLogicalDevice();
 
 		VkBuffer staging_buffer{};
@@ -106,7 +111,7 @@ namespace raytracy {
 
 		void* data;
 		vkMapMemory(logical_device, staging_buffer_memory, 0, buffer_size, 0, &data);
-		memcpy(data, vertices, (size_t)buffer_size);
+		memcpy(data, vertices.data(), (size_t)buffer_size);
 		vkUnmapMemory(logical_device, staging_buffer_memory);
 
 		CreateBuffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -117,13 +122,10 @@ namespace raytracy {
 		vkDestroyBuffer(logical_device, staging_buffer, nullptr);
 		vkFreeMemory(logical_device, staging_buffer_memory, nullptr);
 	}
+
 	VulkanVertexBuffer::~VulkanVertexBuffer() {
 		vkDestroyBuffer(logical_device, vertex_buffer, nullptr);
 		vkFreeMemory(logical_device, vertex_buffer_memory, nullptr);
-	}
-	void VulkanVertexBuffer::Bind() const {
-	}
-	void VulkanVertexBuffer::Unbind() const {
 	}
 	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* indices, uint32_t count, shared_ptr<RendererAPI>& api) : IndexBuffer(count) {
 		auto vulkan_api = std::dynamic_pointer_cast<VulkanRendererAPI>(api);
@@ -154,10 +156,6 @@ namespace raytracy {
 	VulkanIndexBuffer::~VulkanIndexBuffer() {
 		vkDestroyBuffer(logical_device, index_buffer, nullptr);
 		vkFreeMemory(logical_device, index_buffer_memory, nullptr);
-	}
-	void VulkanIndexBuffer::Bind() const {
-	}
-	void VulkanIndexBuffer::Unbind() const {
 	}
 
 	

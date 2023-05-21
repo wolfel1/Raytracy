@@ -44,12 +44,12 @@ namespace raytracy {
 			window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
 			RTY_ASSERT(window_handle, "Could not create window!");
 		}
+		window_data.v_sync = false;
 
-		graphics_context = GraphicsContext::Create(window_handle);
+		graphics_context = GraphicsContext::Create(shared_ptr<Window>(this));
 		graphics_context->Init();
 
 		glfwSetWindowUserPointer(window_handle, &window_data);
-		SetVSync(true);
 
 
 		{
@@ -113,13 +113,8 @@ namespace raytracy {
 	}
 
 	void Window::SetVSync(bool enabled) {
-		if (enabled) {
-			glfwSwapInterval(1);
-		} else {
-			glfwSwapInterval(0);
-		}
-
 		window_data.v_sync = enabled;
+		graphics_context->SetVSync(enabled);
 	}
 
 

@@ -4,6 +4,7 @@
 
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
+#include "raytracy/core/Window.h"
 
 namespace raytracy {
 	static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
@@ -67,7 +68,7 @@ namespace raytracy {
 		const bool enable_validation_layers = false;
 #endif
 	public:
-		VulkanContext(void* window_handle);
+		VulkanContext(const shared_ptr<Window>& window);
 
 		const VkExtent2D& GetSwapChainExtent() { return swap_chain_extent; }
 		const std::vector<VkFramebuffer>& GetSwapChainFrameBuffers() { return swap_chain_framebuffers; }
@@ -115,6 +116,7 @@ namespace raytracy {
 			return indices;
 		}
 		void RecreateSwapChain() {
+			auto window_handle = window->GetNativeWindow();
 			int width = 0, height = 0;
 			glfwGetFramebufferSize(static_cast<GLFWwindow*>(window_handle), &width, &height);
 			while (width == 0 || height == 0) {
@@ -130,6 +132,8 @@ namespace raytracy {
 		}
 
 		virtual void SwapBuffers() override {};
+
+		virtual void SetVSync(bool enabled) override;
 
 		virtual void Shutdown() override {
 			CleanupSwapChain();
@@ -272,6 +276,7 @@ namespace raytracy {
 		}
 
 		void CreateSurface() {
+			auto window_handle = window->GetNativeWindow();
 			if (glfwCreateWindowSurface(instance, static_cast<GLFWwindow*>(window_handle), nullptr, &surface)) {
 				throw std::runtime_error("Failed to create window surface!");
 			}
@@ -377,7 +382,9 @@ namespace raytracy {
 
 			vkGetDeviceQueue(logical_device, indices.graphics_family.value(), 0, &graphics_queue);
 			vkGetDeviceQueue(logical_device, indices.presentation_family.value(), 0, &presentation_queue);
-		}void CreateSwapChain() {
+		}
+
+		void CreateSwapChain() {
 			SwapChainSupportDetails swap_chain_support = QuerySwapChainSupport(physical_device);
 
 			VkSurfaceFormatKHR surface_format = ChooseSwapSurfaceFormat(swap_chain_support.formats);
@@ -462,12 +469,14 @@ namespace raytracy {
 		}
 
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& available_presentation_modes) {
-			for (const auto& available_present_mode : available_presentation_modes) {
-				if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
-					return available_present_mode;
+			if (!window->IsVSync()) {
+				for (const auto& available_present_mode : available_presentation_modes) {
+					if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
+						return available_present_mode;
+					}
 				}
-			}
 
+			}
 			return VK_PRESENT_MODE_FIFO_KHR;
 		}
 
@@ -475,6 +484,7 @@ namespace raytracy {
 			if (capabilites.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 				return capabilites.currentExtent;
 			} else {
+				auto window_handle = window->GetNativeWindow();
 				int width, height;
 				glfwGetFramebufferSize(static_cast<GLFWwindow*>(window_handle), &width, &height);
 
@@ -578,7 +588,7 @@ namespace raytracy {
 				}
 			}
 		}
-		
+
 
 		void CleanupSwapChain() {
 			for (auto framebuffer : swap_chain_framebuffers) {
@@ -590,5 +600,6 @@ namespace raytracy {
 			}
 			vkDestroySwapchainKHR(logical_device, swap_chain, nullptr);
 		}
+
 	};
 }

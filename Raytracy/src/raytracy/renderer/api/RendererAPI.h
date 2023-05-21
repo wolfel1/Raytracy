@@ -2,6 +2,7 @@
 
 #include "GraphicsContext.h"
 #include "VertexArray.h"
+#include "Shader.h"
 
 namespace raytracy {
 	class RendererAPI {

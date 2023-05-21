@@ -19,7 +19,7 @@ namespace raytracy {
 	class Application {
 	private:
 		ApplicationSpecification application_specification;
-		unique_ptr<Window> window;
+		shared_ptr<Window> window;
 		bool running = false;
 		bool minimized = false;
 		float last_frame_time = 0.0f;

@@ -3,6 +3,7 @@
 
 #include <glad/gl.h>
 #include "OpenGLRendererAPI.h"
+#include "OpenGLBuffer.h"
 
 namespace raytracy {
 
@@ -48,7 +49,9 @@ namespace raytracy {
 		RTY_ASSERT(layout.GetElements().size(), "Vertex buffer has no layout!");
 
 		GLCall(glBindVertexArray(renderer_id));
-		vertex_buffer->Bind();
+		auto opengl_vertex_buffer = std::dynamic_pointer_cast<OpenGLVertexBuffer>(vertex_buffer);
+		RTY_ASSERT(opengl_vertex_buffer, "Vertex buffer suits not to opengl!");
+		opengl_vertex_buffer->Bind();
 
 		const auto& elements = layout.GetElements();
 		for (size_t i = 0; i < elements.size(); i++) {
@@ -66,7 +69,10 @@ namespace raytracy {
 
 	void OpenGLVertexArray::SetIndexBuffer(const shared_ptr<IndexBuffer>& index_buffer) {
 		GLCall(glBindVertexArray(renderer_id));
-		index_buffer->Bind();
+		auto opengl_index_buffer = std::dynamic_pointer_cast<OpenGLIndexBuffer>(index_buffer);
+		RTY_ASSERT(opengl_index_buffer, "Index buffer suits not to opengl!");
+		opengl_index_buffer->Bind();
+
 		VertexArray::index_buffer = index_buffer;
 	}
 

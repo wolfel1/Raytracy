@@ -4,6 +4,8 @@ namespace raytracy {
 
 	class RendererAPI;
 
+	struct Vertex;
+
 	enum class VertexDataType {
 		None = 0, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4
 	};
@@ -110,11 +112,8 @@ namespace raytracy {
 	public:
 		virtual ~VertexBuffer() = default;
 
-		static shared_ptr<VertexBuffer> Create(size_t size, shared_ptr<RendererAPI>& api);
-		static shared_ptr<VertexBuffer> Create(float* vertices, size_t size, shared_ptr<RendererAPI>& api);
-
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		static shared_ptr<VertexBuffer> Create(size_t size, const shared_ptr<RendererAPI>& api);
+		static shared_ptr<VertexBuffer> Create(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI>& api);
 
 		const BufferLayout& GetLayout() const {
 			return layout;
@@ -134,9 +133,6 @@ namespace raytracy {
 		virtual ~IndexBuffer() = default;
 
 		uint32_t GetCount() { return count; }
-
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
 
 	protected:
 		IndexBuffer(uint32_t count) : count(count) {}

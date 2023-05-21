@@ -2,6 +2,12 @@
 #include "VulkanContext.h"
 
 namespace raytracy {
-	VulkanContext::VulkanContext(void* window_handle) : GraphicsContext(window_handle) {
+	VulkanContext::VulkanContext(const shared_ptr<Window>& window) : GraphicsContext(window) {
+	}
+	void VulkanContext::SetVSync(bool enabled) {
+		if (enabled != window->IsVSync()) {
+			RecreateSwapChain();
+
+		}
 	}
 }

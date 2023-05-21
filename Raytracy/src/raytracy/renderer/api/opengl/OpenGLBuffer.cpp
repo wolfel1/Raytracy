@@ -4,6 +4,7 @@
 #include <glad/gl.h>
 
 #include "OpenGLRendererAPI.h"
+#include "../../Renderer.h"
 
 namespace raytracy {
 	OpenGLVertexBuffer::OpenGLVertexBuffer(size_t size) {
@@ -11,9 +12,9 @@ namespace raytracy {
 		GLCall(glNamedBufferData(renderer_id, size, nullptr, GL_DYNAMIC_DRAW));
 	}
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, size_t size) {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(const std::vector<Vertex>& vertices) {
 		GLCall(glCreateBuffers(1, &renderer_id));
-		GLCall(glNamedBufferData(renderer_id, size * sizeof(float), vertices, GL_STATIC_DRAW));
+		GLCall(glNamedBufferData(renderer_id, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW));
     }
 	OpenGLVertexBuffer::~OpenGLVertexBuffer() {
 		GLCall(glDeleteBuffers(1, &renderer_id));

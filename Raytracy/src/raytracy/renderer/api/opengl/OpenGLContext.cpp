@@ -1,16 +1,20 @@
 #include "raytracypch.h"
 
 #include "OpenGLContext.h"
+#include "raytracy/core/Window.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>
 
 namespace raytracy {
-	OpenGLContext::OpenGLContext(void* window_handle) : GraphicsContext(window_handle) {
+	OpenGLContext::OpenGLContext(const shared_ptr<Window>& window) : GraphicsContext(window) {
 	}
 
 	void OpenGLContext::Init() {
+		auto window_handle = window->GetNativeWindow();
 		glfwMakeContextCurrent(static_cast<GLFWwindow*>(window_handle));
+
+		SetVSync(window->IsVSync());
 
 		RTY_PROFILE_SCOPE("LoadGlad");
 		int status = gladLoadGL(glfwGetProcAddress);
@@ -22,6 +26,14 @@ namespace raytracy {
 		RTY_BASE_TRACE("Loaded OpenGL version {0}.{1}\n", GLAD_VERSION_MAJOR(status), GLAD_VERSION_MINOR(status));
 	}
 	void OpenGLContext::SwapBuffers() {
+		auto window_handle = window->GetNativeWindow();
 		glfwSwapBuffers(static_cast<GLFWwindow*>(window_handle));
+	}
+	void OpenGLContext::SetVSync(bool enabled) {
+		if (enabled) {
+			glfwSwapInterval(1);
+		} else {
+			glfwSwapInterval(0);
+		}
 	}
 }

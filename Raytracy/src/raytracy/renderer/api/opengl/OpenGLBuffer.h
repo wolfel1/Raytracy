@@ -7,11 +7,11 @@ namespace raytracy {
 
 	public:
 		OpenGLVertexBuffer(size_t size);
-		OpenGLVertexBuffer(float* vertices, size_t size);
+		OpenGLVertexBuffer(const std::vector<Vertex>& vertices);
 		~OpenGLVertexBuffer();
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+		void Bind() const;
+		void Unbind() const;
 	};
 
 	class OpenGLIndexBuffer : public IndexBuffer {
@@ -20,7 +20,7 @@ namespace raytracy {
 		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
 		~OpenGLIndexBuffer();
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+		void Bind() const;
+		void Unbind() const;
 	};
 }

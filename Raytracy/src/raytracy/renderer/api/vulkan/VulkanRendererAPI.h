@@ -27,34 +27,30 @@ namespace raytracy {
 		return buffer;
 	}
 
-	struct Vertex {
-		glm::vec3 position;
-		glm::vec4 color;
 
-		static VkVertexInputBindingDescription getBindingDescription() {
-			VkVertexInputBindingDescription bindingDescription{};
-			bindingDescription.binding = 0;
-			bindingDescription.stride = sizeof(Vertex);
-			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	static VkVertexInputBindingDescription getBindingDescription() {
+		VkVertexInputBindingDescription bindingDescription{};
+		bindingDescription.binding = 0;
+		bindingDescription.stride = 4*3+4*4;
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-			return bindingDescription;
-		}
+		return bindingDescription;
+	}
 
-		static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-			std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
-			attributeDescriptions[0].binding = 0;
-			attributeDescriptions[0].location = 0;
-			attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-			attributeDescriptions[0].offset = offsetof(Vertex, position);
+	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+		attributeDescriptions[0].binding = 0;
+		attributeDescriptions[0].location = 0;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[0].offset = 0;
 
-			attributeDescriptions[1].binding = 0;
-			attributeDescriptions[1].location = 1;
-			attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-			attributeDescriptions[1].offset = offsetof(Vertex, color);
+		attributeDescriptions[1].binding = 0;
+		attributeDescriptions[1].location = 1;
+		attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		attributeDescriptions[1].offset = 4 * 3;
 
-			return attributeDescriptions;
-		}
-	};
+		return attributeDescriptions;
+	}
 
 	class VulkanRendererAPI : public RendererAPI {
 
@@ -63,6 +59,7 @@ namespace raytracy {
 
 		bool framebuffer_resized = false;
 		uint32_t current_frame = 0;
+		glm::vec4 clear_color;
 
 		shared_ptr<VulkanContext> graphics_context;
 
@@ -75,12 +72,14 @@ namespace raytracy {
 		std::vector<VkSemaphore> render_finished_semaphores;
 		std::vector<VkFence> in_flight_fences;
 	public:
+		VulkanRendererAPI();
 
 		virtual void Init(const shared_ptr<GraphicsContext>& context) override;
 
 		const shared_ptr<VulkanContext> GetContext() const { return graphics_context; }
 
 		const VkCommandPool GetCommandPool() const { return command_pool; }
+
 
 		void CreateGraphicsPipeline() {
 			auto vertex_shader_code = ReadFile("resources/shaders/basicspirv/basicvert.spv");
@@ -104,8 +103,8 @@ namespace raytracy {
 
 			VkPipelineShaderStageCreateInfo shader_stages[] = { vertex_shader_stage_info, fragment_shader_stage_info };
 
-			auto bindingDescription = Vertex::getBindingDescription();
-			auto attributeDescriptions = Vertex::getAttributeDescriptions();
+			auto bindingDescription = getBindingDescription();
+			auto attributeDescriptions = getAttributeDescriptions();
 
 			VkPipelineVertexInputStateCreateInfo vertex_input_info{};
 			vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -153,7 +152,7 @@ namespace raytracy {
 			rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 			rasterizer.lineWidth = 1.0f;
 			rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-			rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+			rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 			rasterizer.depthBiasEnable = VK_FALSE;
 			rasterizer.depthBiasConstantFactor = 0.0f;
 			rasterizer.depthBiasClamp = 0.0f;
@@ -317,7 +316,7 @@ namespace raytracy {
 			render_pass_info.renderArea.offset = { 0, 0 };
 			render_pass_info.renderArea.extent = swap_chain_extent;
 
-			VkClearValue clear_color = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+			VkClearValue clear_color = { this->clear_color.r, this->clear_color.g, this->clear_color.b, this->clear_color.a };
 			render_pass_info.clearValueCount = 1;
 			render_pass_info.pClearValues = &clear_color;
 
@@ -347,7 +346,7 @@ namespace raytracy {
 
 			auto index_buffer = std::dynamic_pointer_cast<VulkanIndexBuffer>(vertex_array->GetIndexBuffer());
 			RTY_ASSERT(index_buffer, "Index buffer suits not to vulkan!");
-			
+
 			vkCmdBindIndexBuffer(command_buffer, index_buffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
 			vkCmdDrawIndexed(command_buffer, index_buffer->GetCount(), 1, 0, 0, 0);

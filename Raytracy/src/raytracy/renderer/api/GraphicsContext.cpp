@@ -6,15 +6,15 @@
 #include "vulkan/VulkanContext.h"
 
 namespace raytracy {
-	shared_ptr<GraphicsContext> GraphicsContext::Create(void* window_handle) {
+	shared_ptr<GraphicsContext> GraphicsContext::Create(const shared_ptr<Window>& window) {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::None:
 			RTY_ASSERT(false, "Renderer API None is not supported!");
 			return nullptr;
 		case RendererAPI::API::OpenGL:
-			return make_shared<OpenGLContext>(window_handle);
+			return make_shared<OpenGLContext>(window);
 		case RendererAPI::API::Vulkan:
-			return make_shared<VulkanContext>(window_handle);
+			return make_shared<VulkanContext>(window);
 		default:
 			break;
 		}
@@ -23,7 +23,7 @@ namespace raytracy {
 		return nullptr;
 	}
 
-	GraphicsContext::GraphicsContext(void* window_handle) : window_handle(window_handle) {
-		RTY_ASSERT(window_handle, "Window handle is null!");
+	GraphicsContext::GraphicsContext(const shared_ptr<Window> window) : window(window) {
+		RTY_ASSERT(window, "Window is null!");
 	}
 }
