@@ -46,8 +46,8 @@ namespace raytracy {
 		}
 		window_data.v_sync = false;
 
-		graphics_context = GraphicsContext::Create(shared_ptr<Window>(this));
-		graphics_context->Init();
+		graphics_context = GraphicsContext::Create();
+		graphics_context->Init(window_handle);
 
 		glfwSetWindowUserPointer(window_handle, &window_data);
 
@@ -115,6 +115,10 @@ namespace raytracy {
 	void Window::SetVSync(bool enabled) {
 		window_data.v_sync = enabled;
 		graphics_context->SetVSync(enabled);
+	}
+
+	void Window::Shutdown() {
+		graphics_context.reset();
 	}
 
 

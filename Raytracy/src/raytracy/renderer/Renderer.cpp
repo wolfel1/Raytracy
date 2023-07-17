@@ -5,6 +5,7 @@
 #include "api/Buffer.h"
 #include "api/VertexArray.h"
 #include "api/GraphicsContext.h"
+#include <GLFW/glfw3.h>
 
 
 namespace raytracy {
@@ -15,7 +16,7 @@ namespace raytracy {
 	shared_ptr<Shader> shader_program;
 	static const glm::vec4 clear_color = { 0.01f, 0.01f, 0.01f, 1.0f };
 
-	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
+	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
 
 	void Renderer::Init(const shared_ptr<GraphicsContext>& context) {
 		RTY_PROFILE_FUNCTION();
@@ -29,7 +30,7 @@ namespace raytracy {
 		std::vector<Vertex> vertices = {
 			{{-0.5f, -0.5f, 0.0f,},  { 0.0f, 0.0f, 0.0f, 1.0f},},
 			{{0.5f, -0.5f, 0.0f, },  { 0.0f, 0.0f, 1.0f, 1.0f},},
-			{{1.0f, 0.5f, 0.0f,  },  { 0.0f, 1.0f, 0.0f, 1.0f},},
+			{{0.5f, 0.5f, 0.0f,  },  { 0.0f, 1.0f, 0.0f, 1.0f},},
 			{{-0.5f, 0.5f, 0.0f, },  { 1.0f, 0.0f, 0.0f, 1.0f} },
 		};
 
@@ -45,15 +46,13 @@ namespace raytracy {
 			{ "position", VertexDataType::Float3 },
 			{ "color", VertexDataType::Float4 }
 		});
-		//GLCall(glNamedBufferSubData(vertex_buffer, 0, sizeof(vertices), ));
-		//GLCall(glNamedBufferSubData(vertex_buffer, sizeof(vertices), sizeof(vertex_colors), vertex_colors));
 
 		index_buffer = IndexBuffer::Create(indices, 6, renderer_api);
 
-		shader_program = ShaderLibrary::Get().Load("basic");
-		RTY_ASSERT(shader_program, "Could not create a shader program!");
+		//shader_program = ShaderLibrary::Get().Load("basic");
+		//RTY_ASSERT(shader_program, "Could not create a shader program!");
 		vertex_array->Bind();
-		shader_program->Bind();
+		//shader_program->Bind();
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 		vertex_array->SetIndexBuffer(index_buffer);
@@ -70,8 +69,10 @@ namespace raytracy {
 	void Renderer::Render() {
 		RTY_PROFILE_FUNCTION();
 		renderer_api->ClearViewport();
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		//shader_program->SetVec4("u_color", glm::vec4(0.0f, greenValue, 0.0f, 0.0f));
 
-		
 		renderer_api->DrawIndexed(vertex_array);
 	}
 
@@ -80,6 +81,7 @@ namespace raytracy {
 		vertex_array.reset();
 		vertex_buffer.reset();
 		index_buffer.reset();
+		shader_program.reset();
 	}
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {

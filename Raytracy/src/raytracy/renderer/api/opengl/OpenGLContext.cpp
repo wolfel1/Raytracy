@@ -7,14 +7,9 @@
 #include <glad/gl.h>
 
 namespace raytracy {
-	OpenGLContext::OpenGLContext(const shared_ptr<Window>& window) : GraphicsContext(window) {
-	}
 
-	void OpenGLContext::Init() {
-		auto window_handle = window->GetNativeWindow();
+	void OpenGLContext::Init(void* window_handle) {
 		glfwMakeContextCurrent(static_cast<GLFWwindow*>(window_handle));
-
-		SetVSync(window->IsVSync());
 
 		RTY_PROFILE_SCOPE("LoadGlad");
 		int status = gladLoadGL(glfwGetProcAddress);
@@ -26,7 +21,7 @@ namespace raytracy {
 		RTY_BASE_TRACE("Loaded OpenGL version {0}.{1}\n", GLAD_VERSION_MAJOR(status), GLAD_VERSION_MINOR(status));
 	}
 	void OpenGLContext::SwapBuffers() {
-		auto window_handle = window->GetNativeWindow();
+		auto* window_handle = window->GetNativeWindow();
 		glfwSwapBuffers(static_cast<GLFWwindow*>(window_handle));
 	}
 	void OpenGLContext::SetVSync(bool enabled) {

@@ -15,8 +15,9 @@ namespace raytracy {
 		const std::string& GetName() const { return name; }
 
 		virtual void Bind() const = 0;
-
 		virtual void Unbind() const = 0;
+
+		virtual void SetVec4(const std::string& name, const glm::vec4& value) const = 0;
 
 		static shared_ptr<Shader> CreateFromFile(const std::string& name);
 		static shared_ptr<Shader> CreateFromDirectory(const std::string& directory_name);

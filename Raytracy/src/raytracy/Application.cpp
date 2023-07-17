@@ -20,12 +20,14 @@ namespace raytracy {
 		instance = this;
 
 		window = Window::Create({ application_specification.name, application_specification.width, application_specification.height });
+		auto graphics_context = window->GetGraphicsContext();
+		graphics_context->SetWindow(window);
+		Renderer::Get().Init(graphics_context);
 
-		EventBus::Get().Register<WindowCloseEvent>(RTY_BIND_EVENT_FN(Application::OnWindowClose));
-		EventBus::Get().Register<WindowResizeEvent>(RTY_BIND_EVENT_FN(Application::OnWindowResize)); 
-		EventBus::Get().Register<AppTickEvent>(RTY_BIND_EVENT_FN(Application::OnAppTick));
-
-		Renderer::Get().Init(window->GetGraphicsContext());
+		auto& event_bus = EventBus::Get();
+		event_bus.Register<WindowCloseEvent>(RTY_BIND_EVENT_FN(Application::OnWindowClose));
+		event_bus.Register<WindowResizeEvent>(RTY_BIND_EVENT_FN(Application::OnWindowResize)); 
+		event_bus.Register<AppTickEvent>(RTY_BIND_EVENT_FN(Application::OnAppTick));
 
 		running = true;
 	}
@@ -67,6 +69,7 @@ namespace raytracy {
 	void Application::Shutdown() {
 		RTY_PROFILE_FUNCTION();
 		Renderer::Get().Shutdown();
+		window->Shutdown();
 
 		for (auto& layer : layer_stack)
 			layer->OnDetach();

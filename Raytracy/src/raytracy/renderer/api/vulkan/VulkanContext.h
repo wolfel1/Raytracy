@@ -37,7 +37,6 @@ namespace raytracy {
 
 
 	private:
-
 		VkInstance instance{};
 		VkDebugUtilsMessengerEXT debug_messenger{};
 		VkSurfaceKHR surface{};
@@ -68,7 +67,7 @@ namespace raytracy {
 		const bool enable_validation_layers = false;
 #endif
 	public:
-		VulkanContext(const shared_ptr<Window>& window);
+		VulkanContext() = default;
 
 		const VkExtent2D& GetSwapChainExtent() { return swap_chain_extent; }
 		const std::vector<VkFramebuffer>& GetSwapChainFrameBuffers() { return swap_chain_framebuffers; }
@@ -82,13 +81,13 @@ namespace raytracy {
 
 		const VkSwapchainKHR& GetSwapchain() { return swap_chain; }
 
-		virtual void Init() override {
+		virtual void Init(void* window_handle) override {
 			CreateInstance();
 			InitDebugMessenger();
-			CreateSurface();
+			CreateSurface(window_handle);
 			PickPhysicalDevice();
 			CreateLogicalDevice();
-			CreateSwapChain();
+			CreateSwapChain(window_handle);
 			CreateImageViews();
 			CreateRenderPass();
 			CreateFramebuffers();
@@ -116,7 +115,8 @@ namespace raytracy {
 			return indices;
 		}
 		void RecreateSwapChain() {
-			auto window_handle = window->GetNativeWindow();
+			auto* window_handle = window->GetNativeWindow();
+			RTY_ASSERT(window_handle, "No window available!");
 			int width = 0, height = 0;
 			glfwGetFramebufferSize(static_cast<GLFWwindow*>(window_handle), &width, &height);
 			while (width == 0 || height == 0) {
@@ -126,7 +126,7 @@ namespace raytracy {
 			vkDeviceWaitIdle(logical_device);
 
 			CleanupSwapChain();
-			CreateSwapChain();
+			CreateSwapChain(window_handle);
 			CreateImageViews();
 			CreateFramebuffers();
 		}
@@ -275,8 +275,7 @@ namespace raytracy {
 			create_info.pUserData = nullptr;
 		}
 
-		void CreateSurface() {
-			auto window_handle = window->GetNativeWindow();
+		void CreateSurface(void* window_handle) {
 			if (glfwCreateWindowSurface(instance, static_cast<GLFWwindow*>(window_handle), nullptr, &surface)) {
 				throw std::runtime_error("Failed to create window surface!");
 			}
@@ -384,13 +383,13 @@ namespace raytracy {
 			vkGetDeviceQueue(logical_device, indices.presentation_family.value(), 0, &presentation_queue);
 		}
 
-		void CreateSwapChain() {
+		void CreateSwapChain(void* window_handle) {
 			SwapChainSupportDetails swap_chain_support = QuerySwapChainSupport(physical_device);
 
 			VkSurfaceFormatKHR surface_format = ChooseSwapSurfaceFormat(swap_chain_support.formats);
 			swap_chain_image_format = surface_format.format;
 			VkPresentModeKHR presentation_mode = ChooseSwapPresentMode(swap_chain_support.presentation_modes);
-			VkExtent2D extent = ChooseSwapExtent(swap_chain_support.capabilities);
+			VkExtent2D extent = ChooseSwapExtent(swap_chain_support.capabilities, window_handle);
 			swap_chain_extent = extent;
 
 			uint32_t image_count = swap_chain_support.capabilities.minImageCount + 1;
@@ -469,7 +468,7 @@ namespace raytracy {
 		}
 
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& available_presentation_modes) {
-			if (!window->IsVSync()) {
+			if (window && !window->IsVSync()) {
 				for (const auto& available_present_mode : available_presentation_modes) {
 					if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
 						return available_present_mode;
@@ -480,11 +479,10 @@ namespace raytracy {
 			return VK_PRESENT_MODE_FIFO_KHR;
 		}
 
-		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilites) {
+		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilites, void* window_handle) {
 			if (capabilites.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 				return capabilites.currentExtent;
 			} else {
-				auto window_handle = window->GetNativeWindow();
 				int width, height;
 				glfwGetFramebufferSize(static_cast<GLFWwindow*>(window_handle), &width, &height);
 

@@ -193,4 +193,9 @@ namespace raytracy {
 	void OpenGLShader::Unbind() const {
 		glUseProgram(0);
 	}
+    void OpenGLShader::SetVec4(const std::string& name, const glm::vec4& value) const {
+		glUseProgram(renderer_id);
+		auto location = glGetUniformLocation(renderer_id, name.c_str());
+		glUniform4f(location, value.x, value.y, value.z, value.w);
+    }
 }

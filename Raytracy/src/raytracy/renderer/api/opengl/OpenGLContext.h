@@ -6,9 +6,9 @@ namespace raytracy {
 	class OpenGLContext : public GraphicsContext {
 
 	public:
-		OpenGLContext(const shared_ptr<Window>& window);
+		OpenGLContext() = default;
 
-		virtual void Init() override;
+		virtual void Init(void* window_handle) override;
 		virtual void SwapBuffers() override;
 		virtual void SetVSync(bool enabled) override;
 		virtual void Shutdown() override {};
