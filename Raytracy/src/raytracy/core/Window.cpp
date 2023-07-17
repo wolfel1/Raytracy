@@ -44,7 +44,7 @@ namespace raytracy {
 			window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
 			RTY_ASSERT(window_handle, "Could not create window!");
 		}
-		window_data.v_sync = false;
+		window_data.v_sync = true;
 
 		graphics_context = GraphicsContext::Create();
 		graphics_context->Init(window_handle);

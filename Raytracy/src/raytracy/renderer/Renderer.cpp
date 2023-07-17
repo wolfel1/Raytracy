@@ -16,7 +16,7 @@ namespace raytracy {
 	shared_ptr<Shader> shader_program;
 	static const glm::vec4 clear_color = { 0.01f, 0.01f, 0.01f, 1.0f };
 
-	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
+	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
 
 	void Renderer::Init(const shared_ptr<GraphicsContext>& context) {
 		RTY_PROFILE_FUNCTION();
@@ -49,10 +49,10 @@ namespace raytracy {
 
 		index_buffer = IndexBuffer::Create(indices, 6, renderer_api);
 
-		//shader_program = ShaderLibrary::Get().Load("basic");
-		//RTY_ASSERT(shader_program, "Could not create a shader program!");
+		shader_program = ShaderLibrary::Get().Load("basic");
+		RTY_ASSERT(shader_program, "Could not create a shader program!");
 		vertex_array->Bind();
-		//shader_program->Bind();
+		shader_program->Bind();
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 		vertex_array->SetIndexBuffer(index_buffer);
@@ -71,7 +71,7 @@ namespace raytracy {
 		renderer_api->ClearViewport();
 		float timeValue = glfwGetTime();
 		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-		//shader_program->SetVec4("u_color", glm::vec4(0.0f, greenValue, 0.0f, 0.0f));
+		shader_program->SetVec4("u_color", glm::vec4(0.0f, greenValue, 0.0f, 1.0f));
 
 		renderer_api->DrawIndexed(vertex_array);
 	}

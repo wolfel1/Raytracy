@@ -10,6 +10,7 @@ namespace raytracy {
 
 	void OpenGLContext::Init(void* window_handle) {
 		glfwMakeContextCurrent(static_cast<GLFWwindow*>(window_handle));
+		SetVSync(true);
 
 		RTY_PROFILE_SCOPE("LoadGlad");
 		int status = gladLoadGL(glfwGetProcAddress);

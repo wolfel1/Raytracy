@@ -3,6 +3,8 @@
 
 #include <filesystem>
 
+#include "OpenGLRendererAPI.h"
+
 #include "glad/gl.h"
 
 namespace raytracy {
@@ -194,8 +196,7 @@ namespace raytracy {
 		glUseProgram(0);
 	}
     void OpenGLShader::SetVec4(const std::string& name, const glm::vec4& value) const {
-		glUseProgram(renderer_id);
-		auto location = glGetUniformLocation(renderer_id, name.c_str());
-		glUniform4f(location, value.x, value.y, value.z, value.w);
+		GLint location = glGetUniformLocation(renderer_id, name.c_str());
+		GLCall(glUniform4f(location, value.x, value.y, value.z, value.w));
     }
 }

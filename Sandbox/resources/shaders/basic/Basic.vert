@@ -8,6 +8,6 @@ uniform vec4 u_color;
 layout(location = 0) out vec4 vertex_color;
 
 void main() {
-	vertex_color = in_vertex_color;
+	vertex_color = u_color;
 	gl_Position = vec4(in_vertex_position, 1.0);
 }
