@@ -16,7 +16,7 @@ namespace raytracy {
 	shared_ptr<Shader> shader_program;
 	static const glm::vec4 clear_color = { 0.01f, 0.01f, 0.01f, 1.0f };
 
-	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
+	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
 
 	void Renderer::Init(const shared_ptr<GraphicsContext>& context) {
 		RTY_PROFILE_FUNCTION();

@@ -2,6 +2,7 @@
 
 #include "Event.h"
 #include "../core/Timestep.h"
+#include "raytracy/renderer/api/Shader.h"
 
 namespace raytracy {
 	class WindowCloseEvent : public Event {
@@ -59,6 +60,27 @@ namespace raytracy {
 		}
 
 		EVENT_CLASS_TYPE(AppTick);
+		EVENT_CLASS_CATEGORY(EventCategoryApplication);
+	};
+
+	class ShaderChangedEvent : public Event {
+	private:
+		shared_ptr<Shader> shader;
+	public:
+		ShaderChangedEvent(shared_ptr<Shader> s) : shader(s) {};
+		~ShaderChangedEvent() = default;
+
+		shared_ptr<Shader> GetShader() const {
+			return shader;
+		}
+
+		std::string ToString() const override {
+			std::stringstream ss;
+			ss << "ShaderChangedEvent: time" << shader->GetName();
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(ShaderChanged);
 		EVENT_CLASS_CATEGORY(EventCategoryApplication);
 	};
 }

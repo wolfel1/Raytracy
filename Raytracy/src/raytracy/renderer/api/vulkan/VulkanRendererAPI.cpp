@@ -1,6 +1,7 @@
 #include "raytracypch.h"
 #include "VulkanRendererAPI.h"
 
+
 namespace raytracy {
 
 	VulkanRendererAPI::VulkanRendererAPI() : clear_color({0.0f, 0.0f, 0.0f, 1.0f}) {
@@ -10,7 +11,9 @@ namespace raytracy {
 		graphics_context = std::dynamic_pointer_cast<VulkanContext>(context);
 		RTY_ASSERT(graphics_context, "Context is not Vulkan!");
 
-		CreateGraphicsPipeline();
+		auto& event_bus = EventBus::Get();
+		event_bus.Register<ShaderChangedEvent>(RTY_BIND_EVENT_FN(VulkanRendererAPI::CreateGraphicsPipeline));
+
 		CreateCommandPool();
 		CreateCommandBuffers();
 		CreateSyncObjects();

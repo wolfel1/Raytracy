@@ -42,7 +42,7 @@ namespace raytracy {
 		case RendererAPI::API::OpenGL:
 			return make_shared<OpenGLShader>(filepaths);
 		case RendererAPI::API::Vulkan:
-		return make_shared<VulkanShader>(filepaths);
+			return VulkanShader::Create(filepaths);
 		default:
 			break;
 		}

@@ -4,8 +4,10 @@
 #include "VulkanContext.h"
 #include "VulkanVertexArray.h"
 #include "VulkanBuffer.h"
+#include "VulkanShader.h"
 
 #include <vulkan/vulkan.h>
+#include "raytracy/event/ApplicationEvent.h"
 
 
 namespace raytracy {
@@ -81,12 +83,15 @@ namespace raytracy {
 		const VkCommandPool GetCommandPool() const { return command_pool; }
 
 
-		void CreateGraphicsPipeline() {
-			auto vertex_shader_code = ReadFile("resources/shaders/basicspirv/basicvert.spv");
-			auto fragment_shader_code = ReadFile("resources/shaders/basicspirv/basicfrag.spv");
+		bool CreateGraphicsPipeline(Event& e) {
 
-			VkShaderModule vertex_shader_module = CreateShaderModule(vertex_shader_code);
-			VkShaderModule fragment_shader_module = CreateShaderModule(fragment_shader_code);
+			ShaderChangedEvent evt = static_cast<ShaderChangedEvent&>(e);
+			auto shader = std::dynamic_pointer_cast<VulkanShader>(evt.GetShader());
+			RTY_ASSERT(shader, "Shader is not a vulkan shader!");
+
+			auto& shader_modules = shader->GetShaderModules();
+			VkShaderModule vertex_shader_module = shader_modules.at(VK_SHADER_STAGE_VERTEX_BIT);
+			VkShaderModule fragment_shader_module = shader_modules.at(VK_SHADER_STAGE_FRAGMENT_BIT);
 
 			VkPipelineShaderStageCreateInfo vertex_shader_stage_info{};
 			vertex_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -100,11 +105,10 @@ namespace raytracy {
 			fragment_shader_stage_info.module = fragment_shader_module;
 			fragment_shader_stage_info.pName = "main";
 
-
 			VkPipelineShaderStageCreateInfo shader_stages[] = { vertex_shader_stage_info, fragment_shader_stage_info };
 
-			auto bindingDescription = getBindingDescription();
-			auto attributeDescriptions = getAttributeDescriptions();
+			auto bindingDescription = shader->GetBindingDescription();;
+			auto attributeDescriptions = shader->GetAttributeDescriptions();
 
 			VkPipelineVertexInputStateCreateInfo vertex_input_info{};
 			vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -228,6 +232,8 @@ namespace raytracy {
 
 			vkDestroyShaderModule(logical_device, fragment_shader_module, nullptr);
 			vkDestroyShaderModule(logical_device, vertex_shader_module, nullptr);
+
+			return true;
 		}
 
 		VkShaderModule CreateShaderModule(const std::vector<char>& code) {
