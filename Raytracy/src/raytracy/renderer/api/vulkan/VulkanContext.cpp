@@ -3,7 +3,7 @@
 
 namespace raytracy {
 	void VulkanContext::SetVSync(bool enabled) {
-		if (enabled != window->IsVSync()) {
+		if (enabled != m_window->IsVSync()) {
 			RecreateSwapChain();
 		}
 	}

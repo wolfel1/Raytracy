@@ -35,7 +35,7 @@ namespace raytracy {
 	}
 
 
-	void OpenGLRendererAPI::Init(const shared_ptr<GraphicsContext>& context) {
+	void OpenGLRendererAPI::Init() {
 		RTY_PROFILE_FUNCTION();
 
 #ifdef RTY_DEBUG

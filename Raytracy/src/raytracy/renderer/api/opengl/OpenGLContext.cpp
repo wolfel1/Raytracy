@@ -22,7 +22,7 @@ namespace raytracy {
 		RTY_BASE_TRACE("Loaded OpenGL version {0}.{1}\n", GLAD_VERSION_MAJOR(status), GLAD_VERSION_MINOR(status));
 	}
 	void OpenGLContext::SwapBuffers() {
-		auto* window_handle = window->GetNativeWindow();
+		auto* window_handle = m_window->GetNativeWindow();
 		glfwSwapBuffers(static_cast<GLFWwindow*>(window_handle));
 	}
 	void OpenGLContext::SetVSync(bool enabled) {

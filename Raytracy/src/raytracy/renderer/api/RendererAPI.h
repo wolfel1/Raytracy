@@ -20,7 +20,7 @@ namespace raytracy {
 		static API GetAPI() { return graphics_api; }
 		static void SetAPI(API api) { graphics_api = api; }
 
-		virtual void Init(const shared_ptr<GraphicsContext>& context) = 0;
+		virtual void Init() = 0;
 
 		virtual void ClearViewport() = 0;
 

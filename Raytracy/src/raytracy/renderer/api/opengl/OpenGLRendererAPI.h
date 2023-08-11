@@ -18,7 +18,7 @@ namespace raytracy {
 
 	public:
 
-		virtual void Init(const shared_ptr<GraphicsContext>& context) override;
+		virtual void Init() override;
 
 		virtual void ClearViewport() override;
 

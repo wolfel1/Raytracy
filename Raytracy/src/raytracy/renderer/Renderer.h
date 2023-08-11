@@ -22,7 +22,7 @@ namespace raytracy {
 			return renderer;
 		}
 
-		void Init(const shared_ptr<GraphicsContext>& context);
+		void Init();
 
 		void Submit();
 

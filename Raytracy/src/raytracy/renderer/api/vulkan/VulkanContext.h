@@ -115,7 +115,7 @@ namespace raytracy {
 			return indices;
 		}
 		void RecreateSwapChain() {
-			auto* window_handle = window->GetNativeWindow();
+			auto* window_handle = m_window->GetNativeWindow();
 			RTY_ASSERT(window_handle, "No window available!");
 			int width = 0, height = 0;
 			glfwGetFramebufferSize(static_cast<GLFWwindow*>(window_handle), &width, &height);
@@ -468,7 +468,7 @@ namespace raytracy {
 		}
 
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& available_presentation_modes) {
-			if (window && !window->IsVSync()) {
+			if (m_window && !m_window->IsVSync()) {
 				for (const auto& available_present_mode : available_presentation_modes) {
 					if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
 						return available_present_mode;
