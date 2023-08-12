@@ -21,7 +21,7 @@ namespace raytracy {
 
 	bool VulkanRendererAPI::CreateGraphicsPipeline(Event& e) {
 
-		ShaderChangedEvent evt = static_cast<ShaderChangedEvent&>(e);
+		ShaderChangedEvent& evt = static_cast<ShaderChangedEvent&>(e);
 		auto shader = std::dynamic_pointer_cast<VulkanShader>(evt.GetShader());
 		RTY_ASSERT(shader, "Shader is not a vulkan shader!");
 
@@ -174,7 +174,7 @@ namespace raytracy {
 
 	void VulkanRendererAPI::CreateCommandPool() {
 		QueueFamilyIndices queue_family_indices = graphics_context->FindQueueFamilyIndices(graphics_context->GetPhysicalDevice());
-		auto logical_device = graphics_context->GetLogicalDevice();
+		auto& logical_device = graphics_context->GetLogicalDevice();
 
 		VkCommandPoolCreateInfo pool_info{};
 		pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -187,7 +187,7 @@ namespace raytracy {
 	}
 
 	void VulkanRendererAPI::CreateCommandBuffers() {
-		auto logical_device = graphics_context->GetLogicalDevice();
+		auto& logical_device = graphics_context->GetLogicalDevice();
 
 		command_buffers.resize(MAX_FRAMES_IN_FLIGHT);
 		VkCommandBufferAllocateInfo alloc_info{};
@@ -202,7 +202,7 @@ namespace raytracy {
 	}
 
 	void VulkanRendererAPI::CreateSyncObjects() {
-		auto logical_device = graphics_context->GetLogicalDevice();
+		auto& logical_device = graphics_context->GetLogicalDevice();
 		image_available_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		render_finished_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		in_flight_fences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -224,7 +224,7 @@ namespace raytracy {
 	}
 
 	void VulkanRendererAPI::RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray>& vertex_array) {
-		auto render_pass = graphics_context->GetRenderPass();
+		auto& render_pass = graphics_context->GetRenderPass();
 		auto& swap_chain_extent = graphics_context->GetSwapChainExtent();
 		auto& swap_chain_framebuffers = graphics_context->GetSwapChainFrameBuffers();
 
@@ -295,8 +295,8 @@ namespace raytracy {
 	}
 
 	void VulkanRendererAPI::DrawIndexed(const shared_ptr<VertexArray>& vertex_array) {
-		auto logical_device = graphics_context->GetLogicalDevice();
-		auto swap_chain = graphics_context->GetSwapchain();
+		auto& logical_device = graphics_context->GetLogicalDevice();
+		auto& swap_chain = graphics_context->GetSwapchain();
 
 		vkWaitForFences(logical_device, 1, &in_flight_fences[current_frame], VK_TRUE, UINT64_MAX);
 
@@ -329,7 +329,7 @@ namespace raytracy {
 		submit_info.signalSemaphoreCount = 1;
 		submit_info.pSignalSemaphores = signal_semaphores;
 
-		auto graphics_queue = graphics_context->GetGraphicsQueue();
+		auto& graphics_queue = graphics_context->GetGraphicsQueue();
 		if (vkQueueSubmit(graphics_queue, 1, &submit_info, in_flight_fences[current_frame]) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to submit draw command buffer!");
 		}
@@ -345,7 +345,7 @@ namespace raytracy {
 		present_info.pImageIndices = &image_index;
 		present_info.pResults = nullptr;
 
-		auto presentation_queue = graphics_context->GetPresentationQueue();
+		auto& presentation_queue = graphics_context->GetPresentationQueue();
 		result = vkQueuePresentKHR(presentation_queue, &present_info);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebuffer_resized) {
 			framebuffer_resized = false;
@@ -362,7 +362,7 @@ namespace raytracy {
 	}
 
 	void VulkanRendererAPI::Shutdown() {
-		auto logical_device = graphics_context->GetLogicalDevice();
+		auto& logical_device = graphics_context->GetLogicalDevice();
 		vkDeviceWaitIdle(logical_device);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
