@@ -29,7 +29,7 @@ namespace raytracy {
 		VkBuffer index_buffer{};
 		VkDeviceMemory index_buffer_memory{};
 	public:
-		VulkanIndexBuffer(uint32_t* indices, uint32_t count, shared_ptr<RendererAPI>& api);
+		VulkanIndexBuffer(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI>& api);
 		~VulkanIndexBuffer();
 
 		const VkBuffer& GetBuffer() const { return index_buffer; }

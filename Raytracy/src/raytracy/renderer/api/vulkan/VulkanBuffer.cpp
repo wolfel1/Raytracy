@@ -127,7 +127,7 @@ namespace raytracy {
 		vkDestroyBuffer(logical_device, vertex_buffer, nullptr);
 		vkFreeMemory(logical_device, vertex_buffer_memory, nullptr);
 	}
-	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* indices, uint32_t count, shared_ptr<RendererAPI>& api) : IndexBuffer(count) {
+	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI>& api) : IndexBuffer(count) {
 		auto vulkan_api = std::dynamic_pointer_cast<VulkanRendererAPI>(api);
 		RTY_ASSERT(api, "Api is not Vulkan!");
 		auto vulkan_context = vulkan_api->GetContext();

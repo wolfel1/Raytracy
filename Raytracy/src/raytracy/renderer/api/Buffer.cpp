@@ -41,7 +41,7 @@ namespace raytracy {
 		return nullptr;
 	}
 
-	shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count, shared_ptr<RendererAPI>& api) {
+	shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI>& api) {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::None:
 			RTY_ASSERT(false, "Renderer API None is not supported!");

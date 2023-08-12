@@ -129,7 +129,7 @@ namespace raytracy {
 		uint32_t count{};
 
 	public:
-		static shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count, shared_ptr<RendererAPI>& api);
+		static shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI>& api);
 		virtual ~IndexBuffer() = default;
 
 		uint32_t GetCount() { return count; }
