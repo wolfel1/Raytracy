@@ -16,7 +16,7 @@ namespace raytracy {
 	shared_ptr<Shader> shader_program;
 	static const glm::vec4 clear_color = { 0.01f, 0.01f, 0.01f, 1.0f };
 
-	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
+	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
 
 	void Renderer::Init() {
 		RTY_PROFILE_FUNCTION();
@@ -71,7 +71,7 @@ namespace raytracy {
 		renderer_api->ClearViewport();
 		float timeValue = glfwGetTime();
 		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-		shader_program->SetVec4("u_color", glm::vec4(0.0f, greenValue, 0.0f, 1.0f));
+		shader_program->SetColor("ubo_color", glm::vec4(0.0f, greenValue, 0.0f, 1.0f));
 
 		renderer_api->DrawIndexed(vertex_array);
 	}

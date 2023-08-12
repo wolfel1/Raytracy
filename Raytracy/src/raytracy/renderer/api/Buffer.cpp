@@ -57,4 +57,19 @@ namespace raytracy {
 		RTY_ASSERT(false, "Unknown RendereAPI!");
 		return nullptr;
 	}
+	shared_ptr<UniformBuffer> UniformBuffer::Create() {
+		switch (RendererAPI::GetAPI()) {
+		case RendererAPI::API::None:
+			RTY_ASSERT(false, "Renderer API None is not supported!");
+			return nullptr;
+		case RendererAPI::API::OpenGL:
+			return make_shared<OpenGLUniformBuffer>();
+		case RendererAPI::API::Vulkan:
+		default:
+			break;
+		}
+
+		RTY_ASSERT(false, "Unknown RendereAPI!");
+		return nullptr;
+	}
 }

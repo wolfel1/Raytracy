@@ -5,6 +5,7 @@
 
 #include "OpenGLRendererAPI.h"
 #include "../../Renderer.h"
+#include "glm/gtc/type_ptr.hpp"
 
 namespace raytracy {
 	OpenGLVertexBuffer::OpenGLVertexBuffer(size_t size) {
@@ -35,10 +36,36 @@ namespace raytracy {
 		GLCall(glDeleteBuffers(1, &renderer_id));
 	}
 
-	 void OpenGLIndexBuffer::Bind() const {
+	void OpenGLIndexBuffer::Bind() const {
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id));
 	}
-	 void OpenGLIndexBuffer::Unbind() const {
+
+	void OpenGLIndexBuffer::Unbind() const {
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+	}
+
+	OpenGLUniformBuffer::OpenGLUniformBuffer() {
+		GLCall(glCreateBuffers(1, &renderer_id));
+		glNamedBufferData(renderer_id, sizeof(ubo_color), NULL, GL_STATIC_DRAW);
+	}
+
+	OpenGLUniformBuffer::~OpenGLUniformBuffer() {
+		GLCall(glDeleteBuffers(1, &renderer_id));
+	}
+
+	void OpenGLUniformBuffer::Bind() const {
+		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, renderer_id));
+	}
+
+	void OpenGLUniformBuffer::Unbind() const {
+		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+	}
+
+	void OpenGLUniformBuffer::Link() const {
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, renderer_id);
+	}
+
+	void OpenGLUniformBuffer::SetColor(const glm::vec4& value) const {
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec4), glm::value_ptr(value));
 	}
 }

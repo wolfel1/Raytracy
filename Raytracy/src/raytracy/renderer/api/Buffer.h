@@ -137,4 +137,21 @@ namespace raytracy {
 	protected:
 		IndexBuffer(uint32_t count) : count(count) {}
 	};
+
+	class UniformBuffer {
+
+		struct UniformBufferColorObject {
+			alignas(4) glm::vec4 color;
+		};
+	protected:
+		uint32_t renderer_id{};
+		UniformBufferColorObject ubo_color{};
+
+	public:
+		static shared_ptr<UniformBuffer> Create();
+		virtual ~UniformBuffer() = default;
+
+		virtual void Link() const = 0;
+		virtual void SetColor(const glm::vec4& value) const = 0;
+	};
 }

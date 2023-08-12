@@ -23,4 +23,18 @@ namespace raytracy {
 		void Bind() const;
 		void Unbind() const;
 	};
+
+	class OpenGLUniformBuffer : public UniformBuffer {
+
+	public:
+		OpenGLUniformBuffer();
+		~OpenGLUniformBuffer();
+
+		void Bind() const;
+		void Unbind() const;
+
+		virtual void Link() const override;
+
+		virtual void SetColor(const glm::vec4& value) const override;
+	};
 }

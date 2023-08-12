@@ -1,12 +1,18 @@
 #pragma once
 
+#include "Buffer.h"
+
 typedef unsigned int GLenum;
 
 namespace raytracy {
 	class Shader {
+
 	protected:
 		std::string name = "";
 		uint32_t renderer_id{};
+
+		shared_ptr<UniformBuffer> uniform_buffer;
+
 
 	public:
 	
@@ -17,14 +23,14 @@ namespace raytracy {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void SetVec4(const std::string& name, const glm::vec4& value) const = 0;
+		virtual void SetColor(const std::string& name, const glm::vec4& value) const = 0;
 
 		static shared_ptr<Shader> CreateFromFile(const std::string& name);
 		static shared_ptr<Shader> CreateFromDirectory(const std::string& directory_name);
 		
 		protected:
-		Shader() = default;
-		Shader(const std::string& name) : name(name) {};
+		Shader();
+		Shader(const std::string& name);
 
 	};
 

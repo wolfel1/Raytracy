@@ -25,7 +25,7 @@ namespace raytracy {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual void SetVec4(const std::string& name, const glm::vec4& value) const override {}
+		virtual void SetColor(const std::string& name, const glm::vec4& value) const override {}
 
 		private:
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
