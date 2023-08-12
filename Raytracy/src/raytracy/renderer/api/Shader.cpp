@@ -52,13 +52,7 @@ namespace raytracy {
 
 	}
 
-	Shader::Shader() {
-	uniform_buffer = UniformBuffer::Create();
-	}
 
-	Shader::Shader(const std::string& name) {
-		uniform_buffer = UniformBuffer::Create();
-	}
 
 	shared_ptr<Shader> ShaderLibrary::Load(const std::string& name) {
 		std::string path = rootPath + name;

@@ -145,13 +145,18 @@ namespace raytracy {
 		};
 	protected:
 		uint32_t renderer_id{};
-		UniformBufferColorObject ubo_color{};
+		BufferLayout layout;
 
 	public:
 		static shared_ptr<UniformBuffer> Create();
 		virtual ~UniformBuffer() = default;
 
+		const BufferLayout& GetLayout() const {
+			return layout;
+		}
+		virtual void SetLayout(const BufferLayout& layout) = 0;
+
 		virtual void Link() const = 0;
-		virtual void SetColor(const glm::vec4& value) const = 0;
+		virtual void SetVec4(const std::string& name, const glm::vec4& value) const = 0;
 	};
 }

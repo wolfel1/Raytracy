@@ -11,7 +11,6 @@ namespace raytracy {
 		std::string name = "";
 		uint32_t renderer_id{};
 
-		shared_ptr<UniformBuffer> uniform_buffer;
 
 
 	public:
@@ -23,14 +22,12 @@ namespace raytracy {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void SetColor(const std::string& name, const glm::vec4& value) const = 0;
-
 		static shared_ptr<Shader> CreateFromFile(const std::string& name);
 		static shared_ptr<Shader> CreateFromDirectory(const std::string& directory_name);
 		
 		protected:
-		Shader();
-		Shader(const std::string& name);
+		Shader() = default;
+		Shader(const std::string& name) : name(name) {}
 
 	};
 

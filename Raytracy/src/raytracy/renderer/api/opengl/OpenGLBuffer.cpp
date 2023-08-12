@@ -46,7 +46,6 @@ namespace raytracy {
 
 	OpenGLUniformBuffer::OpenGLUniformBuffer() {
 		GLCall(glCreateBuffers(1, &renderer_id));
-		glNamedBufferData(renderer_id, sizeof(ubo_color), NULL, GL_STATIC_DRAW);
 	}
 
 	OpenGLUniformBuffer::~OpenGLUniformBuffer() {
@@ -61,11 +60,21 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 	}
 
+	void OpenGLUniformBuffer::SetLayout(const BufferLayout& layout) {
+		this->layout = layout;
+		glNamedBufferData(renderer_id, layout.GetStride(), NULL, GL_STATIC_DRAW);
+	}
+
 	void OpenGLUniformBuffer::Link() const {
 		glBindBufferBase(GL_UNIFORM_BUFFER, 0, renderer_id);
 	}
 
-	void OpenGLUniformBuffer::SetColor(const glm::vec4& value) const {
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec4), glm::value_ptr(value));
+	void OpenGLUniformBuffer::SetVec4(const std::string& name, const glm::vec4& value) const {
+		auto& elements = layout.GetElements();
+		
+		auto element = std::find_if(elements.begin(), elements.end(), [&name](const BufferElement& element) { return element.name == name; });
+		RTY_ASSERT(element != elements.end(), "No uniform found with name {0}!", name);
+
+		glBufferSubData(GL_UNIFORM_BUFFER, element->offset, SizeOfVertexDataType(element->type), glm::value_ptr(value));
 	}
 }

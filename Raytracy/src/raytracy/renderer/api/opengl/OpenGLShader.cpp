@@ -41,7 +41,6 @@ namespace raytracy {
 		std::string source = ReadFile(path);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
-		uniform_buffer->Link();
 	}
 
 	OpenGLShader::OpenGLShader(const std::vector<std::string>& paths) {
@@ -52,7 +51,6 @@ namespace raytracy {
 		}
 
 		Compile(shader_sources);
-		uniform_buffer->Link();
 	}
 
 	OpenGLShader::~OpenGLShader() {
@@ -197,7 +195,4 @@ namespace raytracy {
 	void OpenGLShader::Unbind() const {
 		glUseProgram(0);
 	}
-    void OpenGLShader::SetColor(const std::string& name, const glm::vec4& value) const {
-		uniform_buffer->SetColor(value);
-    }
 }

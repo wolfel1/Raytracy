@@ -32,9 +32,10 @@ namespace raytracy {
 
 		void Bind() const;
 		void Unbind() const;
+		virtual void SetLayout(const BufferLayout& layout) override;
 
 		virtual void Link() const override;
 
-		virtual void SetColor(const glm::vec4& value) const override;
+		virtual void SetVec4(const std::string& name, const glm::vec4& value) const override;
 	};
 }
