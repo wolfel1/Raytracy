@@ -4,6 +4,9 @@
 
 namespace raytracy {
 
+	const int VulkanRendererAPI::MAX_FRAMES_IN_FLIGHT;
+	uint32_t VulkanRendererAPI::current_frame = 0;
+
 	VulkanRendererAPI::VulkanRendererAPI() : clear_color({0.0f, 0.0f, 0.0f, 1.0f}) {
 	}
 
@@ -14,9 +17,28 @@ namespace raytracy {
 		auto& event_bus = EventBus::Get();
 		event_bus.Register<ShaderChangedEvent>(RTY_BIND_EVENT_FN(VulkanRendererAPI::CreateGraphicsPipeline));
 
+		CreateDescriptorSetLayout();
 		CreateCommandPool();
 		CreateCommandBuffers();
 		CreateSyncObjects();
+	}
+
+	void VulkanRendererAPI::CreateDescriptorSetLayout() {
+		VkDescriptorSetLayoutBinding ubo_layout_binding{};
+		ubo_layout_binding.binding = 0;
+		ubo_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		ubo_layout_binding.descriptorCount = 1;
+		ubo_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		ubo_layout_binding.pImmutableSamplers = nullptr;
+
+		VkDescriptorSetLayoutCreateInfo layout_info{};
+		layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layout_info.bindingCount = 1;
+		layout_info.pBindings = &ubo_layout_binding;
+
+		if (vkCreateDescriptorSetLayout(graphics_context->GetLogicalDevice(), &layout_info, nullptr, &descriptor_set_layout) != VK_SUCCESS) {
+			throw std::runtime_error("Failed to create descriptor set layout!");
+		}
 	}
 
 	bool VulkanRendererAPI::CreateGraphicsPipeline(Event& e) {
@@ -133,8 +155,8 @@ namespace raytracy {
 
 		VkPipelineLayoutCreateInfo pipeline_layout_info{};
 		pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipeline_layout_info.setLayoutCount = 0;
-		pipeline_layout_info.pSetLayouts = nullptr;
+		pipeline_layout_info.setLayoutCount = 1;
+		pipeline_layout_info.pSetLayouts = &descriptor_set_layout;
 		pipeline_layout_info.pushConstantRangeCount = 0;
 		pipeline_layout_info.pPushConstantRanges = nullptr;
 
@@ -223,7 +245,7 @@ namespace raytracy {
 		}
 	}
 
-	void VulkanRendererAPI::RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray>& vertex_array) {
+	void VulkanRendererAPI::RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray> vertex_array, shared_ptr<UniformBuffer> uniform_buffer) {
 		auto& render_pass = graphics_context->GetRenderPass();
 		auto& swap_chain_extent = graphics_context->GetSwapChainExtent();
 		auto& swap_chain_framebuffers = graphics_context->GetSwapChainFrameBuffers();
@@ -277,6 +299,9 @@ namespace raytracy {
 
 		vkCmdBindIndexBuffer(command_buffer, index_buffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
+		auto descriptor_sets = std::dynamic_pointer_cast<VulkanUniformBuffer>(uniform_buffer)->GetDescriptorSets();
+		vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[current_frame], 0, nullptr);
+
 		vkCmdDrawIndexed(command_buffer, index_buffer->GetCount(), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(command_buffer);
@@ -294,7 +319,7 @@ namespace raytracy {
 		this->clear_color = clear_color;
 	}
 
-	void VulkanRendererAPI::DrawIndexed(const shared_ptr<VertexArray>& vertex_array) {
+	void VulkanRendererAPI::DrawIndexed(const shared_ptr<VertexArray> vertex_array, const shared_ptr<UniformBuffer> uniform_buffer) {
 		auto& logical_device = graphics_context->GetLogicalDevice();
 		auto& swap_chain = graphics_context->GetSwapchain();
 
@@ -313,7 +338,7 @@ namespace raytracy {
 		vkResetFences(logical_device, 1, &in_flight_fences[current_frame]);
 
 		vkResetCommandBuffer(command_buffers[current_frame], 0);
-		RecordCommandBuffer(command_buffers[current_frame], image_index, vertex_array);
+		RecordCommandBuffer(command_buffers[current_frame], image_index, vertex_array, uniform_buffer);
 
 		VkSubmitInfo submit_info{};
 		submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -371,6 +396,7 @@ namespace raytracy {
 			vkDestroyFence(logical_device, in_flight_fences[i], nullptr);
 		}
 		vkDestroyCommandPool(logical_device, command_pool, nullptr);
+		vkDestroyDescriptorSetLayout(logical_device, descriptor_set_layout, nullptr);
 		vkDestroyPipeline(logical_device, graphics_pipeline, nullptr);
 		vkDestroyPipelineLayout(logical_device, pipeline_layout, nullptr);
 

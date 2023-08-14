@@ -65,7 +65,7 @@ namespace raytracy {
 		GLCall(glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a));
 	}
 
-	void OpenGLRendererAPI::DrawIndexed(const shared_ptr<VertexArray>& vertex_array) {
+	void OpenGLRendererAPI::DrawIndexed(const shared_ptr<VertexArray> vertex_array, const shared_ptr<UniformBuffer> uniform_buffer) {
 		auto& index_buffer = vertex_array->GetIndexBuffer();
 		GLCall(glDrawElements(GL_TRIANGLES, index_buffer->GetCount(), GL_UNSIGNED_INT, (void*)0));
 	}

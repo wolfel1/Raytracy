@@ -3,6 +3,7 @@
 #include "../Buffer.h"
 
 #include <vulkan/vulkan.h>
+#include "VulkanContext.h"
 
 namespace raytracy {
 
@@ -15,8 +16,8 @@ namespace raytracy {
 		VkDeviceMemory vertex_buffer_memory{};
 
 	public:
-		VulkanVertexBuffer(size_t size, const shared_ptr<RendererAPI>& api);
-		VulkanVertexBuffer(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI>& api);
+		VulkanVertexBuffer(size_t size, const shared_ptr<RendererAPI> api);
+		VulkanVertexBuffer(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI> api);
 		~VulkanVertexBuffer();
 		
 		const VkBuffer& GetBuffer() const { return vertex_buffer; }
@@ -29,9 +30,35 @@ namespace raytracy {
 		VkBuffer index_buffer{};
 		VkDeviceMemory index_buffer_memory{};
 	public:
-		VulkanIndexBuffer(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI>& api);
+		VulkanIndexBuffer(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI> api);
 		~VulkanIndexBuffer();
 
 		const VkBuffer& GetBuffer() const { return index_buffer; }
+	};
+
+	class VulkanUniformBuffer : public UniformBuffer {
+
+	private:
+		std::vector<VkBuffer> uniform_buffers;
+		std::vector<VkDeviceMemory> uniform_buffers_memory;
+		std::vector<void*> uniform_buffers_mapped;
+		VkDescriptorPool descriptor_pool;
+		std::vector<VkDescriptorSet> descriptor_sets;
+		VkDescriptorSetLayout descriptor_set_layout{};
+
+	public:
+		VulkanUniformBuffer(const BufferLayout& layout);
+		~VulkanUniformBuffer();
+
+		const std::vector<VkDescriptorSet>& GetDescriptorSets() const { return descriptor_sets; }
+
+		virtual void Link() const override;
+
+		virtual void SetVec4(const std::string& name, const glm::vec4& value) const override;
+
+	private:
+		void CreateUniformBuffers(const BufferLayout& layout, const shared_ptr<VulkanContext> context);
+		void CreateDescriptorPool(const shared_ptr<VulkanContext> context);
+		void CreateDescriptorSets(const BufferLayout& layout, const shared_ptr<VulkanContext> context);
 	};
 }

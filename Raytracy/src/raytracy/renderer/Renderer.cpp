@@ -52,8 +52,7 @@ namespace raytracy {
 
 		shader_program = ShaderLibrary::Get().Load("basic"); 
 		RTY_ASSERT(shader_program, "Could not create a shader program!");
-		uniform_buffer = UniformBuffer::Create();
-		uniform_buffer->SetLayout({
+		uniform_buffer = UniformBuffer::Create({
 			{ "color", VertexDataType::Float4 }
 		});
 
@@ -80,7 +79,7 @@ namespace raytracy {
 		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 		uniform_buffer->SetVec4("color", glm::vec4(0.0f, greenValue, 0.0f, 1.0f));
 
-		renderer_api->DrawIndexed(vertex_array);
+		renderer_api->DrawIndexed(vertex_array, uniform_buffer);
 	}
 
 	void Renderer::Shutdown() {

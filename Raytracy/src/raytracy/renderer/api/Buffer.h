@@ -112,8 +112,8 @@ namespace raytracy {
 	public:
 		virtual ~VertexBuffer() = default;
 
-		static shared_ptr<VertexBuffer> Create(size_t size, const shared_ptr<RendererAPI>& api);
-		static shared_ptr<VertexBuffer> Create(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI>& api);
+		static shared_ptr<VertexBuffer> Create(size_t size, const shared_ptr<RendererAPI> api);
+		static shared_ptr<VertexBuffer> Create(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI> api);
 
 		const BufferLayout& GetLayout() const {
 			return layout;
@@ -129,7 +129,7 @@ namespace raytracy {
 		uint32_t count{};
 
 	public:
-		static shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI>& api);
+		static shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI> api);
 		virtual ~IndexBuffer() = default;
 
 		uint32_t GetCount() { return count; }
@@ -140,21 +140,19 @@ namespace raytracy {
 
 	class UniformBuffer {
 
-		struct UniformBufferColorObject {
-			alignas(4) glm::vec4 color;
-		};
 	protected:
 		uint32_t renderer_id{};
 		BufferLayout layout;
 
 	public:
-		static shared_ptr<UniformBuffer> Create();
+		static shared_ptr<UniformBuffer> Create(const BufferLayout& layout);
+
+		UniformBuffer(const BufferLayout& layout) : layout(layout) {}
 		virtual ~UniformBuffer() = default;
 
 		const BufferLayout& GetLayout() const {
 			return layout;
 		}
-		virtual void SetLayout(const BufferLayout& layout) = 0;
 
 		virtual void Link() const = 0;
 		virtual void SetVec4(const std::string& name, const glm::vec4& value) const = 0;

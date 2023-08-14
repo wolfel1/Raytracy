@@ -13,16 +13,17 @@
 namespace raytracy {
 
 	class VulkanRendererAPI : public RendererAPI {
-
+	public:
+		static const int MAX_FRAMES_IN_FLIGHT = 2;
+		static uint32_t current_frame;
 	private:
-		const int MAX_FRAMES_IN_FLIGHT = 2;
 
 		bool framebuffer_resized = false;
-		uint32_t current_frame = 0;
 		glm::vec4 clear_color;
 
 		shared_ptr<VulkanContext> graphics_context;
 
+		VkDescriptorSetLayout descriptor_set_layout{};
 		VkPipelineLayout pipeline_layout{};
 		VkPipeline graphics_pipeline{};
 		VkCommandPool command_pool{};
@@ -38,23 +39,25 @@ namespace raytracy {
 
 		const shared_ptr<VulkanContext> GetContext() const { return graphics_context; }
 
-		const VkCommandPool GetCommandPool() const { return command_pool; }
+		const VkCommandPool& GetCommandPool() const { return command_pool; }
+		const VkDescriptorSetLayout& GetDescriptorSetLayout() const { return descriptor_set_layout; }
 
 		virtual void ClearViewport() override;
 
 		virtual void SetClearColor(const glm::vec4& clear_color) override;
 
-		virtual void DrawIndexed(const shared_ptr<VertexArray>& vertex_array) override;
+		virtual void DrawIndexed(const shared_ptr<VertexArray> vertex_array, const shared_ptr<UniformBuffer> uniform_buffer) override;
 
 		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
 		virtual void Shutdown() override;
 
 		private:
+			void CreateDescriptorSetLayout();
 			bool CreateGraphicsPipeline(Event& e);
 			void CreateCommandPool();
 			void CreateCommandBuffers();
 			void CreateSyncObjects();
-			void RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray>& vertex_array);
+			void RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray> vertex_array, shared_ptr<UniformBuffer> uniform_buffer);
 	};
 }

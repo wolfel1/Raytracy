@@ -72,7 +72,7 @@ namespace raytracy {
 		const VkExtent2D& GetSwapChainExtent() const { return swap_chain_extent; }
 		const std::vector<VkFramebuffer>& GetSwapChainFrameBuffers() const { return swap_chain_framebuffers; }
 
-		const VkPhysicalDevice& GetPhysicalDevice() const { return physical_device; }
+		VkPhysicalDevice& GetPhysicalDevice() { return physical_device; }
 		const VkDevice& GetLogicalDevice() const { return logical_device; }
 
 		const VkRenderPass& GetRenderPass() const { return render_pass; }

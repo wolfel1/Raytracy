@@ -12,6 +12,7 @@ namespace raytracy {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::None:
 			RTY_ASSERT(false, "Renderer API None is not supported!");
+			return nullptr;
 		case RendererAPI::API::OpenGL:
 			current_context = make_shared<OpenGLContext>();
 			break;

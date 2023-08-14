@@ -13,6 +13,7 @@ namespace raytracy {
 	private:
 
 		static API graphics_api;
+		static shared_ptr<RendererAPI> current_api;
 
 	public:
 		static shared_ptr<RendererAPI> Create();
@@ -20,13 +21,15 @@ namespace raytracy {
 		static API GetAPI() { return graphics_api; }
 		static void SetAPI(API api) { graphics_api = api; }
 
+		static shared_ptr<RendererAPI> GetCurrentAPI() { return current_api; }
+
 		virtual void Init() = 0;
 
 		virtual void ClearViewport() = 0;
 
 		virtual void SetClearColor(const glm::vec4& clear_color) = 0;
 
-		virtual void DrawIndexed(const shared_ptr<VertexArray>& vertex_array) = 0;
+		virtual void DrawIndexed(const shared_ptr<VertexArray> vertex_array, shared_ptr<UniformBuffer> uniform_buffer) = 0;
 
 		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
