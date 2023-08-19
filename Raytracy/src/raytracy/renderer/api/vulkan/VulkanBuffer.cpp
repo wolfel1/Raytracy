@@ -91,11 +91,11 @@ namespace raytracy {
 		vkFreeCommandBuffers(logical_device, command_pool, 1, &command_buffer);
 	}
 
-	VulkanVertexBuffer::VulkanVertexBuffer(size_t size, const shared_ptr<RendererAPI> api) {
+	VulkanVertexBuffer::VulkanVertexBuffer(size_t size) {
 	}
 
-	VulkanVertexBuffer::VulkanVertexBuffer(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI> api) {
-		auto vulkan_api = std::dynamic_pointer_cast<VulkanRendererAPI>(api);
+	VulkanVertexBuffer::VulkanVertexBuffer(std::vector<Vertex>& vertices) {
+		auto vulkan_api = std::dynamic_pointer_cast<VulkanRendererAPI>(RendererAPI::GetCurrentAPI());
 		RTY_ASSERT(vulkan_api, "Api is not Vulkan!");
 		auto vulkan_context = vulkan_api->GetContext();
 
@@ -128,9 +128,9 @@ namespace raytracy {
 		vkDestroyBuffer(logical_device, vertex_buffer, nullptr);
 		vkFreeMemory(logical_device, vertex_buffer_memory, nullptr);
 	}
-	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI> api) : IndexBuffer(count) {
-		auto vulkan_api = std::dynamic_pointer_cast<VulkanRendererAPI>(api);
-		RTY_ASSERT(api, "Api is not Vulkan!");
+	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* indices, uint32_t count) : IndexBuffer(count) {
+		auto vulkan_api = std::dynamic_pointer_cast<VulkanRendererAPI>(RendererAPI::GetCurrentAPI());
+		RTY_ASSERT(vulkan_api, "Api is not Vulkan!");
 		auto vulkan_context = vulkan_api->GetContext();
 
 		VkDeviceSize buffer_size = sizeof(uint32_t) * count;

@@ -112,8 +112,8 @@ namespace raytracy {
 	public:
 		virtual ~VertexBuffer() = default;
 
-		static shared_ptr<VertexBuffer> Create(size_t size, const shared_ptr<RendererAPI> api);
-		static shared_ptr<VertexBuffer> Create(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI> api);
+		static shared_ptr<VertexBuffer> Create(size_t size);
+		static shared_ptr<VertexBuffer> Create(std::vector<Vertex>& vertices);
 
 		const BufferLayout& GetLayout() const {
 			return layout;
@@ -129,7 +129,7 @@ namespace raytracy {
 		uint32_t count{};
 
 	public:
-		static shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI> api);
+		static shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count);
 		virtual ~IndexBuffer() = default;
 
 		uint32_t GetCount() { return count; }

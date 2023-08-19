@@ -16,8 +16,8 @@ namespace raytracy {
 		VkDeviceMemory vertex_buffer_memory{};
 
 	public:
-		VulkanVertexBuffer(size_t size, const shared_ptr<RendererAPI> api);
-		VulkanVertexBuffer(std::vector<Vertex>& vertices, const shared_ptr<RendererAPI> api);
+		VulkanVertexBuffer(size_t size);
+		VulkanVertexBuffer(std::vector<Vertex>& vertices);
 		~VulkanVertexBuffer();
 		
 		const VkBuffer& GetBuffer() const { return vertex_buffer; }
@@ -30,7 +30,7 @@ namespace raytracy {
 		VkBuffer index_buffer{};
 		VkDeviceMemory index_buffer_memory{};
 	public:
-		VulkanIndexBuffer(uint32_t* indices, uint32_t count, const shared_ptr<RendererAPI> api);
+		VulkanIndexBuffer(uint32_t* indices, uint32_t count);
 		~VulkanIndexBuffer();
 
 		const VkBuffer& GetBuffer() const { return index_buffer; }

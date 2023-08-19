@@ -42,13 +42,13 @@ namespace raytracy {
 
 		vertex_array = VertexArray::Create();
 
-		vertex_buffer = VertexBuffer::Create(vertices, renderer_api);
+		vertex_buffer = VertexBuffer::Create(vertices);
 		vertex_buffer->SetLayout({
 			{ "position", VertexDataType::Float3 },
 			{ "color", VertexDataType::Float4 }
 		});
 
-		index_buffer = IndexBuffer::Create(indices, 6, renderer_api);
+		index_buffer = IndexBuffer::Create(indices, 6);
 
 		shader_program = ShaderLibrary::Get().Load("basic"); 
 		RTY_ASSERT(shader_program, "Could not create a shader program!");

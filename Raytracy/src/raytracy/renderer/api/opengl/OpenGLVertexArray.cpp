@@ -54,14 +54,14 @@ namespace raytracy {
 		opengl_vertex_buffer->Bind();
 
 		const auto& elements = layout.GetElements();
-		for (size_t i = 0; i < elements.size(); i++) {
+		for (unsigned int i = 0; i < elements.size(); i++) {
 			GLCall(glEnableVertexAttribArray(i));
 			GLCall(glVertexAttribPointer(i,
 										 elements[i].GetComponentCount(),
 										 ConvertVertexDataTypeInOpenGLBaseType(elements[i].type),
 										 elements[i].normalized ? GL_TRUE : GL_FALSE,
 										 layout.GetStride(),
-										 (const void*)elements[i].offset
+										 (const void*) elements[i].offset
 			));
 		}
 		VertexArray::vertex_buffer = vertex_buffer;
