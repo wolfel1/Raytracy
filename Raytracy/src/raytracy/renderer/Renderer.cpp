@@ -17,7 +17,7 @@ namespace raytracy {
 	shared_ptr<UniformBuffer> uniform_buffer;
 	static const glm::vec4 clear_color = { 0.01f, 0.01f, 0.01f, 1.0f };
 
-	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
+	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
 
 	void Renderer::Init() {
 		RTY_PROFILE_FUNCTION();

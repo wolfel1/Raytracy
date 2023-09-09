@@ -16,7 +16,7 @@ public:
 		EventBus::Get().Register<KeyPressedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyPressed));
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
 
-		plane = make_shared<Mesh>();
+		plane = make_shared<Mesh>(Primitive::Plane);
 	}
 
 	void OnUpdate(Timestep timestep) override{
