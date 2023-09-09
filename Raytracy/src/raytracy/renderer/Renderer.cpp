@@ -59,6 +59,7 @@ namespace raytracy {
 		vertex_array->Bind();
 		shader_program->Bind();
 		uniform_buffer->Link();
+		uniform_buffer->SetVec4("color", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 		vertex_array->SetIndexBuffer(index_buffer);
@@ -75,9 +76,6 @@ namespace raytracy {
 	void Renderer::Render() {
 		RTY_PROFILE_FUNCTION();
 		renderer_api->ClearViewport();
-		float timeValue = glfwGetTime();
-		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-		uniform_buffer->SetVec4("color", glm::vec4(0.0f, greenValue, 0.0f, 1.0f));
 
 		renderer_api->DrawIndexed(vertex_array, uniform_buffer);
 	}

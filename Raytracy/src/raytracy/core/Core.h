@@ -28,7 +28,7 @@
 #endif
 
 #ifdef RTY_ENABLE_ASSERTS
-#define RTY_ASSERT(x, ...) { if(!(x)) { RTY_BASE_ERROR("Assertion Failed: {0}", __VA_ARGS__); RTY_DEBUG_BREAK(); } }
+#define RTY_ASSERT(x, ...) { if(!(x)) { RTY_BASE_ERROR("Assertion Failed: {0}", std::format(__VA_ARGS__)); RTY_DEBUG_BREAK(); } }
 #else
 #define RTY_ASSERT(x, ...)
 #endif
