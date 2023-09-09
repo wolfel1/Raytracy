@@ -5,6 +5,9 @@
 using namespace raytracy;
 
 class SandboxLayer : public Layer {
+private:
+	shared_ptr<Mesh> plane;
+
 public:
 	SandboxLayer() : Layer("SandboxLayer") {
 	}
@@ -12,10 +15,12 @@ public:
 	void OnAttach() override{
 		EventBus::Get().Register<KeyPressedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyPressed));
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
+
+		plane = make_shared<Mesh>();
 	}
 
 	void OnUpdate(Timestep timestep) override{
-		Renderer::Get().Submit();
+		Renderer::Get().Submit(plane);
 	}
 
 	void RaytraceScene() {

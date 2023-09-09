@@ -28,64 +28,31 @@ namespace raytracy {
 
 		renderer_api->SetClearColor(clear_color);
 
-		std::vector<Vertex> vertices = {
-			{{-0.5f, -0.5f, 0.0f,},  { 0.0f, 0.0f, 0.0f, 1.0f},},
-			{{0.5f, -0.5f, 0.0f, },  { 0.0f, 0.0f, 1.0f, 1.0f},},
-			{{0.5f, 0.5f, 0.0f,  },  { 0.0f, 1.0f, 0.0f, 1.0f},},
-			{{-0.5f, 0.5f, 0.0f, },  { 1.0f, 0.0f, 0.0f, 1.0f} },
-		};
-
-		uint32_t indices[] = {
-			0, 1, 2,
-			2, 3, 0
-		};
-
-		vertex_array = VertexArray::Create();
-
-		vertex_buffer = VertexBuffer::Create(vertices);
-		vertex_buffer->SetLayout({
-			{ "position", VertexDataType::Float3 },
-			{ "color", VertexDataType::Float4 }
-		});
-
-		index_buffer = IndexBuffer::Create(indices, 6);
-
-		shader_program = ShaderLibrary::Get().Load("basic"); 
-		RTY_ASSERT(shader_program, "Could not create a shader program!");
-		uniform_buffer = UniformBuffer::Create({
-			{ "color", VertexDataType::Float4 }
-		});
-
-		vertex_array->Bind();
-		shader_program->Bind();
-		uniform_buffer->Link();
-		uniform_buffer->SetVec4("color", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
-
-		vertex_array->SetVertexBuffer(vertex_buffer);
-		vertex_array->SetIndexBuffer(index_buffer);
-
 		is_initialized = true;
 	}
 
 
-	void Renderer::Submit() {
+	void Renderer::Submit(shared_ptr<Mesh> const mesh) {
 		RTY_ASSERT(is_initialized, "Renderer is not initialized!");
-		Render();
+		Render(mesh);
 	}
 
-	void Renderer::Render() {
+	void Renderer::Render(shared_ptr<Mesh> const mesh) {
 		RTY_PROFILE_FUNCTION();
+
+		auto vertex_array = mesh->GetVertexArray();
+		auto shader = mesh->GetShader();
+		auto uniform_buffer = mesh->GetUniformBuffer();
+
 		renderer_api->ClearViewport();
 
+		vertex_array->Bind();
+		shader->Bind();
 		renderer_api->DrawIndexed(vertex_array, uniform_buffer);
 	}
 
 	void Renderer::Shutdown() {
 		RTY_PROFILE_FUNCTION();
-		vertex_array.reset();
-		vertex_buffer.reset();
-		index_buffer.reset();
-		shader_program.reset();
 	}
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {

@@ -18,3 +18,4 @@
 #include "raytracy/raytracer/Camera.h"
 
 #include "raytracy/renderer/Renderer.h"
+#include "raytracy/renderer/model/Mesh.h"

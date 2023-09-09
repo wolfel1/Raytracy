@@ -1,13 +1,9 @@
 #pragma once
 
 #include "api/RendererAPI.h"
+#include "model/Mesh.h"
 
 namespace raytracy {
-
-	struct Vertex {
-		glm::vec3 position;
-		glm::vec4 color;
-	};
 
 	class Renderer {
 	private:
@@ -24,7 +20,7 @@ namespace raytracy {
 
 		void Init();
 
-		void Submit();
+		void Submit(shared_ptr<Mesh> const mesh);
 
 		void Shutdown();
 
@@ -33,6 +29,6 @@ namespace raytracy {
 	private:
 		Renderer() {}
 
-		void Render();
+		void Render(shared_ptr<Mesh> const mesh);
 	};
 }

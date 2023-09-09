@@ -11,8 +11,6 @@ namespace raytracy {
 		std::string name = "";
 		uint32_t renderer_id{};
 
-
-
 	public:
 	
 		virtual ~Shader() = default;
