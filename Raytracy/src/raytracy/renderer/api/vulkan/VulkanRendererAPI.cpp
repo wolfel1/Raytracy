@@ -245,7 +245,7 @@ namespace raytracy {
 		}
 	}
 
-	void VulkanRendererAPI::RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray> vertex_array, shared_ptr<UniformBuffer> uniform_buffer) {
+	void VulkanRendererAPI::RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray> vertex_array, std::unordered_map<std::string, shared_ptr<UniformBuffer>> const& uniform_buffers) {
 		auto& render_pass = graphics_context->GetRenderPass();
 		auto& swap_chain_extent = graphics_context->GetSwapChainExtent();
 		auto& swap_chain_framebuffers = graphics_context->GetSwapChainFrameBuffers();
@@ -299,8 +299,13 @@ namespace raytracy {
 
 		vkCmdBindIndexBuffer(command_buffer, index_buffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
-		auto descriptor_sets = std::dynamic_pointer_cast<VulkanUniformBuffer>(uniform_buffer)->GetDescriptorSets();
-		vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[CURRENT_FRAME], 0, nullptr);
+		std::vector<VkDescriptorSet> descriptor_sets;
+		for (const auto& pair : uniform_buffers) {
+			auto& single_descriptor_sets = std::dynamic_pointer_cast<VulkanUniformBuffer>(pair.second)->GetDescriptorSets();
+			descriptor_sets.push_back(single_descriptor_sets[CURRENT_FRAME]);
+		}
+		vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0,
+		static_cast<uint32_t>(descriptor_sets.size()), descriptor_sets.data(), 0, nullptr);
 
 		vkCmdDrawIndexed(command_buffer, index_buffer->GetCount(), 1, 0, 0, 0);
 
@@ -319,7 +324,7 @@ namespace raytracy {
 		this->clear_color = clear_color;
 	}
 
-	void VulkanRendererAPI::DrawIndexed(const shared_ptr<VertexArray> vertex_array, const shared_ptr<UniformBuffer> uniform_buffer) {
+	void VulkanRendererAPI::DrawIndexed(const shared_ptr<VertexArray> vertex_array, std::unordered_map<std::string, shared_ptr<UniformBuffer>> const& uniform_buffers) {
 		auto& logical_device = graphics_context->GetLogicalDevice();
 		auto& swap_chain = graphics_context->GetSwapchain();
 
@@ -338,7 +343,7 @@ namespace raytracy {
 		vkResetFences(logical_device, 1, &in_flight_fences[CURRENT_FRAME]);
 
 		vkResetCommandBuffer(command_buffers[CURRENT_FRAME], 0);
-		RecordCommandBuffer(command_buffers[CURRENT_FRAME], image_index, vertex_array, uniform_buffer);
+		RecordCommandBuffer(command_buffers[CURRENT_FRAME], image_index, vertex_array, uniform_buffers);
 
 		VkSubmitInfo submit_info{};
 		submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

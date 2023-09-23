@@ -46,7 +46,7 @@ namespace raytracy {
 
 		vertex_array->Bind();
 		shader->Bind();
-		renderer_api->DrawIndexed(vertex_array, it->second);
+		renderer_api->DrawIndexed(vertex_array, uniform_buffers);
 	}
 
 	void Renderer::Shutdown() {

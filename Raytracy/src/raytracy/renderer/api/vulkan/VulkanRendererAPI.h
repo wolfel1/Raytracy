@@ -46,7 +46,7 @@ namespace raytracy {
 
 		virtual void SetClearColor(const glm::vec4& clear_color) override;
 
-		virtual void DrawIndexed(const shared_ptr<VertexArray> vertex_array, const shared_ptr<UniformBuffer> uniform_buffer) override;
+		virtual void DrawIndexed(const shared_ptr<VertexArray> vertex_array, std::unordered_map<std::string, shared_ptr<UniformBuffer>> const& uniform_buffer) override;
 
 		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
@@ -58,6 +58,6 @@ namespace raytracy {
 			void CreateCommandPool();
 			void CreateCommandBuffers();
 			void CreateSyncObjects();
-			void RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray> vertex_array, shared_ptr<UniformBuffer> uniform_buffer);
+			void RecordCommandBuffer(VkCommandBuffer command_buffer, uint32_t image_index, const shared_ptr<VertexArray> vertex_array, std::unordered_map<std::string, shared_ptr<UniformBuffer>> const& uniform_buffer);
 	};
 }
