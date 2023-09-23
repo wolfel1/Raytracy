@@ -16,6 +16,8 @@ namespace raytracy {
 		static shared_ptr<RendererAPI> current_api;
 
 	public:
+		virtual ~RendererAPI() = default;
+
 		static shared_ptr<RendererAPI> Create();
 
 		static API GetAPI() { return graphics_api; }

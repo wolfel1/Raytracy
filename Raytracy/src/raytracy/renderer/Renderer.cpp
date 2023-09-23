@@ -10,11 +10,6 @@
 
 namespace raytracy {
 
-	shared_ptr<VertexArray> vertex_array;
-	shared_ptr<VertexBuffer> vertex_buffer;
-	shared_ptr<IndexBuffer> index_buffer;
-	shared_ptr<Shader> shader_program;
-	shared_ptr<UniformBuffer> uniform_buffer;
 	static const glm::vec4 clear_color = { 0.01f, 0.01f, 0.01f, 1.0f };
 
 	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::Vulkan;
@@ -42,13 +37,16 @@ namespace raytracy {
 
 		auto vertex_array = mesh->GetVertexArray();
 		auto shader = mesh->GetShader();
-		auto uniform_buffer = mesh->GetUniformBuffer();
+		auto& uniform_buffers = shader->GetUniformBuffers();
+		auto it = uniform_buffers.find("shading");
+		RTY_ASSERT(it != uniform_buffers.end(), "No uniform buffer with key 'shading' exists!");
+		it->second->SetVec4("color", mesh->GetData()->display_color);
 
 		renderer_api->ClearViewport();
 
 		vertex_array->Bind();
 		shader->Bind();
-		renderer_api->DrawIndexed(vertex_array, uniform_buffer);
+		renderer_api->DrawIndexed(vertex_array, it->second);
 	}
 
 	void Renderer::Shutdown() {

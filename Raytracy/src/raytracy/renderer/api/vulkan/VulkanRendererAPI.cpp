@@ -5,7 +5,7 @@
 namespace raytracy {
 
 	const int VulkanRendererAPI::MAX_FRAMES_IN_FLIGHT;
-	uint32_t VulkanRendererAPI::current_frame = 0;
+	uint32_t VulkanRendererAPI::CURRENT_FRAME = 0;
 
 	VulkanRendererAPI::VulkanRendererAPI() : clear_color({0.0f, 0.0f, 0.0f, 1.0f}) {
 	}
@@ -300,7 +300,7 @@ namespace raytracy {
 		vkCmdBindIndexBuffer(command_buffer, index_buffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
 		auto descriptor_sets = std::dynamic_pointer_cast<VulkanUniformBuffer>(uniform_buffer)->GetDescriptorSets();
-		vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[current_frame], 0, nullptr);
+		vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[CURRENT_FRAME], 0, nullptr);
 
 		vkCmdDrawIndexed(command_buffer, index_buffer->GetCount(), 1, 0, 0, 0);
 
@@ -323,11 +323,11 @@ namespace raytracy {
 		auto& logical_device = graphics_context->GetLogicalDevice();
 		auto& swap_chain = graphics_context->GetSwapchain();
 
-		vkWaitForFences(logical_device, 1, &in_flight_fences[current_frame], VK_TRUE, UINT64_MAX);
+		vkWaitForFences(logical_device, 1, &in_flight_fences[CURRENT_FRAME], VK_TRUE, UINT64_MAX);
 
 		uint32_t image_index;
 		VkResult result = vkAcquireNextImageKHR(logical_device, swap_chain, UINT64_MAX,
-			image_available_semaphores[current_frame], VK_NULL_HANDLE, &image_index);
+			image_available_semaphores[CURRENT_FRAME], VK_NULL_HANDLE, &image_index);
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
 			graphics_context->RecreateSwapChain();
@@ -335,27 +335,27 @@ namespace raytracy {
 		} else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
 			throw std::runtime_error("Failed to acquire swap chain images!");
 		}
-		vkResetFences(logical_device, 1, &in_flight_fences[current_frame]);
+		vkResetFences(logical_device, 1, &in_flight_fences[CURRENT_FRAME]);
 
-		vkResetCommandBuffer(command_buffers[current_frame], 0);
-		RecordCommandBuffer(command_buffers[current_frame], image_index, vertex_array, uniform_buffer);
+		vkResetCommandBuffer(command_buffers[CURRENT_FRAME], 0);
+		RecordCommandBuffer(command_buffers[CURRENT_FRAME], image_index, vertex_array, uniform_buffer);
 
 		VkSubmitInfo submit_info{};
 		submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		VkSemaphore wait_semaphores[] = { image_available_semaphores[current_frame] };
+		VkSemaphore wait_semaphores[] = { image_available_semaphores[CURRENT_FRAME] };
 		VkPipelineStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		submit_info.waitSemaphoreCount = 1;
 		submit_info.pWaitSemaphores = wait_semaphores;
 		submit_info.pWaitDstStageMask = wait_stages;
 		submit_info.commandBufferCount = 1;
-		submit_info.pCommandBuffers = &command_buffers[current_frame];
+		submit_info.pCommandBuffers = &command_buffers[CURRENT_FRAME];
 
-		VkSemaphore signal_semaphores[] = { render_finished_semaphores[current_frame] };
+		VkSemaphore signal_semaphores[] = { render_finished_semaphores[CURRENT_FRAME] };
 		submit_info.signalSemaphoreCount = 1;
 		submit_info.pSignalSemaphores = signal_semaphores;
 
 		auto& graphics_queue = graphics_context->GetGraphicsQueue();
-		if (vkQueueSubmit(graphics_queue, 1, &submit_info, in_flight_fences[current_frame]) != VK_SUCCESS) {
+		if (vkQueueSubmit(graphics_queue, 1, &submit_info, in_flight_fences[CURRENT_FRAME]) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to submit draw command buffer!");
 		}
 
@@ -379,7 +379,7 @@ namespace raytracy {
 			throw std::runtime_error("Failed to present swap chain image!");
 		}
 
-		current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
+		CURRENT_FRAME = (CURRENT_FRAME + 1) % MAX_FRAMES_IN_FLIGHT;
 	}
 
 	void VulkanRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {

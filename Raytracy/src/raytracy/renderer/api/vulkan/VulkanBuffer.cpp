@@ -191,9 +191,8 @@ namespace raytracy {
 
 		auto element = std::find_if(elements.begin(), elements.end(), [&name](const BufferElement& element) { return element.name == name; });
 		RTY_ASSERT(element != elements.end(), "No uniform found with name {0}!", name);
-		for (size_t i = 0; i < VulkanRendererAPI::MAX_FRAMES_IN_FLIGHT; i++) {
-			memcpy(static_cast<uint32_t*>(uniform_buffers_mapped[i]) + element->offset, glm::value_ptr(value), SizeOfVertexDataType(element->type));
-		}
+		memcpy(static_cast<uint32_t*>(uniform_buffers_mapped[VulkanRendererAPI::CURRENT_FRAME]) + element->offset, glm::value_ptr(value), SizeOfVertexDataType(element->type));
+		
 	}
 
 	void VulkanUniformBuffer::CreateUniformBuffers(const BufferLayout& layout, const shared_ptr<VulkanContext> context) {

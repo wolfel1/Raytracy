@@ -12,8 +12,8 @@ namespace raytracy {
 		shared_ptr<VertexArray> vertex_array;
 		shared_ptr<VertexBuffer> vertex_buffer;
 		shared_ptr<IndexBuffer> index_buffer;
-		shared_ptr<Shader> shader;
-		std::vector<shared_ptr<UniformBuffer>> uniform_buffer;
+		shared_ptr<Shader> shader; 
+		shared_ptr<MeshData> mesh_data;
 
 	public:
 		Mesh(Primitive const& base_type);
@@ -26,9 +26,8 @@ namespace raytracy {
 			return shader;
 		}
 
-		//temporar
-		shared_ptr<UniformBuffer> GetUniformBuffer() const {
-			return uniform_buffer[0];
+		shared_ptr<MeshData> GetData() const {
+			return mesh_data;
 		}
 	};
 }

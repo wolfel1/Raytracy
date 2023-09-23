@@ -3,17 +3,16 @@
 
 namespace raytracy {
 	Mesh::Mesh(Primitive const& base_type) {
-		std::unique_ptr<MeshData> mesh_data;
 		switch (base_type) {
 		case Primitive::Custom:
 			break;
 			case Primitive::Plane:
-				mesh_data = make_unique<PlaneData>();
+				mesh_data = make_shared<PlaneData>();
 				break;
 			case Primitive::Cube:
 				break;
 			default:
-				mesh_data = make_unique<MeshData>();
+				mesh_data = make_shared<MeshData>();
 				break;
 		}
 		mesh_data->Init();
@@ -30,14 +29,9 @@ namespace raytracy {
 
 		shader = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader, "Could not create a shader program!");
-		uniform_buffer.push_back(UniformBuffer::Create({
+		shader->AddUniformBuffer("shading", UniformBuffer::Create({
 			{ "color", VertexDataType::Float4 }
 		}));
-
-		shader->Bind();
-		uniform_buffer[0]->Link();
-		uniform_buffer[0]->SetVec4("color", mesh_data->display_color);
-		shader->Unbind();
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 		vertex_array->SetIndexBuffer(index_buffer);
