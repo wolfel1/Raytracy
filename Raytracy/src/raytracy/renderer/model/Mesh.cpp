@@ -28,10 +28,12 @@ namespace raytracy {
 		index_buffer = IndexBuffer::Create(mesh_data->indices.data(), mesh_data->indices.size());
 
 		shader = ShaderLibrary::Get().Load("basic");
-		RTY_ASSERT(shader, "Could not create a shader program!");
-		shader->AddUniformBuffer("shading", UniformBuffer::Create({
+		RTY_ASSERT(shader, "Could not create a shader program!"); 
+		auto shading_uniform_buffer = UniformBuffer::Create({
 			{ "color", VertexDataType::Float4 }
-		}));
+		});
+		shading_uniform_buffer->SetVec4("color", mesh_data->display_color);
+		shader->AddUniformBuffer("shading", shading_uniform_buffer);
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 		vertex_array->SetIndexBuffer(index_buffer);

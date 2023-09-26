@@ -7,9 +7,9 @@ layout(binding = 0) uniform UniformBufferColorObject {
   vec4 color;
 } ubo_color;
 
-layout(location = 0) out vec4 vertex_color;
+layout(location = 0) out vec4 display_color;
 
 void main() {
-	vertex_color = ubo_color.color;
+	display_color = ubo_color.color;
 	gl_Position = vec4(in_vertex_position, 1.0);
 }

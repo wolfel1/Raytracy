@@ -38,9 +38,6 @@ namespace raytracy {
 		auto vertex_array = mesh->GetVertexArray();
 		auto shader = mesh->GetShader();
 		auto& uniform_buffers = shader->GetUniformBuffers();
-		auto it = uniform_buffers.find("shading");
-		RTY_ASSERT(it != uniform_buffers.end(), "No uniform buffer with key 'shading' exists!");
-		it->second->SetVec4("color", mesh->GetData()->display_color);
 
 		renderer_api->ClearViewport();
 
