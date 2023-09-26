@@ -2,20 +2,7 @@
 #include "Mesh.h"
 
 namespace raytracy {
-	Mesh::Mesh(Primitive const& base_type) {
-		switch (base_type) {
-		case Primitive::Custom:
-			break;
-			case Primitive::Plane:
-				mesh_data = make_shared<PlaneData>();
-				break;
-			case Primitive::Cube:
-				break;
-			default:
-				mesh_data = make_shared<MeshData>();
-				break;
-		}
-		mesh_data->Init();
+	void Mesh::Init(shared_ptr<MeshData> const mesh_data)  {
 
 		vertex_array = VertexArray::Create();
 
@@ -39,5 +26,11 @@ namespace raytracy {
 		vertex_array->SetIndexBuffer(index_buffer);
 
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
+	}
+
+	Plane::Plane() {
+		auto data = make_shared<PlaneData>();
+		data->Init();
+		Init(data);
 	}
 }

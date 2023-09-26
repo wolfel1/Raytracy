@@ -16,8 +16,9 @@ namespace raytracy {
 		shared_ptr<MeshData> mesh_data;
 
 	public:
-		Mesh(Primitive const& base_type);
-		~Mesh() = default;
+		Mesh() {}
+		virtual ~Mesh() = default;
+
 
 		shared_ptr<VertexArray> GetVertexArray() const {
 			return vertex_array;
@@ -29,5 +30,17 @@ namespace raytracy {
 		shared_ptr<MeshData> GetData() const {
 			return mesh_data;
 		}
+
+		protected:
+			void Init(shared_ptr<MeshData> const mesh_data);
+
+	};
+
+	class Plane : public Mesh {
+	private:
+
+	public:
+		Plane();
+		~Plane() = default;
 	};
 }

@@ -2,9 +2,6 @@
 
 namespace raytracy {
 
-	enum class Primitive {
-		Custom = 0, Plane, Cube
-	};
 	struct Vertex {
 		glm::vec3 position;
 		glm::vec4 color;
@@ -21,7 +18,7 @@ namespace raytracy {
 	};
 
 	struct PlaneData : public MeshData {
-		void Init() {
+		virtual void Init() override {
 			vertices = {
 				{{-0.5f, -0.5f, 0.0f},  { 1.0f, 1.0f, 1.0f, 1.0f}},
 				{{0.5f, -0.5f, 0.0f },  { 1.0f, 1.0f, 1.0f, 1.0f}},
