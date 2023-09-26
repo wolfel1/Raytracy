@@ -61,8 +61,8 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 	}
 
-	void OpenGLUniformBuffer::Link() const {
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, renderer_id);
+	void OpenGLUniformBuffer::Link(uint32_t const index) const {
+		GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, index, renderer_id));
 	}
 
 	void OpenGLUniformBuffer::SetVec4(const std::string& name, const glm::vec4& value) const {
@@ -72,7 +72,18 @@ namespace raytracy {
 		RTY_ASSERT(element != elements.end(), "No uniform found with name {0}!", name);
 
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, renderer_id));
-		glBufferSubData(GL_UNIFORM_BUFFER, element->offset, SizeOfVertexDataType(element->type), glm::value_ptr(value));
+		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, element->offset, SizeOfVertexDataType(element->type), glm::value_ptr(value)));
+		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+	}
+
+	void OpenGLUniformBuffer::SetMat4(const std::string& name, const glm::mat4& value) const {
+		auto& elements = layout.GetElements();
+
+		auto element = std::find_if(elements.begin(), elements.end(), [&name](const BufferElement& element) { return element.name == name; });
+		RTY_ASSERT(element != elements.end(), "No uniform found with name {0}!", name);
+
+		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, renderer_id));
+		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, element->offset, SizeOfVertexDataType(element->type), glm::value_ptr(value)));
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 	}
 }

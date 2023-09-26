@@ -2,11 +2,20 @@
 
 #include "api/RendererAPI.h"
 #include "model/Mesh.h"
+#include "camera/PerspectiveCamera.h"
 
 namespace raytracy {
 
 	class Renderer {
 	private:
+
+		struct SceneData {
+			glm::mat4 view_matrix{};
+			glm::mat4 projection_matrix{};
+		};
+
+		SceneData scene_data{};
+
 		bool is_initialized = false;
 
 		shared_ptr<RendererAPI> renderer_api = nullptr;
@@ -20,7 +29,9 @@ namespace raytracy {
 
 		void Init();
 
+		void BeginScene(PerspectiveCamera const& camera);
 		void Submit(shared_ptr<Mesh> const mesh);
+		void EndScene();
 
 		void Shutdown();
 

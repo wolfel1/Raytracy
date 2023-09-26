@@ -14,11 +14,11 @@ namespace raytracy {
 		shared_ptr<IndexBuffer> index_buffer;
 		shared_ptr<Shader> shader; 
 		shared_ptr<MeshData> mesh_data;
+		glm::mat4 model_matrix = glm::mat4(1.0f);
 
 	public:
 		Mesh() {}
 		virtual ~Mesh() = default;
-
 
 		shared_ptr<VertexArray> GetVertexArray() const {
 			return vertex_array;
@@ -31,9 +31,14 @@ namespace raytracy {
 			return mesh_data;
 		}
 
+		glm::mat4 const& GetModelMatrix() const {
+			return model_matrix;
+		}
+
+		void Translate(glm::vec3 const& direction);
+
 		protected:
 			void Init(shared_ptr<MeshData> const mesh_data);
-
 	};
 
 	class Plane : public Mesh {

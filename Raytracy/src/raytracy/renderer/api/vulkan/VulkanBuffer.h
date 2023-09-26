@@ -52,9 +52,10 @@ namespace raytracy {
 
 		const std::vector<VkDescriptorSet>& GetDescriptorSets() const { return descriptor_sets; }
 
-		virtual void Link() const override;
+		virtual void Link(uint32_t const index) const override;
 
 		virtual void SetVec4(const std::string& name, const glm::vec4& value) const override;
+		virtual void SetMat4(const std::string& name, const glm::mat4& value) const override;
 
 	private:
 		void CreateUniformBuffers(const BufferLayout& layout, const shared_ptr<VulkanContext> context);

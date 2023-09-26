@@ -22,10 +22,10 @@ namespace raytracy {
 		virtual void Unbind() const = 0;
 
 		void AddUniformBuffer(std::string const& name, shared_ptr<UniformBuffer> const uniform_buffer) { 
-			uniform_buffers.insert_or_assign(name, uniform_buffer); 
 			Bind();
-			uniform_buffer->Link();
+			uniform_buffer->Link(static_cast<uint32_t>(uniform_buffers.size()));
 			Unbind();
+			uniform_buffers.insert_or_assign(name, uniform_buffer); 
 		}
 
 		std::unordered_map<std::string, shared_ptr<UniformBuffer>> const& GetUniformBuffers() const {

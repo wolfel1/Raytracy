@@ -8,19 +8,26 @@ class SandboxLayer : public Layer {
 private:
 	shared_ptr<Plane> plane;
 
+	PerspectiveCamera camera;
+
 public:
-	SandboxLayer() : Layer("SandboxLayer") {
+	SandboxLayer() : camera(45.0f, 1000.0f / 700.0f), Layer("SandboxLayer") {
 	}
 
 	void OnAttach() override{
 		EventBus::Get().Register<KeyPressedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyPressed));
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
+		camera.SetPosition({0.0f,0.0f, 5.0f});
 
 		plane = make_shared<Plane>();
 	}
 
 	void OnUpdate(Timestep timestep) override{
-		Renderer::Get().Submit(plane);
+		auto& renderer = Renderer::Get();
+
+		renderer.BeginScene(camera);
+		renderer.Submit(plane);
+		renderer.EndScene();
 	}
 
 	void RaytraceScene() {

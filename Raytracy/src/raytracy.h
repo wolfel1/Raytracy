@@ -19,3 +19,4 @@
 
 #include "raytracy/renderer/Renderer.h"
 #include "raytracy/renderer/model/Mesh.h"
+#include "raytracy/renderer/camera/PerspectiveCamera.h"

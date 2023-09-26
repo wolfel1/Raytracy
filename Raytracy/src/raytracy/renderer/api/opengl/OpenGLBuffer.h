@@ -33,8 +33,9 @@ namespace raytracy {
 		void Bind() const;
 		void Unbind() const;
 
-		virtual void Link() const override;
+		virtual void Link(uint32_t const index) const override;
 
 		virtual void SetVec4(const std::string& name, const glm::vec4& value) const override;
+		virtual void SetMat4(const std::string& name, const glm::mat4& value) const override;
 	};
 }

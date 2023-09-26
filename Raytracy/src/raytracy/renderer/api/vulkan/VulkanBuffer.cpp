@@ -183,7 +183,7 @@ namespace raytracy {
 		vkDestroyDescriptorPool(logical_device, descriptor_pool, nullptr);
 	}
 
-	void VulkanUniformBuffer::Link() const {
+	void VulkanUniformBuffer::Link(uint32_t const index) const {
 	}
 
 	void VulkanUniformBuffer::SetVec4(const std::string& name, const glm::vec4& value) const {
@@ -197,6 +197,9 @@ namespace raytracy {
 		}
 		
 	}
+
+    void VulkanUniformBuffer::SetMat4(const std::string& name, const glm::mat4& value) const {
+    }
 
 	void VulkanUniformBuffer::CreateUniformBuffers(const BufferLayout& layout, const shared_ptr<VulkanContext> context) {
 		VkDeviceSize buffer_size = layout.GetStride();

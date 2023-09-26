@@ -7,7 +7,7 @@ namespace raytracy {
 	struct Vertex;
 
 	enum class VertexDataType {
-		None = 0, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4
+		None = 0, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4, Mat3, Mat4
 	};
 
 	static uint32_t SizeOfVertexDataType(VertexDataType type) {
@@ -23,9 +23,13 @@ namespace raytracy {
 		case VertexDataType::Int3:
 		case VertexDataType::Float3:
 			return 4 * 3;
+		case VertexDataType::Mat3:
+			return 4 * 3 * 3;
 		case VertexDataType::Int4:
 		case VertexDataType::Float4:
 			return 4 * 4;
+		case VertexDataType::Mat4:
+			return 4 * 4 * 4;
 		}
 
 		RTY_RENDERER_ERROR("Unknown VertexDataType!");
@@ -54,9 +58,11 @@ namespace raytracy {
 				return 2;
 			case raytracy::VertexDataType::Int3:
 			case raytracy::VertexDataType::Float3:
+			case raytracy::VertexDataType::Mat3:
 				return 3;
 			case raytracy::VertexDataType::Int4:
 			case raytracy::VertexDataType::Float4:
+			case raytracy::VertexDataType::Mat4:
 				return 4;
 			default:
 				break;
@@ -154,7 +160,8 @@ namespace raytracy {
 			return layout;
 		}
 
-		virtual void Link() const = 0;
+		virtual void Link(uint32_t const index) const = 0;
 		virtual void SetVec4(const std::string& name, const glm::vec4& value) const = 0;
+		virtual void SetMat4(const std::string& name, const glm::mat4& value) const = 0;
 	};
 }
