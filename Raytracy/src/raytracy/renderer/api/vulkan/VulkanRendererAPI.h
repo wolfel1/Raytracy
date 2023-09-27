@@ -15,7 +15,7 @@ namespace raytracy {
 	class VulkanRendererAPI : public RendererAPI {
 	public:
 		static const int MAX_FRAMES_IN_FLIGHT = 2;
-		static uint32_t CURRENT_FRAME;
+		static uint32_t current_frame;
 	private:
 
 		bool framebuffer_resized = false;
