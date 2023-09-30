@@ -29,6 +29,8 @@ namespace raytracy {
 			return camera;
 		}
 
+		void Translate(glm::vec3 const& amount);
+
 	private:
 		bool OnWindowResized(Event& e);
 		bool OnMouseScrolled(Event& e);

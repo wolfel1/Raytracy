@@ -15,11 +15,20 @@ namespace raytracy {
 	void PerspectiveCameraController::OnEvent(Event& e) {
 	}
 
+	void PerspectiveCameraController::Translate(glm::vec3 const& amount) {
+		auto& camera_position = camera.GetPosition();
+		glm::vec3 new_position = camera_position + amount;
+		camera.SetPosition(new_position);
+	}
+
 	bool PerspectiveCameraController::OnWindowResized(Event& e) {
 		return true;
 	}
 
 	bool PerspectiveCameraController::OnMouseScrolled(Event& e) {
+		auto& evt = static_cast<WindowResizeEvent&>(e);
+		aspect_ratio = (float)evt.GetWidth() / (float)evt.GetHeight();
+		camera.SetProjection(field_of_view, aspect_ratio);
 		return true;
 	}
 }

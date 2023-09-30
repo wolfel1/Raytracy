@@ -100,4 +100,3 @@ namespace raytracy {
 		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};
 };
-}

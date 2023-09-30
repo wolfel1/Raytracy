@@ -45,6 +45,12 @@ namespace raytracy {
 			return view_matrix;
 		}
 
+		glm::vec3 const& GetPosition() const {
+			return position;
+		}
+
+		void SetProjection(float field_of_view, float aspect_ratio);
+
 	private:
 		void RecalculateViewMatrix();
 	};
