@@ -4,6 +4,7 @@
 namespace raytracy {
 
 	void VulkanContext::Init(void* window_handle) {
+		RTY_RENDERER_CRITICAL("Vulkan implementation may not work!");
 		CreateInstance();
 		InitDebugMessenger();
 		CreateSurface(window_handle);
@@ -148,16 +149,6 @@ namespace raytracy {
 
 		if (enable_validation_layers) {
 			glfw_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-		}
-
-		std::cout << extension_count << " extensions supported.\n";
-		for (const auto& extension : extensions) {
-			std::cout << '\t' << extension.extensionName << '\n';
-		}
-
-		std::cout << glfw_extension_count << " extensions used by GLFW.\n";
-		for (const auto& extension : glfw_extensions) {
-			std::cout << '\t' << extension << '\n';
 		}
 
 		return glfw_extensions;
