@@ -3,7 +3,7 @@
 #include <ostream>
 
 namespace raytracy {
-	typedef enum class KeyCode : uint16_t {
+	enum class KeyCode : uint16_t {
 		// From glfw3.h
 		Space = 32,
 		Apostrophe = 39, /* ' */
@@ -135,7 +135,7 @@ namespace raytracy {
 		RightAlt = 346,
 		RightSuper = 347,
 		Menu = 348
-	} Key;
+	};
 
 	inline std::ostream& operator<<(std::ostream& os, KeyCode keyCode) {
 		os << static_cast<int32_t>(keyCode);

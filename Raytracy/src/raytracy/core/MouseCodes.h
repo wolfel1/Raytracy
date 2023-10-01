@@ -4,7 +4,7 @@
 #include <ostream>
 
 namespace raytracy {
-	typedef enum class MouseCode : uint16_t {
+	enum class MouseCode : uint16_t {
 		// From glfw3.h
 		Button0 = 0,
 		Button1 = 1,
@@ -19,14 +19,14 @@ namespace raytracy {
 		ButtonLeft = Button0,
 		ButtonRight = Button1,
 		ButtonMiddle = Button2
-	} Mouse;
+	};
 
 	inline std::ostream& operator<<(std::ostream& os, MouseCode mouseCode) {
 		os << static_cast<int32_t>(mouseCode);
 		return os;
 	}
 
-	typedef enum class CursorMode : uint16_t {
+	enum class CursorMode : uint32_t {
 		// From glfw3.h
 		NormalCursor = 0x00034001,
 		HiddenCursor = 0x00034002,

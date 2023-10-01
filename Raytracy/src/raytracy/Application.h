@@ -38,6 +38,14 @@ namespace raytracy {
 
 		void Shutdown();
 
+		shared_ptr<Window> GetWindow() const {
+			return window;
+		}
+		
+		ApplicationSpecification const& GetSpecification() const {
+			return application_specification;
+		}
+
 		static Application& Get() {
 			return *instance;
 		}

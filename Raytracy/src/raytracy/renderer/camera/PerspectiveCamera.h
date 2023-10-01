@@ -13,7 +13,8 @@ namespace raytracy {
 		glm::mat4 view_matrix{};
 		glm::mat4 projection_matrix{};
 		glm::vec3 up = { 0.0f, 1.0f, 0.0f };
-		float rotation = 0.0f;
+		float yaw = -90.0f;
+		float pitch = 0.0f;
 		float near_clip = 0.1f;
 		float far_clip = 100.0f;
 
@@ -38,6 +39,16 @@ namespace raytracy {
 			this->far_clip = far_clip; RecalculateViewMatrix();
 		}
 
+		void SetPitch(float pitch) {
+			this->pitch += pitch;
+			
+			RecalculateTarget();
+		}
+
+		void SetYaw(float yaw) {
+			this->yaw += yaw; RecalculateTarget();
+		}
+
 		glm::mat4 const& GetProjectionMatrix() const {
 			return projection_matrix;
 		}
@@ -53,5 +64,6 @@ namespace raytracy {
 
 	private:
 		void RecalculateViewMatrix();
+		void RecalculateTarget();
 	};
 }

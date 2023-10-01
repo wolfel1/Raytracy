@@ -14,16 +14,18 @@ public:
 	SandboxLayer() : Layer("SandboxLayer") {
 	}
 
-	void OnAttach() override{
+	void OnAttach() override {
 		EventBus::Get().Register<KeyPressedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyPressed));
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
 		camera = make_unique<PerspectiveCameraController>(1000.0f / 700.0f);
-		camera->Translate({0.0f,0.0f, 5.0f});
+		camera->TranslateZ(5.0f);
 
 		plane = make_shared<Plane>();
 	}
 
-	void OnUpdate(Timestep timestep) override{
+	void OnUpdate(Timestep timestep) override {
+		camera->OnUpdate(timestep);
+
 		auto& renderer = Renderer::Get();
 
 		renderer.BeginScene(camera->GetCamera());
@@ -82,7 +84,7 @@ public:
 
 	bool OnKeyReleased(Event& e) {
 		KeyReleasedEvent evt = static_cast<KeyReleasedEvent&>(e);
-		if (evt.GetKeyCode() == Key::Escape) {
+		if (evt.GetKeyCode() == KeyCode::Escape) {
 			WindowCloseEvent e;
 			EventBus::Get().Notify(e);
 		}
