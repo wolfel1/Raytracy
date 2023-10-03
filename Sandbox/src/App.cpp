@@ -15,10 +15,10 @@ public:
 	}
 
 	void OnAttach() override {
-		EventBus::Get().Register<KeyPressedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyPressed));
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
 		camera = make_unique<PerspectiveCameraController>(1000.0f / 700.0f);
-		camera->TranslateZ(5.0f);
+		camera->Translate({0.0f, 2.0f, 5.0f});
+		camera->RotateX(-20.0f);
 
 		plane = make_shared<Plane>();
 	}
@@ -74,12 +74,6 @@ public:
 		}
 
 		image->WriteImage();
-	}
-
-	bool OnKeyPressed(Event& e) {
-		std::cout << e.ToString();
-
-		return true;
 	}
 
 	bool OnKeyReleased(Event& e) {

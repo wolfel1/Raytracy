@@ -9,7 +9,7 @@ namespace raytracy {
 	class PerspectiveCamera {
 	private:
 		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 target = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 direction = { 0.0f, 0.0f, -1.0f };
 		glm::mat4 view_matrix{};
 		glm::mat4 projection_matrix{};
 		glm::vec3 up = { 0.0f, 1.0f, 0.0f };
@@ -27,8 +27,8 @@ namespace raytracy {
 			this->position = position; RecalculateViewMatrix();
 		}
 
-		void SetTarget(glm::vec3 const& target) {
-			this->target = target; RecalculateViewMatrix();
+		void SetDirection(glm::vec3 const& direction) {
+			this->direction = direction; RecalculateViewMatrix();
 		}
 
 		void SetNearClip(float near_clip) {
@@ -42,11 +42,11 @@ namespace raytracy {
 		void SetPitch(float pitch) {
 			this->pitch += pitch;
 			
-			RecalculateTarget();
+			RecalculateDirection();
 		}
 
 		void SetYaw(float yaw) {
-			this->yaw += yaw; RecalculateTarget();
+			this->yaw += yaw; RecalculateDirection();
 		}
 
 		glm::mat4 const& GetProjectionMatrix() const {
@@ -59,11 +59,19 @@ namespace raytracy {
 		glm::vec3 const& GetPosition() const {
 			return position;
 		}
+		
+		glm::vec3 const& GetDirection() const {
+			return direction;
+		}
+
+		glm::vec3 const& GetUp() const {
+			return up;
+		}
 
 		void SetProjection(float field_of_view, float aspect_ratio);
 
 	private:
 		void RecalculateViewMatrix();
-		void RecalculateTarget();
+		void RecalculateDirection();
 	};
 }

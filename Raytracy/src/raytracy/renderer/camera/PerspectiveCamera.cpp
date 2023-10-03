@@ -9,7 +9,7 @@ namespace raytracy {
 	PerspectiveCamera::PerspectiveCamera(float field_of_view, float aspect_ratio) {
 
 		projection_matrix = glm::perspective(glm::radians(field_of_view), aspect_ratio, near_clip, far_clip);
-		view_matrix = glm::lookAt(position, target, up);
+		view_matrix = glm::lookAt(position, position + direction, up);
 	}
 
 
@@ -18,10 +18,10 @@ namespace raytracy {
     }
 
     void PerspectiveCamera::RecalculateViewMatrix() {
-		view_matrix = glm::lookAt(position, target, up);
+		view_matrix = glm::lookAt(position, position + direction, up);
 	}
 
-	void PerspectiveCamera::RecalculateTarget() {
+	void PerspectiveCamera::RecalculateDirection() {
 		if (pitch > 89.0f) {
 			pitch = 89.0f;
 		} else if (pitch < -89.0f) {
@@ -32,7 +32,7 @@ namespace raytracy {
 		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		direction.y = sin(glm::radians(pitch));
 		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		target = position + direction;
+		this->direction = glm::normalize(direction);
 		RecalculateViewMatrix();
 	}
 }

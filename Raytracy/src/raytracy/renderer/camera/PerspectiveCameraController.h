@@ -15,7 +15,7 @@ namespace raytracy {
 		float field_of_view = 90.0f;
 		PerspectiveCamera camera;
 
-		float translation_speed = 5.0f;
+		float translation_speed = 0.05f;
 		float rotation_speed = .2f;
 		float orbit_speed = 180.0f;
 
@@ -31,9 +31,13 @@ namespace raytracy {
 			return camera;
 		}
 
+		void Translate(glm::vec3 const& amount);
 		void TranslateX(float const amount);
 		void TranslateY(float const amount);
 		void TranslateZ(float const amount);
+
+		void RotateX(float const degree);
+		void RotateY(float const degree);
 
 	private:
 		bool OnWindowResized(Event& e);
