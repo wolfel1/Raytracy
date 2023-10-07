@@ -3,7 +3,7 @@
 namespace raytracy {
 
 	struct Vertex {
-		glm::vec3 position;
+		glm::vec4 position;
 		glm::vec4 color;
 	};
 
@@ -20,10 +20,10 @@ namespace raytracy {
 	struct PlaneData : public MeshData {
 		virtual void Init() override {
 			vertices = {
-				{{-1.0f, -1.0f, 0.0f},  { 1.0f, 1.0f, 1.0f, 1.0f}},
-				{{1.0f, -1.0f, 0.0f },  { 1.0f, 1.0f, 1.0f, 1.0f}},
-				{{1.0f, 1.0f, 0.0f  },  { 1.0f, 1.0f, 1.0f, 1.0f}},
-				{{-1.0f, 1.0f, 0.0f },  { 1.0f, 1.0f, 1.0f, 1.0f} }
+				{{-1.0f, 0.0f, 1.0f, 1.0f},  { 1.0f, 1.0f, 1.0f, 1.0f}},
+				{{1.0f, 0.0f, 1.0f, 1.0f },  { 1.0f, 1.0f, 1.0f, 1.0f}},
+				{{1.0f, 0.0f, -1.0f, 1.0f },  { 1.0f, 1.0f, 1.0f, 1.0f}},
+				{{-1.0f, 0.0f, -1.0f, 1.0f },  { 1.0f, 1.0f, 1.0f, 1.0f} }
 			};
 			indices = {
 				0, 1, 2,

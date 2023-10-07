@@ -15,9 +15,11 @@ namespace raytracy {
 		shared_ptr<Shader> shader; 
 		shared_ptr<MeshData> mesh_data;
 		glm::mat4 model_matrix = glm::mat4(1.0f);
+		glm::vec3 origin{};
 
 	public:
 		Mesh() {}
+		Mesh(glm::vec3 const& position, float const scale_factor);
 		virtual ~Mesh() = default;
 
 		shared_ptr<VertexArray> GetVertexArray() const {
@@ -37,6 +39,8 @@ namespace raytracy {
 
 		void Translate(glm::vec3 const& direction);
 
+		void Scale(float const value);
+
 		protected:
 			void Init(shared_ptr<MeshData> const mesh_data);
 	};
@@ -46,6 +50,7 @@ namespace raytracy {
 
 	public:
 		Plane();
+		Plane(glm::vec3 const& position, float const scale_factor);
 		~Plane() = default;
 	};
 }

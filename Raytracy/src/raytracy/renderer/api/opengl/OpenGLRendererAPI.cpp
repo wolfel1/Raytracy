@@ -67,6 +67,7 @@ namespace raytracy {
 
 	void OpenGLRendererAPI::DrawIndexed(const shared_ptr<VertexArray> vertex_array, std::unordered_map<std::string, shared_ptr<UniformBuffer>> const& uniform_buffers) {
 		auto& index_buffer = vertex_array->GetIndexBuffer();
+		//InstrumentationTimer timer("Render", true);
 		GLCall(glDrawElements(GL_TRIANGLES, index_buffer->GetCount(), GL_UNSIGNED_INT, (void*)0));
 	}
 

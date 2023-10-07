@@ -2,13 +2,19 @@
 #include "Mesh.h"
 
 namespace raytracy {
+
+	Mesh::Mesh(glm::vec3 const& position, float const scale_factor) {
+		model_matrix = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(scale_factor));
+		origin = position;
+	}
+
 	void Mesh::Init(shared_ptr<MeshData> const mesh_data)  {
 
 		vertex_array = VertexArray::Create();
 
 		vertex_buffer = VertexBuffer::Create(mesh_data->vertices);
 		vertex_buffer->SetLayout({
-			{ "position", VertexDataType::Float3 },
+			{ "position", VertexDataType::Float4 },
 			{ "color", VertexDataType::Float4 }
 		});
 
@@ -35,11 +41,23 @@ namespace raytracy {
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
 	}
 
+
 	void Mesh::Translate(glm::vec3 const& direction) {
-		model_matrix = glm::translate(model_matrix, direction);
+		origin += direction;
+		model_matrix = glm::translate(glm::mat4(1.0f), direction) * model_matrix;
+	}
+
+	void Mesh::Scale(float const value) {
+		model_matrix = model_matrix * glm::scale(glm::mat4(1.0f), glm::vec3(value));
 	}
 
 	Plane::Plane() {
+		auto data = make_shared<PlaneData>();
+		data->Init();
+		Init(data);
+	}
+
+	Plane::Plane(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
 		auto data = make_shared<PlaneData>();
 		data->Init();
 		Init(data);

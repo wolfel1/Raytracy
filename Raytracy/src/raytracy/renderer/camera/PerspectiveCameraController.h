@@ -12,7 +12,7 @@ namespace raytracy {
 
 	private:
 		float aspect_ratio;
-		float field_of_view = 90.0f;
+		float field_of_view = 45.0f;
 		PerspectiveCamera camera;
 
 		float translation_speed = 0.05f;
