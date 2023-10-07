@@ -50,7 +50,7 @@ namespace raytracy {
 
 	public:
 		Plane();
-		Plane(glm::vec3 const& position, float const scale_factor);
+		Plane(glm::vec3 const& position, float const scale_factor = 1.0f);
 		~Plane() = default;
 	};
 }

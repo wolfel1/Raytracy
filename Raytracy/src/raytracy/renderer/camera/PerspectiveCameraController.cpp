@@ -17,7 +17,7 @@ namespace raytracy {
 	void PerspectiveCameraController::OnUpdate(Timestep timestep) {
 		auto& input = Input::Get();
 
-		if (input.IsMouseButtonPressed(MouseCode::Button1)) {
+		if (input.IsMouseButtonPressed(MouseCode::ButtonMiddle)) {
 			if (is_not_rotating) {
 				last_mouse_position = input.GetMousePosition();
 				is_not_rotating = false;
@@ -92,6 +92,18 @@ namespace raytracy {
 	}
 
 	bool PerspectiveCameraController::OnMouseScrolled(Event& e) {
+		auto& evt = static_cast<MouseScrolledEvent&>(e);
+		auto y = evt.GetYOffset();
+		glm::vec3 translate_direction{};
+		auto& direction = camera.GetDirection();
+		
+		if (y < 0) {
+			translate_direction -= glm::normalize(direction);
+		} else if (y > 0) {
+			translate_direction += glm::normalize(direction);
+		}
+		Translate(translate_direction * scroll_speed);
+		
 		return true;
 	}
 }

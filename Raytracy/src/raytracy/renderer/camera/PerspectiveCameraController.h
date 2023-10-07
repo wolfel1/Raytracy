@@ -15,7 +15,8 @@ namespace raytracy {
 		float field_of_view = 45.0f;
 		PerspectiveCamera camera;
 
-		float translation_speed = 0.05f;
+		float translation_speed = 0.08f;
+		float scroll_speed = 0.5f;
 		float rotation_speed = .2f;
 		float orbit_speed = 180.0f;
 

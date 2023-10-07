@@ -3,6 +3,7 @@
 
 #include "../event/ApplicationEvent.h"
 #include "../event/KeyEvent.h"
+#include "../event/MouseEvent.h"
 
 #include "../renderer/api/RendererAPI.h"
 
@@ -89,6 +90,12 @@ namespace raytracy {
 				WindowResizeEvent e(width, height);
 				EventBus::Get().Notify(e);
 			});
+
+			glfwSetScrollCallback(window_handle, [](GLFWwindow* window, double x_offset, double y_offset) {
+				MouseScrolledEvent e(static_cast<float>(x_offset), static_cast<float>(y_offset));
+				EventBus::Get().Notify(e);
+});
+
 		}
 	}
 

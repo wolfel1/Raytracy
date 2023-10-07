@@ -20,9 +20,7 @@ public:
 		camera->Translate({0.0f, 2.0f, 5.0f});
 		camera->RotateX(-20.0f);
 
-
-		plane = make_shared<Plane>();
-		plane->Translate({-2.0f, 0.0f, 0.0f});
+		plane = make_shared<Plane>(glm::vec3(-2.0f, 0.0f, 0.0f));
 	}
 
 	void OnUpdate(Timestep timestep) override {
