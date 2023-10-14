@@ -19,7 +19,7 @@ namespace raytracy {
 
 	public:
 		Mesh() {}
-		Mesh(glm::vec3 const& position, float const scale_factor);
+		Mesh(glm::vec3 const& position);
 		virtual ~Mesh() = default;
 
 		shared_ptr<VertexArray> GetVertexArray() const {

@@ -54,7 +54,7 @@ namespace raytracy {
 
 		GLCall(glEnable(GL_CULL_FACE));
 		GLCall(glCullFace(GL_BACK));
-		GLCall(glFrontFace(GL_CCW));
+		GLCall(glFrontFace(GL_CW));
 	}
 
 	void OpenGLRendererAPI::ClearViewport() {

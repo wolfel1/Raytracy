@@ -3,9 +3,7 @@
 
 namespace raytracy {
 
-	Mesh::Mesh(glm::vec3 const& position, float const scale_factor) {
-		model_matrix = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(scale_factor));
-		origin = position;
+	Mesh::Mesh(glm::vec3 const& position) : origin(position) {
 	}
 
 	void Mesh::Init(shared_ptr<MeshData> const mesh_data)  {
@@ -14,7 +12,7 @@ namespace raytracy {
 
 		vertex_buffer = VertexBuffer::Create(mesh_data->vertices);
 		vertex_buffer->SetLayout({
-			{ "position", VertexDataType::Float4 },
+			{ "position", VertexDataType::Float3 },
 			{ "color", VertexDataType::Float4 }
 		});
 
@@ -57,9 +55,9 @@ namespace raytracy {
 		Init(data);
 	}
 
-	Plane::Plane(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
+	Plane::Plane(glm::vec3 const& position, float const scale_factor) : Mesh(position) {
 		auto data = make_shared<PlaneData>();
-		data->Init();
+		data->Init(position, scale_factor);
 		Init(data);
 	}
 }
