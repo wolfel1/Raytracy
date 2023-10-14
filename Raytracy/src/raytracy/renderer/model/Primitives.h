@@ -21,12 +21,23 @@ namespace raytracy {
 
 	struct PlaneData : public MeshData {
 		virtual void Init(glm::vec3 position = {0.0f, 0.0f, 0.0f}, float scale_factor = 1.f) override {
+			float translation = scale_factor / 2;
 			glm::vec3 root_vertex = {position.x - scale_factor/2, 0.0f, position.z - scale_factor/2};
 			vertices.resize(4);
-			vertices[0] = {root_vertex, WHITE};
-			vertices[1] = { root_vertex + glm::vec3(scale_factor, 0.0f, 0.0f), WHITE};
-			vertices[2] = { root_vertex + glm::vec3(scale_factor, 0.0f, scale_factor), WHITE };
-			vertices[3] = { root_vertex + glm::vec3(0.0f, 0.0f, scale_factor), WHITE };
+			/*vertices[0] = {position + glm::vec3(-translation, 0.0f, -translation), WHITE};
+			vertices[1] = { position + glm::vec3(translation, 0.0f, -translation), WHITE};
+			vertices[2] = { position + glm::vec3(translation, 0.0f, translation), WHITE };
+			vertices[3] = { position + glm::vec3(-translation, 0.0f, translation), WHITE };*/
+
+			uint16_t i = 0;
+			int16_t x = -1;
+			for (int16_t y = -1; y <= 1; y += 2) {
+				for (int16_t j = 0; j <= 1; j++) {
+					vertices[i++] = { position + glm::vec3(x * translation, 0.0f, translation*y), WHITE };
+					x *= -1;
+				}
+				x = 1;
+			}
 			
 			indices = {
 				0, 1, 2,
