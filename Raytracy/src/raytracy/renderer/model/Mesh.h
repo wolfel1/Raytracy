@@ -14,8 +14,10 @@ namespace raytracy {
 		shared_ptr<IndexBuffer> index_buffer;
 		shared_ptr<Shader> shader; 
 		shared_ptr<MeshData> mesh_data;
+
 		glm::mat4 model_matrix = glm::mat4(1.0f);
 		glm::vec3 origin{};
+		glm::vec4 display_color = { 0.5f, 0.5f, 0.5f, 1.0f };
 
 	public:
 		Mesh() {}

@@ -12,6 +12,8 @@ namespace raytracy {
 		struct SceneData {
 			glm::mat4 view_matrix{};
 			glm::mat4 projection_matrix{};
+
+			std::vector<shared_ptr<Mesh>> meshes;
 		};
 
 		SceneData scene_data{};
@@ -40,6 +42,6 @@ namespace raytracy {
 	private:
 		Renderer() {}
 
-		void Render(shared_ptr<Mesh> const mesh);
+		void Render();
 	};
 }

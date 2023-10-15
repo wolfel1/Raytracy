@@ -23,7 +23,7 @@ namespace raytracy {
 		auto shading_uniform_buffer = UniformBuffer::Create({
 			{ "color", VertexDataType::Float4 }
 		});
-		shading_uniform_buffer->SetVec4("color", mesh_data->display_color);
+		shading_uniform_buffer->SetVec4("color", display_color);
 		shader->AddUniformBuffer("shading", shading_uniform_buffer);
 
 		auto camera_uniform_buffer = UniformBuffer::Create({

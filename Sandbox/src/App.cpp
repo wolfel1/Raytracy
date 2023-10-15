@@ -32,6 +32,7 @@ public:
 
 		renderer.BeginScene(camera->GetCamera());
 		renderer.Submit(cube);
+		renderer.Submit(plane);
 		renderer.EndScene();
 	}
 
