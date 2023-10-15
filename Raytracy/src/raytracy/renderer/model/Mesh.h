@@ -53,4 +53,13 @@ namespace raytracy {
 		Plane(glm::vec3 const& position, float const scale_factor = 1.0f);
 		~Plane() = default;
 	};
+
+	class Cube : public Mesh {
+	private:
+
+	public:
+		Cube();
+		Cube(glm::vec3 const& position, float const scale_factor = 1.0f);
+		~Cube() = default;
+	};
 }

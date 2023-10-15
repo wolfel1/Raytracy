@@ -31,14 +31,14 @@ namespace raytracy {
 				auto& direction = camera.GetDirection();
 
 				if (y_offset < 0) {
-					translate_direction -= glm::normalize(up);
-				} else if (y_offset > 0) {
 					translate_direction += glm::normalize(up);
+				} else if (y_offset > 0) {
+					translate_direction -= glm::normalize(up);
 				}
 				if (x_offset < 0) {
-					translate_direction -= glm::normalize(glm::cross(direction, up));
-				} else if (x_offset > 0) {
 					translate_direction += glm::normalize(glm::cross(direction, up));
+				} else if (x_offset > 0) {
+					translate_direction -= glm::normalize(glm::cross(direction, up));
 				}
 				Translate(translate_direction * translation_speed);
 			} else {

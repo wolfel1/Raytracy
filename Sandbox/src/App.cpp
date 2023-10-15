@@ -7,6 +7,7 @@ using namespace raytracy;
 class SandboxLayer : public Layer {
 private:
 	shared_ptr<Plane> plane;
+	shared_ptr<Cube> cube;
 
 	unique_ptr<PerspectiveCameraController> camera;
 
@@ -21,6 +22,7 @@ public:
 		camera->RotateX(-20.0f);
 
 		plane = make_shared<Plane>(glm::vec3(-2.0f, 0.0f, 0.0f));
+		cube = make_shared<Cube>();
 	}
 
 	void OnUpdate(Timestep timestep) override {
@@ -29,7 +31,7 @@ public:
 		auto& renderer = Renderer::Get();
 
 		renderer.BeginScene(camera->GetCamera());
-		renderer.Submit(plane);
+		renderer.Submit(cube);
 		renderer.EndScene();
 	}
 

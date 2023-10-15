@@ -60,4 +60,16 @@ namespace raytracy {
 		data->Init(position, scale_factor);
 		Init(data);
 	}
+
+    Cube::Cube() {
+		auto data = make_shared<CubeData>();
+		data->Init();
+		Init(data);
+    }
+
+	Cube::Cube(glm::vec3 const& position, float const scale_factor) {
+		auto data = make_shared<CubeData>();
+		data->Init(position, scale_factor);
+		Init(data);
+	}
 }
