@@ -1,7 +1,6 @@
 #include "raytracypch.h"
 #include "RendererAPI.h"
 
-#include "vulkan/VulkanRendererAPI.h"
 #include "opengl/OpenGLRendererAPI.h"
 
 namespace raytracy {
@@ -15,9 +14,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			current_api = make_shared<OpenGLRendererAPI>();
-			break;
-		case RendererAPI::API::Vulkan:
-			current_api = make_shared<VulkanRendererAPI>();
 			break;
 		default:
 			break;

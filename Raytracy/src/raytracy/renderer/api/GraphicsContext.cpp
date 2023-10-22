@@ -3,7 +3,6 @@
 
 #include "RendererAPI.h"
 #include "opengl/OpenGLContext.h"
-#include "vulkan/VulkanContext.h"
 
 namespace raytracy {
 	shared_ptr<GraphicsContext> GraphicsContext::current_context;
@@ -15,9 +14,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			current_context = make_shared<OpenGLContext>();
-			break;
-		case RendererAPI::API::Vulkan:
-			current_context = make_shared<VulkanContext>();
 			break;
 		default:
 			break;

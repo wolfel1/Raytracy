@@ -2,7 +2,6 @@
 #include "Shader.h"
 
 #include "RendererAPI.h"
-#include "vulkan/VulkanShader.h"
 #include "opengl/OpenGLShader.h"
 #include <filesystem>
 
@@ -17,8 +16,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return make_shared<OpenGLShader>(name);
-		case RendererAPI::API::Vulkan:
-		return make_shared<VulkanShader>(name);
 		default:
 			break;
 		}
@@ -41,8 +38,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return make_shared<OpenGLShader>(filepaths);
-		case RendererAPI::API::Vulkan:
-			return VulkanShader::Create(filepaths);
 		default:
 			break;
 		}

@@ -2,7 +2,6 @@
 #include "Buffer.h"
 
 #include "RendererAPI.h"
-#include "vulkan/VulkanBuffer.h"
 #include "opengl/OpenGLBuffer.h"
 
 
@@ -14,8 +13,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return make_shared<OpenGLVertexBuffer>(size);
-		case RendererAPI::API::Vulkan:
-			return make_shared<VulkanVertexBuffer>(size);
 		default:
 			break;
 		}
@@ -31,8 +28,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return make_shared<OpenGLVertexBuffer>(vertices);
-		case RendererAPI::API::Vulkan:
-			return make_shared<VulkanVertexBuffer>(vertices);
 		default:
 			break;
 		}
@@ -48,8 +43,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return make_shared<OpenGLIndexBuffer>(indices, count);
-		case RendererAPI::API::Vulkan:
-			return make_shared<VulkanIndexBuffer>(indices, count);
 		default:
 			break;
 		}
@@ -64,8 +57,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return make_shared<OpenGLUniformBuffer>(layout);
-		case RendererAPI::API::Vulkan:
-			return make_shared<VulkanUniformBuffer>(layout);
 		default:
 			break;
 		}

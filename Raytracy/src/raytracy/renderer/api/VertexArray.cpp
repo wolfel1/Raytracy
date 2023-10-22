@@ -3,7 +3,6 @@
 
 #include "RendererAPI.h"
 #include "opengl/OpenGLVertexArray.h"
-#include "vulkan/VulkanVertexArray.h"
 
 namespace raytracy {
 	shared_ptr<VertexArray> VertexArray::Create() {
@@ -13,8 +12,6 @@ namespace raytracy {
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return make_shared<OpenGLVertexArray>();
-		case RendererAPI::API::Vulkan:
-			return make_shared<VulkanVertexArray>();
 		default:
 			break;
 		}
