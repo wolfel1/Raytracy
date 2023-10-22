@@ -7,7 +7,7 @@ namespace raytracy {
 		glm::vec4 color;
 	};
 
-	static const glm::vec4 WHITE = { 1.0f, 1.0f, 1.0f, 1.0f };
+	static const glm::vec4 DEFAULT_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	struct MeshData {
 		std::vector<Vertex> vertices;
@@ -22,10 +22,10 @@ namespace raytracy {
 		virtual void Init(glm::vec3 position = {0.0f, 0.0f, 0.0f}, float scale_factor = 1.f) override {
 			float half_size = scale_factor / 2;
 			vertices.resize(4);
-			vertices[0] = {position + glm::vec3(-half_size, 0.0f, -half_size), WHITE};
-			vertices[1] = { position + glm::vec3(half_size, 0.0f, -half_size), WHITE};
-			vertices[2] = { position + glm::vec3(half_size, 0.0f, half_size), WHITE };
-			vertices[3] = { position + glm::vec3(-half_size, 0.0f, half_size), WHITE };
+			vertices[0] = {position + glm::vec3(-half_size, 0.0f, -half_size), DEFAULT_COLOR};
+			vertices[1] = { position + glm::vec3(half_size, 0.0f, -half_size), DEFAULT_COLOR};
+			vertices[2] = { position + glm::vec3(half_size, 0.0f, half_size), DEFAULT_COLOR };
+			vertices[3] = { position + glm::vec3(-half_size, 0.0f, half_size), DEFAULT_COLOR };
 
 			
 			indices = {
@@ -41,15 +41,15 @@ namespace raytracy {
 		virtual void Init(glm::vec3 position = { 0.0f, 0.0f, 0.0f }, float scale_factor = 1.f) override {
 			float half_size = scale_factor / 2;
 			vertices.resize(8);
-			vertices[0] = { position + glm::vec3(-half_size, -half_size, half_size), WHITE };
-			vertices[1] = { position + glm::vec3(half_size, -half_size, half_size), WHITE };
-			vertices[2] = { position + glm::vec3(half_size, half_size, half_size), WHITE };
-			vertices[3] = { position + glm::vec3(-half_size, half_size, half_size), WHITE };
+			vertices[0] = { position + glm::vec3(-half_size, -half_size, half_size), DEFAULT_COLOR };
+			vertices[1] = { position + glm::vec3(half_size, -half_size, half_size), DEFAULT_COLOR };
+			vertices[2] = { position + glm::vec3(half_size, half_size, half_size), DEFAULT_COLOR };
+			vertices[3] = { position + glm::vec3(-half_size, half_size, half_size), DEFAULT_COLOR };
 
-			vertices[4] = {position + glm::vec3(-half_size, -half_size, -half_size), WHITE};
-			vertices[5] = { position + glm::vec3(half_size, -half_size, -half_size), WHITE};
-			vertices[6] = { position + glm::vec3(half_size, half_size, -half_size), WHITE };
-			vertices[7] = { position + glm::vec3(-half_size, half_size, -half_size), WHITE };
+			vertices[4] = {position + glm::vec3(-half_size, -half_size, -half_size), DEFAULT_COLOR};
+			vertices[5] = { position + glm::vec3(half_size, -half_size, -half_size), DEFAULT_COLOR};
+			vertices[6] = { position + glm::vec3(half_size, half_size, -half_size), DEFAULT_COLOR };
+			vertices[7] = { position + glm::vec3(-half_size, half_size, -half_size), DEFAULT_COLOR };
 
 			indices = {
 				//front

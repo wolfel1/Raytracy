@@ -27,7 +27,7 @@ namespace raytracy {
 	class OpenGLUniformBuffer : public UniformBuffer {
 
 	public:
-		OpenGLUniformBuffer(const BufferLayout& layout);
+		OpenGLUniformBuffer(std::string const& name, const BufferLayout& layout);
 		~OpenGLUniformBuffer();
 
 		void Bind() const;

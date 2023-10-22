@@ -44,9 +44,9 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 	}
 
-	OpenGLUniformBuffer::OpenGLUniformBuffer(const BufferLayout& layout) : UniformBuffer(layout) {
+	OpenGLUniformBuffer::OpenGLUniformBuffer(std::string const& name, const BufferLayout& layout) : UniformBuffer(name, layout) {
 		GLCall(glCreateBuffers(1, &renderer_id));
-		glNamedBufferData(renderer_id, layout.GetStride(), NULL, GL_STATIC_DRAW);
+		glNamedBufferData(renderer_id, layout.GetStride(), NULL, GL_DYNAMIC_DRAW);
 	}
 
 	OpenGLUniformBuffer::~OpenGLUniformBuffer() {
@@ -62,7 +62,7 @@ namespace raytracy {
 	}
 
 	void OpenGLUniformBuffer::Link(uint32_t const index) const {
-		GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, index, renderer_id));
+		GLCall(glBindBufferRange(GL_UNIFORM_BUFFER, index, renderer_id, 0, layout.GetStride()));
 	}
 
 	void OpenGLUniformBuffer::SetVec4(const std::string& name, const glm::vec4& value) const {

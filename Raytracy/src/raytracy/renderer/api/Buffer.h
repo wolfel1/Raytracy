@@ -149,16 +149,19 @@ namespace raytracy {
 	protected:
 		uint32_t renderer_id{};
 		BufferLayout layout;
+		std::string name;
 
 	public:
-		static shared_ptr<UniformBuffer> Create(const BufferLayout& layout);
+		static shared_ptr<UniformBuffer> Create(std::string const& name, const BufferLayout& layout);
 
-		UniformBuffer(const BufferLayout& layout) : layout(layout) {}
+		UniformBuffer(std::string const& name, const BufferLayout& layout) : name(name), layout(layout) {}
 		virtual ~UniformBuffer() = default;
 
 		const BufferLayout& GetLayout() const {
 			return layout;
 		}
+
+		const std::string& GetName() const { return name; }
 
 		virtual void Link(uint32_t const index) const = 0;
 		virtual void SetVec4(const std::string& name, const glm::vec4& value) const = 0;

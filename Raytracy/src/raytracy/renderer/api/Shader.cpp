@@ -7,6 +7,7 @@
 
 namespace raytracy {
 
+	uint32_t Shader::index = 0;
 	const std::string ShaderLibrary::rootPath = "resources/shaders/";
 
 	shared_ptr<Shader> Shader::CreateFromFile(const std::string& name) {

@@ -18,15 +18,15 @@ namespace raytracy {
 
 		index_buffer = IndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
 
-		shader = ShaderLibrary::Get().Load("basic");
+		shader = Shader::CreateFromDirectory("basic");
 		RTY_ASSERT(shader, "Could not create a shader program!"); 
-		auto shading_uniform_buffer = UniformBuffer::Create({
+		auto shading_uniform_buffer = UniformBuffer::Create("Shading", {
 			{ "color", VertexDataType::Float4 }
 		});
 		shading_uniform_buffer->SetVec4("color", display_color);
 		shader->AddUniformBuffer("shading", shading_uniform_buffer);
 
-		auto camera_uniform_buffer = UniformBuffer::Create({
+		auto camera_uniform_buffer = UniformBuffer::Create("Camera", {
 			{ "model", VertexDataType::Mat4 },
 			{ "view", VertexDataType::Mat4 },
 			{ "projection", VertexDataType::Mat4 }

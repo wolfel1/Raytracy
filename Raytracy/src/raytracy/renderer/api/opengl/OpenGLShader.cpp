@@ -188,6 +188,12 @@ namespace raytracy {
 		renderer_id = program;
 	}
 
+    void OpenGLShader::BindBuffer(shared_ptr<UniformBuffer> const uniform_buffer) {
+		auto& name = uniform_buffer->GetName();
+		auto uniform_block_index = glGetUniformBlockIndex(renderer_id, name.c_str()); 
+		GLCall(glUniformBlockBinding(renderer_id, uniform_block_index, index));
+    }
+
 	void OpenGLShader::Bind() const {
 		glUseProgram(renderer_id);
 	}

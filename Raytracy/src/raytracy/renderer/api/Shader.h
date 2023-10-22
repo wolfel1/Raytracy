@@ -6,11 +6,11 @@ typedef unsigned int GLenum;
 
 namespace raytracy {
 	class Shader {
-
 	protected:
 		std::string name = "";
 		uint32_t renderer_id{};
 		std::unordered_map<std::string, shared_ptr<UniformBuffer>> uniform_buffers;
+		static uint32_t index;
 
 	public:
 	
@@ -23,9 +23,11 @@ namespace raytracy {
 
 		void AddUniformBuffer(std::string const& name, shared_ptr<UniformBuffer> const uniform_buffer) { 
 			Bind();
-			uniform_buffer->Link(static_cast<uint32_t>(uniform_buffers.size()));
+			BindBuffer(uniform_buffer);
+			uniform_buffer->Link(index);
 			Unbind();
-			uniform_buffers.insert_or_assign(name, uniform_buffer); 
+			uniform_buffers.insert_or_assign(name, uniform_buffer);
+			index++;
 		}
 
 		std::unordered_map<std::string, shared_ptr<UniformBuffer>> const& GetUniformBuffers() const {
@@ -38,6 +40,8 @@ namespace raytracy {
 		protected:
 		Shader() = default;
 		Shader(const std::string& name) : name(name) {}
+
+		virtual void BindBuffer(shared_ptr<UniformBuffer> const uniform_buffer) = 0;
 
 	};
 

@@ -41,7 +41,7 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 		renderer_api->ClearViewport();
 
-		for (auto mesh : scene_data.meshes) {
+		for (auto& mesh : scene_data.meshes) {
 			auto vertex_array = mesh->GetVertexArray();
 			auto shader = mesh->GetShader();
 			auto& uniform_buffers = shader->GetUniformBuffers();

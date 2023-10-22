@@ -50,13 +50,13 @@ namespace raytracy {
 		RTY_ASSERT(false, "Unknown RendereAPI!");
 		return nullptr;
 	}
-	shared_ptr<UniformBuffer> UniformBuffer::Create(const BufferLayout& layout) {
+	shared_ptr<UniformBuffer> UniformBuffer::Create(std::string const& name, const BufferLayout& layout) {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::None:
 			RTY_ASSERT(false, "Renderer API None is not supported!");
 			return nullptr;
 		case RendererAPI::API::OpenGL:
-			return make_shared<OpenGLUniformBuffer>(layout);
+			return make_shared<OpenGLUniformBuffer>(name, layout);
 		default:
 			break;
 		}
