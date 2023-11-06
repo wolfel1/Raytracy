@@ -24,7 +24,6 @@ public:
 
 		plane = make_shared<Plane>(glm::vec3(-2.0f, 0.0f, 0.0f));
 		cube = make_shared<Cube>();
-		plane->SetDisplayColor({ 1.0f, 0.0f, 0.0f, 1.0f });
 	}
 
 	void OnUpdate(Timestep timestep) override {

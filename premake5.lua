@@ -14,21 +14,13 @@ workspace "Raytracy"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-VULKAN_SDK = os.getenv("VULKAN_SDK")
-
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["spdlog"] = "Raytracy/vendor/spdlog/include"
 IncludeDir["glm"] = "Raytracy/vendor/glm"
 IncludeDir["glfw"] = "Raytracy/vendor/glfw/include"
 IncludeDir["glad"] = "Raytracy/vendor/glad/include"
-IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 
-LibraryDir = {}
-LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
-
-Library = {}
-Library["Vulkan"] = "%{LibraryDir.VulkanSDK}/vulkan-1.lib"
 
 group "Dependencies"
 	include "Raytracy/vendor/glad"
@@ -75,15 +67,13 @@ project "Raytracy"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.glfw}",
-		"%{IncludeDir.glad}",
-		"%{IncludeDir.VulkanSDK}"
+		"%{IncludeDir.glad}"
 	}
 
 	links {
 		"glfw",
 		"glad",
-		"opengl32.lib",
-		"%{Library.Vulkan}",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
