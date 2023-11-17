@@ -1,6 +1,8 @@
 #include "raytracypch.h"
 #include "Mesh.h"
 
+#include "../Renderer.h"
+
 namespace raytracy {
 
 	Mesh::Mesh(glm::vec3 const& position) : origin(position) {
@@ -26,12 +28,7 @@ namespace raytracy {
 		shading_uniform_buffer->SetVec4("color", display_color);
 		shader->AddUniformBuffer("shading", shading_uniform_buffer);
 
-		auto camera_uniform_buffer = UniformBuffer::Create("Camera", {
-			{ "model", VertexDataType::Mat4 },
-			{ "view", VertexDataType::Mat4 },
-			{ "projection", VertexDataType::Mat4 }
-		});
-		shader->AddUniformBuffer("camera", camera_uniform_buffer);
+		shader->AddUniformBuffer("camera", Renderer::Get().GetCameraUniformBuffer());
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 		vertex_array->SetIndexBuffer(index_buffer);
@@ -39,6 +36,15 @@ namespace raytracy {
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
 	}
 
+	void Mesh::SetDisplayColor(glm::vec4 const& color) {
+		display_color = color;
+		shader->Bind();
+		auto& uniform_buffers = shader->GetUniformBuffers();
+		auto it = uniform_buffers.find("shading");
+		RTY_ASSERT(it != uniform_buffers.end(), "No uniform buffer with key 'shading' exists!");
+		it->second->SetVec4("color", color);
+		shader->Unbind();
+	}
 
 	void Mesh::Translate(glm::vec3 const& direction) {
 		origin += direction;

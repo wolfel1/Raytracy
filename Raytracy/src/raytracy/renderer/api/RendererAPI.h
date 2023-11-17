@@ -31,7 +31,7 @@ namespace raytracy {
 
 		virtual void SetClearColor(const glm::vec4& clear_color) = 0;
 
-		virtual void DrawIndexed(const shared_ptr<VertexArray> vertex_array, std::unordered_map<std::string, shared_ptr<UniformBuffer>> const& uniform_buffers) = 0;
+		virtual void DrawIndexed(const shared_ptr<VertexArray> vertex_array) = 0;
 
 		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 

@@ -39,15 +39,7 @@ namespace raytracy {
 			return model_matrix;
 		}
 		
-		void SetDisplayColor(glm::vec4 const& color) {
-			display_color = color;
-			shader->Bind();
-			auto& uniform_buffers = shader->GetUniformBuffers();
-			auto it = uniform_buffers.find("shading");
-			RTY_ASSERT(it != uniform_buffers.end(), "No uniform buffer with key 'shading' exists!");
-			it->second->SetVec4("color", color);
-			shader->Unbind();
-		}
+		void SetDisplayColor(glm::vec4 const& color);
 
 		void Translate(glm::vec3 const& direction);
 

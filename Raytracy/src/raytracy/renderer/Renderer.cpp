@@ -21,20 +21,27 @@ namespace raytracy {
 		renderer_api = RendererAPI::Create();
 		renderer_api->Init();
 
-		renderer_api->SetClearColor(clear_color);
+		renderer_api->SetClearColor(clear_color); 
+		
+		camera_uniform_buffer = UniformBuffer::Create("Camera", {
+			{ "model", VertexDataType::Mat4 },
+			{ "view", VertexDataType::Mat4 },
+			{ "projection", VertexDataType::Mat4 }
+		});
 
 		is_initialized = true;
 	}
 
 	void Renderer::BeginScene(PerspectiveCamera const& camera) {
 		RTY_ASSERT(is_initialized, "Renderer is not initialized!");
-		scene_data = {};
-		scene_data.view_matrix = camera.GetViewMatrix();
-		scene_data.projection_matrix = camera.GetProjectionMatrix();
+		scene_data.meshes.clear();
+		camera_uniform_buffer->SetMat4("view", camera.GetViewMatrix());
+		camera_uniform_buffer->SetMat4("projection", camera.GetProjectionMatrix());
 	}
 
 	void Renderer::Submit(shared_ptr<Mesh> const mesh) {
 		scene_data.meshes.push_back(mesh);
+		camera_uniform_buffer->SetMat4("model", mesh->GetModelMatrix());
 	}
 
 	void Renderer::Render() {
@@ -44,16 +51,10 @@ namespace raytracy {
 		for (auto& mesh : scene_data.meshes) {
 			auto vertex_array = mesh->GetVertexArray();
 			auto shader = mesh->GetShader();
-			auto& uniform_buffers = shader->GetUniformBuffers();
-			auto it = uniform_buffers.find("camera");
-			RTY_ASSERT(it != uniform_buffers.end(), "No uniform buffer with key 'camera' exists!");
-			it->second->SetMat4("model", mesh->GetModelMatrix());
-			it->second->SetMat4("view", scene_data.view_matrix);
-			it->second->SetMat4("projection", scene_data.projection_matrix);
 
 			vertex_array->Bind();
 			shader->Bind();
-			renderer_api->DrawIndexed(vertex_array, uniform_buffers);
+			renderer_api->DrawIndexed(vertex_array);
 		}
 		
 	}
