@@ -39,9 +39,5 @@ namespace raytracy {
 		virtual void SetVec4(const std::string& name, const glm::vec4& value) const override;
 		virtual void SetMat4(const std::string& name, const glm::mat4& value) const override;
 
-		private:
-
-		template<typename T>
-		void SetUniform(const std::string& name, const T& value);
 	};
 }

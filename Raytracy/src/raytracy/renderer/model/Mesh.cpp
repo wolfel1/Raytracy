@@ -12,13 +12,13 @@ namespace raytracy {
 
 		vertex_array = VertexArray::Create();
 
-		vertex_buffer = VertexBuffer::Create(mesh_data->vertices);
+		auto vertex_buffer = VertexBuffer::Create(mesh_data->vertices);
 		vertex_buffer->SetLayout({
 			{ "position", VertexDataType::Float3 },
 			{ "color", VertexDataType::Float4 }
 		});
 
-		index_buffer = IndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
+		auto index_buffer = IndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
 
 		shader = Shader::CreateFromDirectory("basic");
 		RTY_ASSERT(shader, "Could not create a shader program!"); 

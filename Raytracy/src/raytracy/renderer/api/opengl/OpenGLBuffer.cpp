@@ -98,15 +98,4 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 	}
 
-	template<typename T>
-	void OpenGLUniformBuffer::SetUniform(const std::string& name, const T& value) {
-		auto& elements = layout.GetElements();
-
-		auto element = std::find_if(elements.begin(), elements.end(), [&name](const BufferElement& element) { return element.name == name; });
-		RTY_ASSERT(element != elements.end(), "No uniform found with name {0}!", name);
-
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, renderer_id));
-		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, element->offset, SizeOfVertexDataType(element->type), glm::value_ptr(value)));
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-	}
 }

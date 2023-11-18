@@ -19,15 +19,14 @@ namespace raytracy {
 	};
 
 	struct PlaneData : public MeshData {
-		virtual void Init(glm::vec3 position = {0.0f, 0.0f, 0.0f}, float scale_factor = 1.f) override {
+		virtual void Init(glm::vec3 position = { 0.0f, 0.0f, 0.0f }, float scale_factor = 1.f) override {
 			float half_size = scale_factor / 2;
 			vertices.resize(4);
-			vertices[0] = {position + glm::vec3(-half_size, 0.0f, -half_size), DEFAULT_COLOR};
+			vertices[0] = { position + glm::vec3(-half_size, 0.0f, -half_size), DEFAULT_COLOR };
 			vertices[1] = { position + glm::vec3(half_size, 0.0f, -half_size), DEFAULT_COLOR };
-			vertices[2] = { position + glm::vec3(half_size, 0.0f, half_size), DEFAULT_COLOR};
+			vertices[2] = { position + glm::vec3(half_size, 0.0f, half_size), DEFAULT_COLOR };
 			vertices[3] = { position + glm::vec3(-half_size, 0.0f, half_size), DEFAULT_COLOR };
 
-			
 			indices = {
 				2, 1, 0,
 				0, 3, 2
@@ -46,8 +45,8 @@ namespace raytracy {
 			vertices[2] = { position + glm::vec3(half_size, half_size, half_size), DEFAULT_COLOR };
 			vertices[3] = { position + glm::vec3(-half_size, half_size, half_size), DEFAULT_COLOR };
 
-			vertices[4] = {position + glm::vec3(-half_size, -half_size, -half_size), DEFAULT_COLOR};
-			vertices[5] = { position + glm::vec3(half_size, -half_size, -half_size), DEFAULT_COLOR};
+			vertices[4] = { position + glm::vec3(-half_size, -half_size, -half_size), DEFAULT_COLOR };
+			vertices[5] = { position + glm::vec3(half_size, -half_size, -half_size), DEFAULT_COLOR };
 			vertices[6] = { position + glm::vec3(half_size, half_size, -half_size), DEFAULT_COLOR };
 			vertices[7] = { position + glm::vec3(-half_size, half_size, -half_size), DEFAULT_COLOR };
 
