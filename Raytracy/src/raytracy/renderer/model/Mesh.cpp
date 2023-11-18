@@ -23,9 +23,11 @@ namespace raytracy {
 		shader = Shader::CreateFromDirectory("basic");
 		RTY_ASSERT(shader, "Could not create a shader program!"); 
 		auto shading_uniform_buffer = UniformBuffer::Create("Shading", {
-			{ "color", VertexDataType::Float4 }
+			{ "color", VertexDataType::Float4 },
+			{ "light", VertexDataType::Float3 }
 		});
 		shading_uniform_buffer->SetVec4("color", display_color);
+		shading_uniform_buffer->SetVec3("light", light_color);
 		shader->AddUniformBuffer("shading", shading_uniform_buffer);
 
 		shader->AddUniformBuffer("camera", Renderer::Get().GetCameraUniformBuffer());

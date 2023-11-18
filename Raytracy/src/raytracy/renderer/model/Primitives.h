@@ -23,8 +23,8 @@ namespace raytracy {
 			float half_size = scale_factor / 2;
 			vertices.resize(4);
 			vertices[0] = {position + glm::vec3(-half_size, 0.0f, -half_size), DEFAULT_COLOR};
-			vertices[1] = { position + glm::vec3(half_size, 0.0f, -half_size), DEFAULT_COLOR};
-			vertices[2] = { position + glm::vec3(half_size, 0.0f, half_size), DEFAULT_COLOR };
+			vertices[1] = { position + glm::vec3(half_size, 0.0f, -half_size), DEFAULT_COLOR };
+			vertices[2] = { position + glm::vec3(half_size, 0.0f, half_size), DEFAULT_COLOR};
 			vertices[3] = { position + glm::vec3(-half_size, 0.0f, half_size), DEFAULT_COLOR };
 
 			
