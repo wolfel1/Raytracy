@@ -21,8 +21,8 @@ namespace raytracy {
 		renderer_api = RendererAPI::Create();
 		renderer_api->Init();
 
-		renderer_api->SetClearColor(clear_color); 
-		
+		renderer_api->SetClearColor(clear_color);
+
 		camera_uniform_buffer = UniformBuffer::Create("Camera", {
 			{ "model", VertexDataType::Mat4 },
 			{ "view", VertexDataType::Mat4 },
@@ -41,7 +41,6 @@ namespace raytracy {
 
 	void Renderer::Submit(shared_ptr<Mesh> const mesh) {
 		scene_data.meshes.push_back(mesh);
-		camera_uniform_buffer->SetMat4("model", mesh->GetModelMatrix());
 	}
 
 	void Renderer::Render() {
@@ -51,12 +50,18 @@ namespace raytracy {
 		for (auto& mesh : scene_data.meshes) {
 			auto vertex_array = mesh->GetVertexArray();
 			auto shader = mesh->GetShader();
+			camera_uniform_buffer->SetMat4("model", mesh->GetModelMatrix());
 
 			vertex_array->Bind();
 			shader->Bind();
-			renderer_api->DrawIndexed(vertex_array);
+
+			if (mesh->IsIndexed()) {
+				renderer_api->DrawIndexed(vertex_array);
+			} else {
+				renderer_api->Draw(vertex_array);
+			}
 		}
-		
+
 	}
 
 	void Renderer::EndScene() {

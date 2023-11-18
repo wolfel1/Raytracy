@@ -18,11 +18,11 @@ namespace raytracy {
 		virtual void SetVertexBuffer(const shared_ptr<VertexBuffer>& vertex_buffer) = 0;
 		virtual void SetIndexBuffer(const shared_ptr<IndexBuffer>& index_buffer) = 0;
 
-		const shared_ptr<VertexBuffer>& GetVertexBuffer() const {
+		const shared_ptr<VertexBuffer> GetVertexBuffer() const {
 			return vertex_buffer;
 		}
 
-		const shared_ptr<IndexBuffer>& GetIndexBuffer() const {
+		const shared_ptr<IndexBuffer> GetIndexBuffer() const {
 			return index_buffer;
 		}
 

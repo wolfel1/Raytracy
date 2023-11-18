@@ -5,23 +5,31 @@
 
 namespace raytracy {
 
-	Mesh::Mesh(glm::vec3 const& position) : origin(position) {
+	Mesh::Mesh(glm::vec3 const& position, float const scale_factor) {
+		Translate(position);
+		Scale(scale_factor);
 	}
 
-	void Mesh::Init(shared_ptr<MeshData> const mesh_data)  {
+	void Mesh::Init(shared_ptr<MeshData> const mesh_data) {
 
 		vertex_array = VertexArray::Create();
 
 		auto vertex_buffer = VertexBuffer::Create(mesh_data->vertices);
 		vertex_buffer->SetLayout({
 			{ "position", VertexDataType::Float3 },
+			{ "normal", VertexDataType::Float3 },
 			{ "color", VertexDataType::Float4 }
 		});
 
-		auto index_buffer = IndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
+		vertex_array->SetVertexBuffer(vertex_buffer);
+
+		if (mesh_data->is_indexed) {
+			auto index_buffer = IndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
+			vertex_array->SetIndexBuffer(index_buffer);
+		}
 
 		shader = Shader::CreateFromDirectory("basic");
-		RTY_ASSERT(shader, "Could not create a shader program!"); 
+		RTY_ASSERT(shader, "Could not create a shader program!");
 		auto shading_uniform_buffer = UniformBuffer::Create("Shading", {
 			{ "color", VertexDataType::Float4 },
 			{ "light", VertexDataType::Float3 }
@@ -32,10 +40,8 @@ namespace raytracy {
 
 		shader->AddUniformBuffer("camera", Renderer::Get().GetCameraUniformBuffer());
 
-		vertex_array->SetVertexBuffer(vertex_buffer);
-		vertex_array->SetIndexBuffer(index_buffer);
-
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
+		this->mesh_data = mesh_data;
 	}
 
 	void Mesh::SetDisplayColor(glm::vec4 const& color) {
@@ -63,9 +69,9 @@ namespace raytracy {
 		Init(data);
 	}
 
-	Plane::Plane(glm::vec3 const& position, float const scale_factor) : Mesh(position) {
+	Plane::Plane(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
 		auto data = make_shared<PlaneData>();
-		data->Init(position, scale_factor);
+		data->Init();
 		Init(data);
 	}
 
@@ -75,9 +81,9 @@ namespace raytracy {
 		Init(data);
     }
 
-	Cube::Cube(glm::vec3 const& position, float const scale_factor) {
+	Cube::Cube(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
 		auto data = make_shared<CubeData>();
-		data->Init(position, scale_factor);
+		data->Init();
 		Init(data);
 	}
 }

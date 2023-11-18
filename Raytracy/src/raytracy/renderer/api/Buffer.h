@@ -114,6 +114,7 @@ namespace raytracy {
 		uint32_t renderer_id{};
 
 		BufferLayout layout;
+		uint32_t count{};
 
 	public:
 		virtual ~VertexBuffer() = default;
@@ -127,6 +128,7 @@ namespace raytracy {
 		void SetLayout(const BufferLayout& layout) {
 			this->layout = layout;
 		}
+		uint32_t GetCount() { return count; }
 	};
 
 	class IndexBuffer {

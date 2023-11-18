@@ -10,8 +10,6 @@ namespace raytracy {
 	class Mesh {
 	private:
 		shared_ptr<VertexArray> vertex_array;
-		shared_ptr<VertexBuffer> vertex_buffer;
-		shared_ptr<IndexBuffer> index_buffer;
 		shared_ptr<Shader> shader; 
 		shared_ptr<MeshData> mesh_data;
 
@@ -23,7 +21,7 @@ namespace raytracy {
 
 	public:
 		Mesh() {}
-		Mesh(glm::vec3 const& position);
+		Mesh(glm::vec3 const& position, float const scale_factor);
 		virtual ~Mesh() = default;
 
 		shared_ptr<VertexArray> GetVertexArray() const {
@@ -33,8 +31,8 @@ namespace raytracy {
 			return shader;
 		}
 
-		shared_ptr<MeshData> GetData() const {
-			return mesh_data;
+		bool IsIndexed() const {
+			return mesh_data->is_indexed;
 		}
 
 		glm::mat4 const& GetModelMatrix() const {
