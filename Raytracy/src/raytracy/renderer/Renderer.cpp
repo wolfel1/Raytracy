@@ -24,9 +24,10 @@ namespace raytracy {
 		renderer_api->SetClearColor(clear_color);
 
 		camera_uniform_buffer = UniformBuffer::Create("Camera", {
-			{ "model", VertexDataType::Mat4 },
-			{ "view", VertexDataType::Mat4 },
-			{ "projection", VertexDataType::Mat4 }
+			{ "model_matrix", VertexDataType::Mat4 },
+			{ "view_matrix", VertexDataType::Mat4 },
+			{ "projection_matrix", VertexDataType::Mat4 },
+			{ "normal_matrix", VertexDataType::Mat4 }
 		});
 
 		is_initialized = true;
@@ -35,8 +36,8 @@ namespace raytracy {
 	void Renderer::BeginScene(PerspectiveCamera const& camera) {
 		RTY_ASSERT(is_initialized, "Renderer is not initialized!");
 		scene_data.meshes.clear();
-		camera_uniform_buffer->SetMat4("view", camera.GetViewMatrix());
-		camera_uniform_buffer->SetMat4("projection", camera.GetProjectionMatrix());
+		scene_data.view_matrix = camera.GetViewMatrix();
+		scene_data.projection_matrix = camera.GetProjectionMatrix();
 	}
 
 	void Renderer::Submit(shared_ptr<Mesh> const mesh) {
@@ -47,10 +48,16 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 		renderer_api->ClearViewport();
 
+		camera_uniform_buffer->SetMat4("view_matrix", scene_data.view_matrix);
+		camera_uniform_buffer->SetMat4("projection_matrix", scene_data.projection_matrix);
 		for (auto& mesh : scene_data.meshes) {
 			auto vertex_array = mesh->GetVertexArray();
 			auto shader = mesh->GetShader();
-			camera_uniform_buffer->SetMat4("model", mesh->GetModelMatrix());
+
+			auto& model_matrix = mesh->GetModelMatrix();
+			auto normal_matrix = transpose(inverse(scene_data.view_matrix * model_matrix));
+			camera_uniform_buffer->SetMat4("model_matrix", model_matrix);
+			camera_uniform_buffer->SetMat4("normal_matrix", normal_matrix);
 
 			vertex_array->Bind();
 			shader->Bind();

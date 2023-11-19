@@ -13,6 +13,8 @@ namespace raytracy {
 		struct SceneData {
 			std::vector<shared_ptr<Mesh>> meshes;
 
+			glm::mat4 view_matrix;
+			glm::mat4 projection_matrix;
 		};
 
 		SceneData scene_data{};

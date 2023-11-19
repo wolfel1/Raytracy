@@ -168,6 +168,7 @@ namespace raytracy {
 		virtual void Link(uint32_t const index) const = 0;
 		virtual void SetVec3(const std::string& name, const glm::vec3& value) const = 0;
 		virtual void SetVec4(const std::string& name, const glm::vec4& value) const = 0;
+		virtual void SetMat3(const std::string& name, const glm::mat3& value) const = 0;
 		virtual void SetMat4(const std::string& name, const glm::mat4& value) const = 0;
 	};
 }

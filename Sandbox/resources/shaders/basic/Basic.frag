@@ -16,11 +16,11 @@ void main() {
 	float ambient_strength = 0.1;
 	vec3 ambient = ambient_strength * light_color;
 
-	vec3 normal = normalize(vertex_normal);
+	vec3 normal = vertex_normal;
 	vec3 light_direction = normalize(light_position - frag_position);
 	float diffuse_impact = max(dot(normal, light_direction), 0.0);
 	vec3 diffuse = diffuse_impact * light_color;
 
 	vec3 result = (ambient + diffuse) * display_color.rgb;
-	color = vec4(result, 1.0);
+	color = vec4(result, display_color.a);
 }
