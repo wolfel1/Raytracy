@@ -42,6 +42,8 @@ namespace raytracy {
 		std::string source = ReadFile(path);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
+
+		CreateCameraUniformBuffer();
 	}
 
 	OpenGLShader::OpenGLShader(const std::vector<std::string>& paths) {
@@ -53,41 +55,7 @@ namespace raytracy {
 
 		Compile(shader_sources);
 
-		Bind();
-		uint32_t ubo_index{};
-		ubo_index = glGetUniformBlockIndex(renderer_id, "Camera");
-		if (Renderer::Get().HasNoCameraUniformBuffer()) {
-			int32_t ubo_size;
-			glGetActiveUniformBlockiv(renderer_id, ubo_index, GL_UNIFORM_BLOCK_DATA_SIZE, &ubo_size);
-
-			const char* names[3] = {
-				"model_view_matrix",
-				"model_view_projection_matrix",
-				"normal_matrix"
-			};
-
-			GLuint indices[3];
-			int32_t offsets[3];
-
-			glGetUniformIndices(renderer_id, 3, names, indices);
-			glGetActiveUniformsiv(renderer_id, 3, indices, GL_UNIFORM_OFFSET, offsets);
-
-			BufferLayout layout(static_cast<uint32_t>(ubo_size), {
-				{ "model_view_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[0])},
-				{ "model_view_projection_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[1]) },
-				{ "normal_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[2]) }
-			});
-
-			auto camera_uniform_buffer = UniformBuffer::Create("Camera", layout);
-			AddUniformBuffer("Camera", camera_uniform_buffer);
-			Renderer::Get().SetCameraUniformBuffer(camera_uniform_buffer);
-		} else {
-			auto camera_uniform_buffer = Renderer::Get().GetCameraUniformBuffer();
-			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, camera_uniform_buffer->GetID());
-			AddUniformBuffer("Camera", camera_uniform_buffer);
-
-		}
-		Unbind();
+		CreateCameraUniformBuffer();
 	}
 
 	OpenGLShader::~OpenGLShader() {
@@ -268,5 +236,43 @@ namespace raytracy {
 		Unbind();
 
 		return layout;
+	}
+
+	void OpenGLShader::CreateCameraUniformBuffer() {
+		Bind();
+		uint32_t ubo_index{};
+		ubo_index = glGetUniformBlockIndex(renderer_id, "Camera");
+		if (Renderer::Get().HasNoCameraUniformBuffer()) {
+			int32_t ubo_size;
+			glGetActiveUniformBlockiv(renderer_id, ubo_index, GL_UNIFORM_BLOCK_DATA_SIZE, &ubo_size);
+
+			const char* names[3] = {
+				"model_view_matrix",
+				"model_view_projection_matrix",
+				"normal_matrix"
+			};
+
+			GLuint indices[3];
+			int32_t offsets[3];
+
+			glGetUniformIndices(renderer_id, 3, names, indices);
+			glGetActiveUniformsiv(renderer_id, 3, indices, GL_UNIFORM_OFFSET, offsets);
+
+			BufferLayout layout(static_cast<uint32_t>(ubo_size), {
+				{ "model_view_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[0])},
+				{ "model_view_projection_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[1]) },
+				{ "normal_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[2]) }
+			});
+
+			auto camera_uniform_buffer = UniformBuffer::Create("Camera", layout);
+			AddUniformBuffer("Camera", camera_uniform_buffer);
+			Renderer::Get().SetCameraUniformBuffer(camera_uniform_buffer);
+		} else {
+			auto camera_uniform_buffer = Renderer::Get().GetCameraUniformBuffer();
+			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, camera_uniform_buffer->GetID());
+			AddUniformBuffer("Camera", camera_uniform_buffer);
+
+		}
+		Unbind();
 	}
 }
