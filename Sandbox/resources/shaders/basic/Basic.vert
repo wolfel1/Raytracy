@@ -6,7 +6,7 @@ layout(location = 2) in vec4 in_vertex_color;
 
 layout(std140, binding = 0) uniform Camera {
   mat4 model_view_matrix;
-  mat4 projection_matrix;
+  mat4 model_view_projection_matrix;
   mat4 normal_matrix;
 };
 
@@ -18,5 +18,5 @@ void main() {
 	out_vertex_normal = normalize(mat3(normal_matrix) * in_vertex_normal);
 	out_frag_position = vec3(model_view_matrix * vec4(in_vertex_position, 1.0));
 	out_vertex_color = in_vertex_color;
-	gl_Position = projection_matrix * model_view_matrix * vec4(in_vertex_position, 1.0);
+	gl_Position = model_view_projection_matrix * vec4(in_vertex_position, 1.0);
 }

@@ -42,14 +42,15 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 		renderer_api->ClearViewport();
 
-		camera_uniform_buffer->SetMat4("projection_matrix", scene_data.projection_matrix);
 		for (auto& mesh : scene_data.meshes) {
 			auto vertex_array = mesh->GetVertexArray();
 			auto shader = mesh->GetShader();
 
 			auto& model_matrix = mesh->GetModelMatrix();
 			glm::mat4 model_view_matrix(scene_data.view_matrix * model_matrix);
-			auto normal_matrix = transpose(inverse(model_view_matrix));
+			glm::mat4 model_view_projection_matrix(scene_data.projection_matrix * scene_data.view_matrix * model_matrix);
+			auto normal_matrix = transpose(inverse(model_matrix));
+			camera_uniform_buffer->SetMat4("model_view_projection_matrix", model_view_projection_matrix);
 			camera_uniform_buffer->SetMat4("model_view_matrix", model_view_matrix);
 			camera_uniform_buffer->SetMat4("normal_matrix", normal_matrix);
 

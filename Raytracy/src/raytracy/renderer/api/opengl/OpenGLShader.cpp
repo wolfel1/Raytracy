@@ -62,7 +62,7 @@ namespace raytracy {
 
 			const char* names[3] = {
 				"model_view_matrix",
-				"projection_matrix",
+				"model_view_projection_matrix",
 				"normal_matrix"
 			};
 
@@ -74,7 +74,7 @@ namespace raytracy {
 
 			BufferLayout layout(static_cast<uint32_t>(ubo_size), {
 				{ "model_view_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[0])},
-				{ "projection_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[1]) },
+				{ "model_view_projection_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[1]) },
 				{ "normal_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[2]) }
 			});
 
