@@ -60,24 +60,22 @@ namespace raytracy {
 			int32_t ubo_size;
 			glGetActiveUniformBlockiv(renderer_id, ubo_index, GL_UNIFORM_BLOCK_DATA_SIZE, &ubo_size);
 
-			const char* names[4] = {
-				"model_matrix",
-				"view_matrix",
+			const char* names[3] = {
+				"model_view_matrix",
 				"projection_matrix",
 				"normal_matrix"
 			};
 
-			GLuint indices[4];
-			int32_t offsets[4];
+			GLuint indices[3];
+			int32_t offsets[3];
 
-			glGetUniformIndices(renderer_id, 4, names, indices);
-			glGetActiveUniformsiv(renderer_id, 4, indices, GL_UNIFORM_OFFSET, offsets);
+			glGetUniformIndices(renderer_id, 3, names, indices);
+			glGetActiveUniformsiv(renderer_id, 3, indices, GL_UNIFORM_OFFSET, offsets);
 
 			BufferLayout layout(static_cast<uint32_t>(ubo_size), {
-				{ "model_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[0])},
-				{ "view_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[1]) },
-				{ "projection_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[2]) },
-				{ "normal_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[3]) }
+				{ "model_view_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[0])},
+				{ "projection_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[1]) },
+				{ "normal_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[2]) }
 			});
 
 			auto camera_uniform_buffer = UniformBuffer::Create("Camera", layout);

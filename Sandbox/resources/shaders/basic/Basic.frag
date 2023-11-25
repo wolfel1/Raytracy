@@ -16,9 +16,8 @@ void main() {
 	float ambient_strength = 0.1;
 	vec3 ambient = ambient_strength * light_color;
 
-	vec3 normal = vertex_normal;
 	vec3 light_direction = normalize(light_position - frag_position);
-	float diffuse_impact = max(dot(normal, light_direction), 0.0);
+	float diffuse_impact = max(0.0, dot(vertex_normal, light_direction));
 	vec3 diffuse = diffuse_impact * light_color;
 
 	vec3 result = (ambient + diffuse) * display_color.rgb;
