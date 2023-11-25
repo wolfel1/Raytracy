@@ -47,7 +47,7 @@ namespace raytracy {
 
 	OpenGLUniformBuffer::OpenGLUniformBuffer(std::string const& name, const BufferLayout& layout) : UniformBuffer(name, layout) {
 		GLCall(glCreateBuffers(1, &renderer_id));
-		glNamedBufferData(renderer_id, layout.GetStride(), NULL, GL_DYNAMIC_DRAW);
+		glNamedBufferData(renderer_id, layout.GetStride(), NULL, GL_DYNAMIC_COPY);
 	}
 
 	OpenGLUniformBuffer::~OpenGLUniformBuffer() {

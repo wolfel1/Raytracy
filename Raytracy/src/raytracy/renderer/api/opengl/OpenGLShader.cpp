@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "OpenGLRendererAPI.h"
+#include "../../Renderer.h"
 
 #include "glad/gl.h"
 
@@ -51,6 +52,44 @@ namespace raytracy {
 		}
 
 		Compile(shader_sources);
+
+		Bind();
+		uint32_t ubo_index{};
+		ubo_index = glGetUniformBlockIndex(renderer_id, "Camera");
+		if (Renderer::Get().HasNoCameraUniformBuffer()) {
+			int32_t ubo_size;
+			glGetActiveUniformBlockiv(renderer_id, ubo_index, GL_UNIFORM_BLOCK_DATA_SIZE, &ubo_size);
+
+			const char* names[4] = {
+				"model_matrix",
+				"view_matrix",
+				"projection_matrix",
+				"normal_matrix"
+			};
+
+			GLuint indices[4];
+			int32_t offsets[4];
+
+			glGetUniformIndices(renderer_id, 4, names, indices);
+			glGetActiveUniformsiv(renderer_id, 4, indices, GL_UNIFORM_OFFSET, offsets);
+
+			BufferLayout layout(static_cast<uint32_t>(ubo_size), {
+				{ "model_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[0])},
+				{ "view_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[1]) },
+				{ "projection_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[2]) },
+				{ "normal_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[3]) }
+			});
+
+			auto camera_uniform_buffer = UniformBuffer::Create("Camera", layout);
+			AddUniformBuffer("Camera", camera_uniform_buffer);
+			Renderer::Get().SetCameraUniformBuffer(camera_uniform_buffer);
+		} else {
+			auto camera_uniform_buffer = Renderer::Get().GetCameraUniformBuffer();
+			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, camera_uniform_buffer->GetID());
+			AddUniformBuffer("Camera", camera_uniform_buffer);
+
+		}
+		Unbind();
 	}
 
 	OpenGLShader::~OpenGLShader() {
@@ -188,11 +227,11 @@ namespace raytracy {
 		renderer_id = program;
 	}
 
-    void OpenGLShader::BindBuffer(shared_ptr<UniformBuffer> const uniform_buffer) {
+	void OpenGLShader::BindBuffer(shared_ptr<UniformBuffer> const uniform_buffer) {
 		auto& name = uniform_buffer->GetName();
-		auto uniform_block_index = glGetUniformBlockIndex(renderer_id, name.c_str()); 
+		auto uniform_block_index = glGetUniformBlockIndex(renderer_id, name.c_str());
 		GLCall(glUniformBlockBinding(renderer_id, uniform_block_index, index));
-    }
+	}
 
 	void OpenGLShader::Bind() const {
 		glUseProgram(renderer_id);
@@ -200,5 +239,36 @@ namespace raytracy {
 
 	void OpenGLShader::Unbind() const {
 		glUseProgram(0);
+	}
+
+	BufferLayout const OpenGLShader::GetUniformBufferLayout(const std::string& uniform_block_name) const {
+		Bind();
+		uint32_t ubo_index{};
+
+		int32_t ubo_size;
+
+		ubo_index = glGetUniformBlockIndex(renderer_id, uniform_block_name.c_str());
+		glGetActiveUniformBlockiv(renderer_id, ubo_index, GL_UNIFORM_BLOCK_DATA_SIZE, &ubo_size);
+
+		const char* names[3] = {
+			"display_color",
+			"light_color",
+			"light_position"
+		};
+
+		GLuint indices[3];
+		int32_t offsets[3];
+
+		glGetUniformIndices(renderer_id, 3, names, indices);
+		glGetActiveUniformsiv(renderer_id, 3, indices, GL_UNIFORM_OFFSET, offsets);
+
+		BufferLayout layout(static_cast<uint32_t>(ubo_size), {
+			{ "display_color", VertexDataType::Float4, static_cast<uint32_t>(offsets[0])},
+			{ "light_color", VertexDataType::Float3, static_cast<uint32_t>(offsets[1]) },
+			{ "light_position", VertexDataType::Float3, static_cast<uint32_t>(offsets[2]) }
+		});
+		Unbind();
+
+		return layout;
 	}
 }

@@ -23,13 +23,6 @@ namespace raytracy {
 
 		renderer_api->SetClearColor(clear_color);
 
-		camera_uniform_buffer = UniformBuffer::Create("Camera", {
-			{ "model_matrix", VertexDataType::Mat4 },
-			{ "view_matrix", VertexDataType::Mat4 },
-			{ "projection_matrix", VertexDataType::Mat4 },
-			{ "normal_matrix", VertexDataType::Mat4 }
-		});
-
 		is_initialized = true;
 	}
 
@@ -55,7 +48,7 @@ namespace raytracy {
 			auto shader = mesh->GetShader();
 
 			auto& model_matrix = mesh->GetModelMatrix();
-			auto normal_matrix = transpose(inverse(scene_data.view_matrix * model_matrix));
+			auto normal_matrix = transpose(inverse(model_matrix));
 			camera_uniform_buffer->SetMat4("model_matrix", model_matrix);
 			camera_uniform_buffer->SetMat4("normal_matrix", normal_matrix);
 

@@ -42,8 +42,8 @@ namespace raytracy {
 		bool normalized;
 		uint32_t offset{};
 
-		BufferElement(const std::string& name, VertexDataType type, bool normalized = false) :
-			name(name), type(type), normalized(normalized) {
+		BufferElement(const std::string& name, VertexDataType type, uint32_t offset = 0, bool normalized = false) :
+			name(name), type(type), offset(offset), normalized(normalized) {
 		}
 
 		uint32_t GetComponentCount() const {
@@ -83,6 +83,7 @@ namespace raytracy {
 		BufferLayout(const std::initializer_list<BufferElement>& elements) : elements(elements) {
 			CalculateOffsetAndStride();
 		}
+		BufferLayout(uint32_t stride, const std::initializer_list<BufferElement>& elements) : stride(stride), elements(elements) {}
 
 		uint32_t GetStride() const {
 			return stride;
@@ -164,6 +165,7 @@ namespace raytracy {
 		}
 
 		const std::string& GetName() const { return name; }
+		const uint32_t GetID() const { return renderer_id; }
 
 		virtual void Link(uint32_t const index) const = 0;
 		virtual void SetVec3(const std::string& name, const glm::vec3& value) const = 0;

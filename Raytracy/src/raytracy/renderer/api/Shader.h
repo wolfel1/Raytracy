@@ -9,7 +9,6 @@ namespace raytracy {
 	protected:
 		std::string name = "";
 		uint32_t renderer_id{};
-		std::unordered_map<std::string, shared_ptr<UniformBuffer>> uniform_buffers;
 		static uint32_t index;
 
 	public:
@@ -20,19 +19,9 @@ namespace raytracy {
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
+		virtual BufferLayout const GetUniformBufferLayout(const std::string& uniform_block_name) const = 0;
 
-		void AddUniformBuffer(std::string const& name, shared_ptr<UniformBuffer> const uniform_buffer) { 
-			Bind();
-			BindBuffer(uniform_buffer);
-			uniform_buffer->Link(index);
-			Unbind();
-			uniform_buffers.insert_or_assign(name, uniform_buffer);
-			index++;
-		}
-
-		std::unordered_map<std::string, shared_ptr<UniformBuffer>> const& GetUniformBuffers() const {
-			return uniform_buffers;
-		}
+		void AddUniformBuffer(std::string const& name, shared_ptr<UniformBuffer> const uniform_buffer);
 
 		static shared_ptr<Shader> CreateFromFile(const std::string& name);
 		static shared_ptr<Shader> CreateFromDirectory(const std::string& directory_name);

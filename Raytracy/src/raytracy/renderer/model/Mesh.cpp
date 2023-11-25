@@ -28,19 +28,16 @@ namespace raytracy {
 			vertex_array->SetIndexBuffer(index_buffer);
 		}
 
-		shader = Shader::CreateFromDirectory("basic");
+		shader = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader, "Could not create a shader program!");
-		auto shading_uniform_buffer = UniformBuffer::Create("Shading", {
-			{ "color", VertexDataType::Float4 },
-			{ "light", VertexDataType::Float4 },
-			{ "light_position", VertexDataType::Float4 }
-		});
-		shading_uniform_buffer->SetVec4("color", display_color);
-		shading_uniform_buffer->SetVec3("light", light_color);
-		shading_uniform_buffer->SetVec3("light_position", light_position);
-		shader->AddUniformBuffer("shading", shading_uniform_buffer);
 
-		shader->AddUniformBuffer("camera", Renderer::Get().GetCameraUniformBuffer());
+		auto layout = shader->GetUniformBufferLayout("Shading");
+		shading_uniform_buffer = UniformBuffer::Create("Shading", layout);
+		shading_uniform_buffer->SetVec4("display_color", display_color);
+		shading_uniform_buffer->SetVec3("light_color", light_color);
+		shading_uniform_buffer->SetVec3("light_position", light_position);
+
+		shader->AddUniformBuffer("Shading", shading_uniform_buffer);
 
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
 		this->mesh_data = mesh_data;
@@ -48,12 +45,7 @@ namespace raytracy {
 
 	void Mesh::SetDisplayColor(glm::vec4 const& color) {
 		display_color = color;
-		shader->Bind();
-		auto& uniform_buffers = shader->GetUniformBuffers();
-		auto it = uniform_buffers.find("shading");
-		RTY_ASSERT(it != uniform_buffers.end(), "No uniform buffer with key 'shading' exists!");
-		it->second->SetVec4("color", color);
-		shader->Unbind();
+		shading_uniform_buffer->SetVec4("display_color", color);
 	}
 
 	void Mesh::Translate(glm::vec3 const& direction) {

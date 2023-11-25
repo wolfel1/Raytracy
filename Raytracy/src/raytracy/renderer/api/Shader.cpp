@@ -48,6 +48,14 @@ namespace raytracy {
 
 	}
 
+	void Shader::AddUniformBuffer(std::string const& name, shared_ptr<UniformBuffer> const uniform_buffer) {
+		Bind();
+		BindBuffer(uniform_buffer);
+		uniform_buffer->Link(index);
+		Unbind();
+		index++;
+	}
+
 
 
 	shared_ptr<Shader> ShaderLibrary::Load(const std::string& name) {
