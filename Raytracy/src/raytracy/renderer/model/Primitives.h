@@ -37,7 +37,7 @@ namespace raytracy {
 		}
 	};
 
-	struct CubeData : public MeshData {
+	struct FlatCubeData : public MeshData {
 		virtual void Init() override {
 
 			vertices = {
@@ -91,6 +91,55 @@ namespace raytracy {
 			  {{ -0.5f,  0.5f, 0.5f},		{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR			  }
 			};
 
+
+			name = "FlatCube";
+		}
+	};
+
+	struct CubeData : public MeshData {
+		virtual void Init() override {
+
+			indices = {
+				//back
+				0, 1, 2,
+				2, 3, 0,
+
+				//front
+				4, 5, 6,
+				6, 7, 4,
+
+				//left
+				1, 4, 7,
+				7, 2, 1,
+
+				//right
+				5, 0, 3,
+				3, 6, 5,
+
+				//bottom
+				1, 0, 5,
+				5, 4, 1,
+
+				//top
+				7, 6, 3,
+				3, 2, 7
+			};
+			vertices = {
+				//positions					//normals
+				//back
+				{{0.5f, -0.5f, -0.5f},		{0.5f,  -0.5f, -0.5f}, DEFAULT_COLOR},
+				{{-0.5f, -0.5f, -0.5f,},	{-0.5f, -0.5f, -0.5f,}, DEFAULT_COLOR			  }	,
+				{{-0.5f,  0.5f, -0.5f,},	{-0.5f,  0.5f, -0.5f,}, DEFAULT_COLOR			  }	,
+				{{0.5f,  0.5f, -0.5f,},	{0.5f,  0.5f, -0.5f,}, DEFAULT_COLOR			  }	,
+
+				//front													  	
+				{{-0.5f, -0.5f,  0.5f},		{-0.5f, -0.5f,  0.5f}, DEFAULT_COLOR			  }	,
+				{{ 0.5f, -0.5f,  0.5f},		{ 0.5f, -0.5f,  0.5f}, DEFAULT_COLOR			  }	,
+				{{ 0.5f,  0.5f,  0.5f},		{ 0.5f,  0.5f,  0.5f}, DEFAULT_COLOR			  }	,
+				{{-0.5f,  0.5f,  0.5f},		{-0.5f,  0.5f,  0.5f}, DEFAULT_COLOR			  }	,
+			};
+
+			is_indexed = true;
 			name = "Cube";
 		}
 	};
