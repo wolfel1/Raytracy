@@ -17,5 +17,5 @@ Once you've cloned, run `Win-GenerateProjectVS.bat` to generate Visual Studio 20
 - [glad](https://github.com/Dav1dde/glad/tree/glad2)
 
 ### Credits
-- [Raytracing On One Weekend](https://raytracing.github.io/) series
-- [TheCherno](https://github.com/TheCherno)
+- [Raytracing On One Weekend](https://raytracing.github.io/) series for teaching the principle of raytracing
+- [TheCherno](https://github.com/TheCherno) for teaching C++ and OpenGL
