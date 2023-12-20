@@ -3,7 +3,7 @@
 
 #include "../Renderer.h"
 
-namespace raytracy {
+namespace raytracy::renderer {
 
 	Mesh::Mesh(glm::vec3 const& position, float const scale_factor) {
 		Translate(position);

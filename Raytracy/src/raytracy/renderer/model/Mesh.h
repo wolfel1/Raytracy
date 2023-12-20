@@ -5,7 +5,7 @@
 #include "../api/VertexArray.h"
 #include "Primitives.h"
 
-namespace raytracy {
+namespace raytracy::renderer {
 
 	class Mesh {
 	private:

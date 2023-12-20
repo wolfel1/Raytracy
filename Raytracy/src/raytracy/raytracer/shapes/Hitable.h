@@ -5,11 +5,10 @@
 #include "../helper/Hit.h"
 #include "../materials/Material.h"
 
-namespace raytracy {
+namespace raytracy::raytracer {
 
 	class Hitable {
 	protected:
-		glm::vec3 center;
 		shared_ptr<Material> material;
 
 	public:
@@ -19,6 +18,7 @@ namespace raytracy {
 
 	class Sphere : public Hitable {
 	private:
+		glm::vec3 center;
 		float radius;
 
 	public:
@@ -29,4 +29,25 @@ namespace raytracy {
 		virtual bool IsHit(const Ray& ray, float min, float max,
 								Hit& hit) const override;
 	};
+
+	class Plane : public Hitable {
+	private:
+		glm::vec3 start_point;
+		glm::vec3 normal;
+		glm::vec3 u, v, w;
+		float size;
+		float d;
+
+	public:
+		Plane();
+		Plane(glm::vec3 center, float size, shared_ptr<Material> material);
+		~Plane() = default;
+
+		virtual bool IsHit(const Ray& ray, float min, float max,
+								Hit& hit) const override;
+
+	private:
+		void Init();
+	};
+
 }

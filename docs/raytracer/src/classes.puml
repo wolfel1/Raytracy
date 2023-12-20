@@ -1,0 +1,33 @@
+@startuml raytracer_classes
+abstract Hitable
+Hitable : {abstract} IsHit(ray: Ray, min: float, max: float, hit: Hit)
+
+class Sphere
+Sphere : -center: vec3
+Sphere : -radius: float
+Sphere : +Sphere()
+Sphere : +Sphere(center: vec3, radius: float, material: Material)
+Sphere : +~Sphere()
+
+abstract Material
+Material : {abstract} +Scatter(incoming_ray: Ray, hit: Hit, attenuation: vec4, scattered: Ray)
+
+class Plane
+Plane : -center: vec3
+Plane : -size: float
+Plane : +Plane()
+Plane : +Plane(center: vec3, size: float, material: Material)
+Plane : +~Plane()
+
+class Cube
+Cube : -center: vec3
+Cube : -size: float
+Cube : +Plane()
+Cube : +Plane(center: vec3, size: float, material: Material)
+Cube : +~Plane()
+
+Hitable <|-- Sphere
+Hitable <|-- Plane
+Hitable <|-- Cube
+Material --> Hitable
+@enduml

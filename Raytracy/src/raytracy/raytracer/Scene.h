@@ -5,15 +5,15 @@
 namespace raytracy {
 	class Scene {
 		private:
-		std::vector<shared_ptr<Hitable>> objects;
+		std::vector<shared_ptr<raytracer::Hitable>> objects;
 
 		public:
 		Scene() = default;
-		Scene(shared_ptr<Hitable> object) { Add(object); }
+		Scene(shared_ptr<raytracer::Hitable> object) { Add(object); }
 		~Scene() = default;
 
 		void Clear() { objects.clear(); }
-		void Add(shared_ptr<Hitable> object) { objects.push_back(object); }
+		void Add(shared_ptr<raytracer::Hitable> object) { objects.push_back(object); }
 
 		bool HitObjects(const Ray& ray, float min, float max, Hit& hit) const;
 	};

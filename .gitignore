@@ -16,3 +16,5 @@ profiling/
 **.vcxproj.user
 
 compile.bat
+
+out/

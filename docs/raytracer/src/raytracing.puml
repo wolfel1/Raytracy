@@ -1,0 +1,12 @@
+@startuml raytracing
+participant App
+App -> Raytracer : Submit(Scene, Camera, Image)
+
+activate Raytracer
+Raytracer -> Raytracer : RayTrace
+activate Raytracer
+Raytracer --> Raytracer
+deactivate Raytracer
+Raytracer --> App
+deactivate Raytracer
+@enduml

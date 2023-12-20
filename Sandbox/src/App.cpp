@@ -7,8 +7,9 @@ using namespace raytracy;
 
 class SandboxLayer : public Layer {
 private:
-	shared_ptr<Cube> cube1;
-	shared_ptr<Cube> cube2;
+	shared_ptr<renderer::Plane> ground;
+	shared_ptr<renderer::Cube> cube1;
+	shared_ptr<renderer::Cube> cube2;
 
 	unique_ptr<PerspectiveCameraController> camera;
 
@@ -22,8 +23,10 @@ public:
 		camera->Translate({0.0f, 2.0f, 5.0f});
 		camera->RotateX(-20.0f);
 
-		cube1 = make_shared<Cube>(glm::vec3(-1.0f, 0.0f, 0.0f));
-		cube2 = make_shared<Cube>(glm::vec3(1.0f, 0.0f, 0.0f));
+		ground = make_shared<renderer::Plane>(glm::vec3(0.0f, -0.5f, 0.0f), 10.0f);
+		ground->SetDisplayColor({0.8f, 0.8f, 0.0f, 1.0f});
+		cube1 = make_shared<renderer::Cube>(glm::vec3(-1.0f, 0.0f, 0.0f));
+		cube2 = make_shared<renderer::Cube>(glm::vec3(1.0f, 0.0f, 0.0f));
 		cube2->SetDisplayColor({1.0f,0.0f,0.0f,1.0f});
 	}
 
@@ -33,6 +36,7 @@ public:
 		auto& renderer = Renderer::Get();
 
 		renderer.BeginScene(camera->GetCamera());
+		renderer.Submit(ground);
 		renderer.Submit(cube1);
 		renderer.Submit(cube2);
 		renderer.EndScene();
@@ -57,16 +61,8 @@ public:
 			auto material_left = make_shared<Dielectric>(1.5f);
 			auto material_right = make_shared<Metal>(glm::vec4(0.8f, 0.6f, 0.2f, 1.0f), 0.0f);
 
-			scene.Add(make_shared<Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f,
+			scene.Add(make_shared<raytracer::Plane>(glm::vec3(0.0f, -1.0f, -1.0f), 5.0f,
 										  material_ground));
-			scene.Add(
-				make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, material_center));
-			scene.Add(
-				make_shared<Sphere>(glm::vec3(-1.1f, 0.0f, -1.0f), 0.5f, material_left));
-			scene.Add(
-				make_shared<Sphere>(glm::vec3(-1.1f, 0.0f, -1.0f), -0.4f, material_left));
-			scene.Add(
-				make_shared<Sphere>(glm::vec3(1.1f, 0.0f, -1.0f), 0.5f, material_right));
 
 			glm::vec3 look_from(0, 2, 7);
 			glm::vec3 look_at(0, 0, -1);
@@ -86,6 +82,8 @@ public:
 		if (evt.GetKeyCode() == KeyCode::Escape) {
 			WindowCloseEvent e;
 			EventBus::Get().Notify(e);
+		} else if (evt.GetKeyCode() == KeyCode::R) {
+			RaytraceScene();
 		}
 		return false;
 	}

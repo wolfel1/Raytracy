@@ -11,7 +11,7 @@ namespace raytracy {
 	private:
 
 		struct SceneData {
-			std::vector<shared_ptr<Mesh>> meshes;
+			std::vector<shared_ptr<renderer::Mesh>> meshes;
 
 			glm::mat4 view_matrix;
 			glm::mat4 projection_matrix;
@@ -48,7 +48,7 @@ namespace raytracy {
 		}
 
 		void BeginScene(PerspectiveCamera const& camera);
-		void Submit(shared_ptr<Mesh> const mesh);
+		void Submit(shared_ptr<renderer::Mesh> const mesh);
 		void EndScene();
 
 		void Shutdown();

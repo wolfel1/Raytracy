@@ -34,7 +34,7 @@ namespace raytracy {
 		scene_data.projection_matrix = camera.GetProjectionMatrix();
 	}
 
-	void Renderer::Submit(shared_ptr<Mesh> const mesh) {
+	void Renderer::Submit(shared_ptr<renderer::Mesh> const mesh) {
 		scene_data.meshes.push_back(mesh);
 	}
 
