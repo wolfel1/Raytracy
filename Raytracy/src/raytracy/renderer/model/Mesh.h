@@ -15,6 +15,7 @@ namespace raytracy::renderer {
 
 		glm::mat4 model_matrix = glm::mat4(1.0f);
 		glm::vec3 origin{};
+		float scale = 1.0f;
 
 		glm::vec4 display_color = { 0.5f, 0.5f, 0.5f, 1.0f };
 		glm::vec3 light_color = { 1.0f, 1.0f, 1.0f };
@@ -39,6 +40,14 @@ namespace raytracy::renderer {
 
 		glm::mat4 const& GetModelMatrix() const {
 			return model_matrix;
+		}
+
+		glm::vec3 GetOrigin() const {
+			return origin;
+		}
+
+		float GetScale() const {
+			return scale;
 		}
 		
 		void SetDisplayColor(glm::vec4 const& color);

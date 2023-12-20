@@ -11,7 +11,7 @@ private:
 	shared_ptr<renderer::Cube> cube1;
 	shared_ptr<renderer::Cube> cube2;
 
-	unique_ptr<PerspectiveCameraController> camera;
+	unique_ptr<PerspectiveCameraController> camera_controller;
 
 public:
 	SandboxLayer() : Layer("SandboxLayer") {
@@ -19,9 +19,9 @@ public:
 
 	void OnAttach() override {
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
-		camera = make_unique<PerspectiveCameraController>(1000.0f / 700.0f);
-		camera->Translate({0.0f, 2.0f, 5.0f});
-		camera->RotateX(-20.0f);
+		camera_controller = make_unique<PerspectiveCameraController>(1000.0f / 700.0f);
+		camera_controller->Translate({0.0f, 2.0f, 5.0f});
+		camera_controller->RotateX(-20.0f);
 
 		ground = make_shared<renderer::Plane>(glm::vec3(0.0f, -0.5f, 0.0f), 10.0f);
 		ground->SetDisplayColor({0.8f, 0.8f, 0.0f, 1.0f});
@@ -31,11 +31,11 @@ public:
 	}
 
 	void OnUpdate(Timestep timestep) override {
-		camera->OnUpdate(timestep);
+		camera_controller->OnUpdate(timestep);
 
 		auto& renderer = Renderer::Get();
 
-		renderer.BeginScene(camera->GetCamera());
+		renderer.BeginScene(camera_controller->GetCamera());
 		renderer.Submit(ground);
 		renderer.Submit(cube1);
 		renderer.Submit(cube2);
@@ -45,7 +45,7 @@ public:
 	void RaytraceScene() {
 		const auto aspect_ratio = 16.0f / 9.0f;
 
-		uint32_t width = 480;
+		uint32_t width = 1000/2;
 		uint32_t height = static_cast<int>(width / aspect_ratio);
 		uint32_t samples_per_pixel = 100;
 		uint32_t max_depth = 50;
@@ -58,17 +58,20 @@ public:
 				make_shared<LambertianDiffuse>(glm::vec4(0.8f, 0.8f, 0.0f, 1.0f));
 			auto material_center =
 				make_shared<LambertianDiffuse>(glm::vec4(0.7f, 0.3f, 0.3f, 1.0f));
-			auto material_left = make_shared<Dielectric>(1.5f);
-			auto material_right = make_shared<Metal>(glm::vec4(0.8f, 0.6f, 0.2f, 1.0f), 0.0f);
 
-			scene.Add(make_shared<raytracer::Plane>(glm::vec3(0.0f, -1.0f, -1.0f), 5.0f,
+			scene.Add(make_shared<raytracer::Plane>(ground->GetOrigin(), ground->GetScale(),
 										  material_ground));
+			scene.Add(make_shared<raytracer::Sphere>(cube1->GetOrigin(), cube1->GetScale()/2,
+													material_center));
+			scene.Add(make_shared<raytracer::Sphere>(cube2->GetOrigin(), cube2->GetScale()/2,
+													material_center));
 
-			glm::vec3 look_from(0, 2, 7);
-			glm::vec3 look_at(0, 0, -1);
-			glm::vec3 up(0, 1, 0);
+			auto& viewport_camera = camera_controller->GetCamera();
+			glm::vec3 look_from = viewport_camera.GetPosition();
+			glm::vec3 look_at = viewport_camera.GetDirection();
+			glm::vec3 up = viewport_camera.GetUp();
 
-			Camera camera(look_from, look_at, up, 20.0f, aspect_ratio);
+			Camera camera(look_from, look_at, up, camera_controller->GetFieldOfView(), aspect_ratio);
 
 			Raytracer raytracer;
 			raytracer.Submit(scene, camera, image);

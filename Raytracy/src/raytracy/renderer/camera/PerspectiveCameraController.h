@@ -32,6 +32,10 @@ namespace raytracy {
 			return camera;
 		}
 
+		float GetFieldOfView() const {
+			return field_of_view;
+		}
+
 		void Translate(glm::vec3 const& amount);
 		void TranslateX(float const amount);
 		void TranslateY(float const amount);
