@@ -147,28 +147,27 @@ namespace raytracy {
 	};
 
 	struct SphereData : public MeshData {
-		float radius;
 		virtual void Init() override {
 			//vertices
-			radius = 1.0f;
-			float sector_count = 36;
-			float stack_count = 18;
+			float radius = 1.0f;
+			float segment_count = 36;
+			float ring_count = 18;
 			float x, y, z, xz;
 			float nx, ny, nz;
-			float sector_step = 2 * std::numbers::pi / sector_count;
-			float stack_step = std::numbers::pi / stack_count;
-			float sector_angle, stack_angle;
+			float segment_step = 2 * std::numbers::pi / segment_count;
+			float ring_step = std::numbers::pi / ring_count;
+			float segment_angle, ring_angle;
 
-			for (auto i = 0; i <= stack_count; i++) {
-				stack_angle = std::numbers::pi / 2 - i * stack_step;
-				xz = radius * cosf(stack_angle);
-				y = radius * sinf(stack_angle);
+			for (auto i = 0; i <= ring_count; i++) {
+				ring_angle = std::numbers::pi / 2 - i * ring_step;
+				xz = radius * cosf(ring_angle);
+				y = radius * sinf(ring_angle);
 
-				for (auto j = 0; j <= sector_count; j++) {
-					sector_angle = j * sector_step;
+				for (auto j = 0; j <= segment_count; j++) {
+					segment_angle = j * segment_step;
 
-					x = xz * cosf(sector_angle);
-					z = xz * sinf(sector_angle);
+					x = xz * cosf(segment_angle);
+					z = xz * sinf(segment_angle);
 
 					nx = x;
 					ny = y;
@@ -180,17 +179,17 @@ namespace raytracy {
 
 			//indices
 			uint32_t k1, k2;
-			for (auto i = 0; i < stack_count; i++) {
-				k1 = i * (sector_count + 1);
-				k2 = k1 + sector_count + 1;
-				for (auto j = 0; j < sector_count; j++, k1++, k2++) {
+			for (auto i = 0; i < ring_count; i++) {
+				k1 = i * (segment_count + 1);
+				k2 = k1 + segment_count + 1;
+				for (auto j = 0; j < segment_count; j++, k1++, k2++) {
 					if (i != 0) {
 						indices.push_back(k1);
 						indices.push_back(k1 + 1);
 						indices.push_back(k2);
 					}
 
-					if (i != (stack_count - 1)) {
+					if (i != (ring_count - 1)) {
 						indices.push_back(k1 + 1);
 						indices.push_back(k2 + 1);
 						indices.push_back(k2);
