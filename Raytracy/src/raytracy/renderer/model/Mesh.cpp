@@ -81,4 +81,16 @@ namespace raytracy::renderer {
 		data->Init();
 		Init(data);
 	}
+	
+	Sphere::Sphere() {
+		auto data = make_shared<SphereData>();
+		data->Init();
+		Init(data);
+	}
+
+	Sphere::Sphere(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
+		auto data = make_shared<SphereData>();
+		data->Init();
+		Init(data);
+	}
 }

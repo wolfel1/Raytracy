@@ -77,4 +77,13 @@ namespace raytracy::renderer {
 		Cube(glm::vec3 const& position, float const scale_factor = 1.0f);
 		~Cube() = default;
 	};
+
+	class Sphere : public Mesh {
+	private:
+
+	public:
+		Sphere();
+		Sphere(glm::vec3 const& position, float const scale_factor = 1.0f);
+		~Sphere() = default;
+	};
 }

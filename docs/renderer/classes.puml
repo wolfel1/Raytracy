@@ -1,0 +1,46 @@
+@startuml renderer_classes
+abstract Mesh
+Mesh : -model_matrix: mat4
+Mesh : -origin: vec3
+Mesh : -scale: float
+Mesh : +Mesh()
+Mesh : +Mesh(position: vec3, scale_factor: float)
+Mesh : +\~Mesh()
+Mesh : Translate(direction: vec3)
+Mesh : Scale(value float)
+Mesh : #Init(): void
+
+
+class Plane
+Plane : +Plane()
+Plane : +Plane(position: vec3, scale_factor: float)
+Plane : +\~Plane()
+
+class Cube
+Cube : +Cube()
+Cube : +Cube(position: vec3, scale_factor: float)
+Cube : +\~Cube()
+
+class Sphere
+Sphere : -radius: float
+Sphere : +Sphere()
+Sphere : +Sphere(position: vec3, radius: float, scale_factor: float)
+Sphere : +\~Sphere()
+
+struct MeshData
+
+struct PlaneData
+
+struct CubeData
+
+struct SphereData
+
+MeshData --> Mesh
+MeshData <|-- PlaneData
+MeshData <|-- CubeData
+MeshData <|-- SphereData
+
+Mesh <|-- Plane
+Mesh <|-- Cube
+Mesh <|-- Sphere
+@enduml
