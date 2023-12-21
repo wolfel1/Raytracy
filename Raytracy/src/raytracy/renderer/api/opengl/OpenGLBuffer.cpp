@@ -16,7 +16,7 @@ namespace raytracy {
 	OpenGLVertexBuffer::OpenGLVertexBuffer(const std::vector<Vertex>& vertices) {
 		GLCall(glCreateBuffers(1, &renderer_id));
 		GLCall(glNamedBufferData(renderer_id, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW));
-		count = vertices.size();
+		count = static_cast<uint32_t>(vertices.size());
     }
 	OpenGLVertexBuffer::~OpenGLVertexBuffer() {
 		GLCall(glDeleteBuffers(1, &renderer_id));

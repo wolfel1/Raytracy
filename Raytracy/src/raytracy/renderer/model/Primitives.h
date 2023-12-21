@@ -149,21 +149,22 @@ namespace raytracy {
 	struct SphereData : public MeshData {
 		virtual void Init() override {
 			//vertices
+			const float PI = std::numbers::pi_v<float>;
 			float radius = 1.0f;
-			float segment_count = 36;
-			float ring_count = 18;
+			uint32_t segment_count = 36;
+			uint32_t ring_count = 18;
 			float x, y, z, xz;
 			float nx, ny, nz;
-			float segment_step = 2 * std::numbers::pi / segment_count;
-			float ring_step = std::numbers::pi / ring_count;
+			float segment_step = 2 * PI / segment_count;
+			float ring_step = PI / ring_count;
 			float segment_angle, ring_angle;
 
-			for (auto i = 0; i <= ring_count; i++) {
-				ring_angle = std::numbers::pi / 2 - i * ring_step;
+			for (uint32_t i = 0; i <= ring_count; i++) {
+				ring_angle = PI / 2 - i * ring_step;
 				xz = radius * cosf(ring_angle);
 				y = radius * sinf(ring_angle);
 
-				for (auto j = 0; j <= segment_count; j++) {
+				for (uint32_t j = 0; j <= segment_count; j++) {
 					segment_angle = j * segment_step;
 
 					x = xz * cosf(segment_angle);
@@ -179,10 +180,10 @@ namespace raytracy {
 
 			//indices
 			uint32_t k1, k2;
-			for (auto i = 0; i < ring_count; i++) {
+			for (uint32_t i = 0; i < ring_count; i++) {
 				k1 = i * (segment_count + 1);
 				k2 = k1 + segment_count + 1;
-				for (auto j = 0; j < segment_count; j++, k1++, k2++) {
+				for (uint32_t j = 0; j < segment_count; j++, k1++, k2++) {
 					if (i != 0) {
 						indices.push_back(k1);
 						indices.push_back(k1 + 1);
