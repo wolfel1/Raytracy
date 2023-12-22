@@ -42,6 +42,7 @@ namespace raytracy {
 		bool normalized;
 		uint32_t offset{};
 
+		BufferElement() {}
 		BufferElement(const std::string& name, VertexDataType type, uint32_t offset = 0, bool normalized = false) :
 			name(name), type(type), offset(offset), normalized(normalized) {
 		}
@@ -83,7 +84,7 @@ namespace raytracy {
 		BufferLayout(const std::initializer_list<BufferElement>& elements) : elements(elements) {
 			CalculateOffsetAndStride();
 		}
-		BufferLayout(uint32_t stride, const std::initializer_list<BufferElement>& elements) : stride(stride), elements(elements) {}
+		BufferLayout(uint32_t stride, const std::vector<BufferElement>& elements) : stride(stride), elements(elements) {}
 
 		uint32_t GetStride() const {
 			return stride;
@@ -145,6 +146,13 @@ namespace raytracy {
 
 	protected:
 		IndexBuffer(uint32_t count) : count(count) {}
+	};
+
+	struct UniformBlock {
+		std::string name;
+		std::vector<const char*> uniform_names;
+
+		UniformBlock(std::string const& name, const std::initializer_list<const char*>& uniform_names) : name(name), uniform_names(uniform_names) {}
 	};
 
 	class UniformBuffer {

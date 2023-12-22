@@ -10,7 +10,6 @@ Mesh : Translate(direction: vec3)
 Mesh : Scale(value float)
 Mesh : #Init(): void
 
-
 class Plane
 Plane : +Plane()
 Plane : +Plane(position: vec3, scale_factor: float)
@@ -35,7 +34,18 @@ struct CubeData
 
 struct SphereData
 
-MeshData --> Mesh
+struct BufferElement
+
+class BufferLayout
+BufferLayout : AddElement(element: BufferElement)
+
+struct UniformBlock
+UniformBlock : +name: string
+UniformBlock : +uniform_names: string[]
+
+BufferLayout --> "0..* #elements" BufferElement
+
+Mesh --> "1" MeshData
 MeshData <|-- PlaneData
 MeshData <|-- CubeData
 MeshData <|-- SphereData

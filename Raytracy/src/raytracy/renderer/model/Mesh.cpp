@@ -31,7 +31,13 @@ namespace raytracy::renderer {
 		shader = ShaderLibrary::Get().Load("basic");
 		RTY_ASSERT(shader, "Could not create a shader program!");
 
-		auto layout = shader->GetUniformBufferLayout("Shading");
+		UniformBlock shading_block("Shading", {
+			"display_color",
+			"light_color",
+			"light_position"
+});
+
+		auto layout = shader->GetUniformBufferLayout(shading_block);
 		shading_uniform_buffer = UniformBuffer::Create("Shading", layout);
 		shading_uniform_buffer->SetVec4("display_color", display_color);
 		shading_uniform_buffer->SetVec3("light_color", light_color);
@@ -70,18 +76,18 @@ namespace raytracy::renderer {
 		Init(data);
 	}
 
-    Cube::Cube() {
+	Cube::Cube() {
 		auto data = make_shared<CubeData>();
 		data->Init();
 		Init(data);
-    }
+	}
 
 	Cube::Cube(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
 		auto data = make_shared<CubeData>();
 		data->Init();
 		Init(data);
 	}
-	
+
 	Sphere::Sphere() {
 		auto data = make_shared<SphereData>();
 		data->Init();

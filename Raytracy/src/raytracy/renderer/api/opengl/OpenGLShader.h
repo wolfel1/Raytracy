@@ -15,7 +15,7 @@ namespace raytracy {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual BufferLayout const GetUniformBufferLayout(const std::string& uniform_block_name) const override;
+		virtual BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const override;
 		void CreateCameraUniformBuffer();
 
 		static shared_ptr<OpenGLShader> CreateFromFile(const std::string& name);

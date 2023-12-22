@@ -19,7 +19,7 @@ namespace raytracy {
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
-		virtual BufferLayout const GetUniformBufferLayout(const std::string& uniform_block_name) const = 0;
+		virtual BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const = 0;
 
 		void AddUniformBuffer(std::string const& name, shared_ptr<UniformBuffer> const uniform_buffer);
 

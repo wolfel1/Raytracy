@@ -10,6 +10,27 @@
 
 namespace raytracy {
 
+	static VertexDataType ConvertOpenGLBaseTypeInVertexDataType(int32_t type) {
+		switch (type) {
+		case GL_BOOL: return VertexDataType::Bool;
+		case GL_FLOAT: return VertexDataType::Float;
+		case GL_FLOAT_VEC2: return VertexDataType::Float2;
+		case GL_FLOAT_VEC3: return VertexDataType::Float3;
+		case GL_FLOAT_VEC4: return VertexDataType::Float4;
+		case GL_INT: return VertexDataType::Int;
+		case GL_INT_VEC2: return VertexDataType::Int2;
+		case GL_INT_VEC3: return VertexDataType::Int3;
+		case GL_INT_VEC4: return VertexDataType::Int4;
+		case GL_FLOAT_MAT3: return VertexDataType::Mat3;
+		case GL_FLOAT_MAT4: return VertexDataType::Mat4;
+		default:
+			break;
+		}
+
+		RTY_RENDERER_ERROR("Unknown OpenGL Type!");
+		return VertexDataType::None;
+	}
+
 	static GLenum ShaderTypeFromString(const std::string& type) {
 		if (type == "vertex" || type == ".vert")
 			return GL_VERTEX_SHADER;
@@ -207,72 +228,58 @@ namespace raytracy {
 		glUseProgram(0);
 	}
 
-	BufferLayout const OpenGLShader::GetUniformBufferLayout(const std::string& uniform_block_name) const {
+	BufferLayout const OpenGLShader::GetUniformBufferLayout(UniformBlock const& uniform_block) const {
 		Bind();
 		uint32_t ubo_index{};
-
 		int32_t ubo_size;
 
-		ubo_index = glGetUniformBlockIndex(renderer_id, uniform_block_name.c_str());
+		ubo_index = glGetUniformBlockIndex(renderer_id, uniform_block.name.c_str());
+		RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named '{0}'!", uniform_block.name);
+
 		glGetActiveUniformBlockiv(renderer_id, ubo_index, GL_UNIFORM_BLOCK_DATA_SIZE, &ubo_size);
 
-		const char* names[3] = {
-			"display_color",
-			"light_color",
-			"light_position"
-		};
+		auto size = uniform_block.uniform_names.size();
+		std::vector<GLuint> indices(size);
+		std::vector<int32_t> offsets(size);
+		std::vector<int32_t> types(size);
 
-		GLuint indices[3];
-		int32_t offsets[3];
-
-		glGetUniformIndices(renderer_id, 3, names, indices);
-		glGetActiveUniformsiv(renderer_id, 3, indices, GL_UNIFORM_OFFSET, offsets);
-
-		BufferLayout layout(static_cast<uint32_t>(ubo_size), {
-			{ "display_color", VertexDataType::Float4, static_cast<uint32_t>(offsets[0])},
-			{ "light_color", VertexDataType::Float3, static_cast<uint32_t>(offsets[1]) },
-			{ "light_position", VertexDataType::Float3, static_cast<uint32_t>(offsets[2]) }
-		});
+		glGetUniformIndices(renderer_id, size, uniform_block.uniform_names.data(), indices.data());
+		glGetActiveUniformsiv(renderer_id, size, indices.data(), GL_UNIFORM_OFFSET, offsets.data());
+		glGetActiveUniformsiv(renderer_id, size, indices.data(), GL_UNIFORM_TYPE, types.data());
 		Unbind();
+
+		std::vector<BufferElement> elements(size);
+		for (size_t i = 0; i < size; i++) {
+			elements[i] = { uniform_block.uniform_names[i], ConvertOpenGLBaseTypeInVertexDataType(types[i]), static_cast<uint32_t>(offsets[i]) };
+		}
+
+		BufferLayout layout(static_cast<uint32_t>(ubo_size), elements);
 
 		return layout;
 	}
 
 	void OpenGLShader::CreateCameraUniformBuffer() {
-		Bind();
-		uint32_t ubo_index{};
-		ubo_index = glGetUniformBlockIndex(renderer_id, "Camera");
 		if (Renderer::Get().HasNoCameraUniformBuffer()) {
-			int32_t ubo_size;
-			glGetActiveUniformBlockiv(renderer_id, ubo_index, GL_UNIFORM_BLOCK_DATA_SIZE, &ubo_size);
-
-			const char* names[3] = {
+			UniformBlock block("Camera", {
 				"model_view_matrix",
 				"model_view_projection_matrix",
 				"normal_matrix"
-			};
-
-			GLuint indices[3];
-			int32_t offsets[3];
-
-			glGetUniformIndices(renderer_id, 3, names, indices);
-			glGetActiveUniformsiv(renderer_id, 3, indices, GL_UNIFORM_OFFSET, offsets);
-
-			BufferLayout layout(static_cast<uint32_t>(ubo_size), {
-				{ "model_view_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[0])},
-				{ "model_view_projection_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[1]) },
-				{ "normal_matrix", VertexDataType::Mat4, static_cast<uint32_t>(offsets[2]) }
 			});
+
+			auto layout = GetUniformBufferLayout(block);
 
 			auto camera_uniform_buffer = UniformBuffer::Create("Camera", layout);
 			AddUniformBuffer("Camera", camera_uniform_buffer);
 			Renderer::Get().SetCameraUniformBuffer(camera_uniform_buffer);
 		} else {
+			Bind();
+			uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "Camera");
+			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Camera'!");
+
 			auto camera_uniform_buffer = Renderer::Get().GetCameraUniformBuffer();
 			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, camera_uniform_buffer->GetID());
 			AddUniformBuffer("Camera", camera_uniform_buffer);
-
+			Unbind();
 		}
-		Unbind();
 	}
 }
