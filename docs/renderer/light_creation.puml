@@ -1,0 +1,22 @@
+@startuml light_creation
+autoactivate on
+hide footbox
+participant App
+
+create DirectionalLight
+App -> DirectionalLight : <<create>>
+create UniformBuffer
+DirectionalLight -> UniformBuffer : <<create>>
+return
+return
+
+create Mesh
+...
+App -> Mesh : <<create>>
+Mesh ->o] : GetLightUniformBuffer()
+return uniformbuffer
+Mesh -> Shader : AddUniformBuffer(uniformbuffer)
+return
+return
+
+@enduml

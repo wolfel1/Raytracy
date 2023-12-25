@@ -43,7 +43,19 @@ struct UniformBlock
 UniformBlock : +name: string
 UniformBlock : +uniform_names: string[]
 
-BufferLayout --> "0..* #elements" BufferElement
+BufferLayout "#elements" --> "0..*" BufferElement
+
+class UniformBuffer
+
+class DirectionalLight
+DirectionalLight : -light_color: vec3 = {1.0, 1.0, 1.0}
+DirectionalLight : -light_direction: vec3 = {0.0, 1.0, 0.0}
+DirectionalLight : -light_strength: float = 1.0
+DirectionalLight : +DirectionalLight()
+DirectionalLight : +DirectionalLight(color: vec3, direction: vec3)
+DirectionalLight : +SetStrength(value: float) 0.0 < value < 1.0
+
+DirectionalLight "-light_uniform_buffer" --> "1" UniformBuffer
 
 Mesh --> "1" MeshData
 MeshData <|-- PlaneData
