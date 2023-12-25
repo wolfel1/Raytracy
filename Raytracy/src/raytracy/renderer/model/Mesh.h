@@ -19,7 +19,7 @@ namespace raytracy::renderer {
 
 		glm::vec4 display_color = { 0.5f, 0.5f, 0.5f, 1.0f };
 		glm::vec3 light_color = { 1.0f, 1.0f, 1.0f };
-		glm::vec3 light_position = { 0.0f, 2.0f, 5.0f };
+		glm::vec3 light_direction = { 0.0f, 2.0f, 2.0f };
 		shared_ptr<UniformBuffer> shading_uniform_buffer;
 
 	public:

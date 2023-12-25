@@ -9,7 +9,6 @@ class SandboxLayer : public Layer {
 private:
 	shared_ptr<renderer::Plane> ground;
 	shared_ptr<renderer::Sphere> sphere;
-	shared_ptr<renderer::Cube> cube;
 
 	unique_ptr<PerspectiveCameraController> camera_controller;
 
@@ -25,8 +24,7 @@ public:
 
 		ground = make_shared<renderer::Plane>(glm::vec3(0.0f, -1.5f, 0.0f), 10.0f);
 		ground->SetDisplayColor({ 0.8f, 0.8f, 0.0f, 1.0f });
-		sphere = make_shared<renderer::Sphere>(glm::vec3(1.5f, 0.0f, 0.0f));
-		cube = make_shared<renderer::Cube>(glm::vec3(-1.5f, 0.0f, 0.0f));
+		sphere = make_shared<renderer::Sphere>(glm::vec3(0.0f, 0.0f, 0.0f));
 	}
 
 	void OnUpdate(Timestep timestep) override {
@@ -37,7 +35,6 @@ public:
 		renderer.BeginScene(camera_controller->GetCamera());
 		renderer.Submit(ground);
 		renderer.Submit(sphere);
-		renderer.Submit(cube);
 		renderer.EndScene();
 	}
 
@@ -61,8 +58,6 @@ public:
 			scene.Add(make_shared<raytracer::Plane>(ground->GetOrigin(), ground->GetScale(),
 													material_ground));
 			scene.Add(make_shared<raytracer::Sphere>(sphere->GetOrigin(), sphere->GetScale(),
-													 material_center));
-			scene.Add(make_shared<raytracer::Sphere>(cube->GetOrigin(), cube->GetScale(),
 													 material_center));
 
 			auto& viewport_camera = camera_controller->GetCamera();

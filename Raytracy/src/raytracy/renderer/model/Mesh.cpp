@@ -34,14 +34,14 @@ namespace raytracy::renderer {
 		UniformBlock shading_block("Shading", {
 			"display_color",
 			"light_color",
-			"light_position"
+			"light_direction"
 });
 
 		auto layout = shader->GetUniformBufferLayout(shading_block);
 		shading_uniform_buffer = UniformBuffer::Create("Shading", layout);
 		shading_uniform_buffer->SetVec4("display_color", display_color);
 		shading_uniform_buffer->SetVec3("light_color", light_color);
-		shading_uniform_buffer->SetVec3("light_position", light_position);
+		shading_uniform_buffer->SetVec3("light_direction", light_direction);
 
 		shader->AddUniformBuffer("Shading", shading_uniform_buffer);
 
