@@ -66,6 +66,7 @@ namespace raytracy {
 		Compile(shaderSources);
 
 		CreateCameraUniformBuffer();
+		CreateLightUniformBuffer();
 	}
 
 	OpenGLShader::OpenGLShader(const std::vector<std::string>& paths) {
@@ -78,6 +79,7 @@ namespace raytracy {
 		Compile(shader_sources);
 
 		CreateCameraUniformBuffer();
+		CreateLightUniformBuffer();
 	}
 
 	OpenGLShader::~OpenGLShader() {
@@ -281,6 +283,34 @@ namespace raytracy {
 
 			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, camera_uniform_buffer->GetID());
 			AddUniformBuffer("Camera", camera_uniform_buffer);
+			Unbind();
+		}
+	}
+
+	void OpenGLShader::CreateLightUniformBuffer() {
+		auto& scene_light = renderer::Scene::Get()->GetSceneLight();
+		;
+		if (!scene_light.light_uniform_buffer) {
+			UniformBlock block("Light", {
+				"light_color",
+				"light_direction",
+				"light_strength"
+			});
+
+			auto layout = GetUniformBufferLayout(block);
+
+			scene_light.light_uniform_buffer = UniformBuffer::Create("Light", layout);
+			scene_light.light_uniform_buffer->SetVec3("light_color", scene_light.color);
+			scene_light.light_uniform_buffer->SetVec3("light_direction", scene_light.direction);
+			scene_light.light_uniform_buffer->SetFloat("light_strength", scene_light.strength);
+			AddUniformBuffer("Light", scene_light.light_uniform_buffer);
+		} else {
+			Bind();
+			uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "Light");
+			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Light'!");
+
+			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, scene_light.light_uniform_buffer->GetID());
+			AddUniformBuffer("Light", scene_light.light_uniform_buffer);
 			Unbind();
 		}
 	}

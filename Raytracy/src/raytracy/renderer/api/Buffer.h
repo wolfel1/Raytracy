@@ -176,6 +176,7 @@ namespace raytracy {
 		const uint32_t GetID() const { return renderer_id; }
 
 		virtual void Link(uint32_t const index) const = 0;
+		virtual void SetFloat(const std::string& name, const float value) const = 0;
 		virtual void SetVec3(const std::string& name, const glm::vec3& value) const = 0;
 		virtual void SetVec4(const std::string& name, const glm::vec4& value) const = 0;
 		virtual void SetMat3(const std::string& name, const glm::mat3& value) const = 0;

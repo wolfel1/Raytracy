@@ -17,6 +17,7 @@ namespace raytracy {
 
 		virtual BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const override;
 		void CreateCameraUniformBuffer();
+		void CreateLightUniformBuffer();
 
 		static shared_ptr<OpenGLShader> CreateFromFile(const std::string& name);
 
