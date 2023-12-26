@@ -15,7 +15,7 @@ namespace raytracy {
 
 		std::thread raytracing_thread;
 
-		std::unique_ptr<Scene> active_scene;
+		std::unique_ptr<raytracer::Scene> active_scene;
 		std::unique_ptr<Camera> active_camera;
 		std::shared_ptr<Image> image_ptr;
 
@@ -26,10 +26,10 @@ namespace raytracy {
 	public:
 		Raytracer();
 		~Raytracer();
-		void Submit(const Scene& objects, const Camera& camera, const shared_ptr<Image> image);
+		void Submit(const raytracer::Scene& objects, const Camera& camera, const shared_ptr<Image> image);
 
 	private:
 		void RayTrace();
-		glm::vec4 ComputePixelColor(const Ray& ray, const Scene& objects, uint32_t depth);
+		glm::vec4 ComputePixelColor(const Ray& ray, const raytracer::Scene& objects, uint32_t depth);
 	};
 }

@@ -7,7 +7,8 @@
 
 namespace raytracy {
 
-	PerspectiveCameraController::PerspectiveCameraController(float aspect_ratio) : aspect_ratio(aspect_ratio), camera(field_of_view, aspect_ratio) {
+	PerspectiveCameraController::PerspectiveCameraController(float aspect_ratio) : aspect_ratio(aspect_ratio) {
+		camera = make_shared<PerspectiveCamera>(field_of_view, aspect_ratio);
 
 		auto& event_bus = EventBus::Get();
 		event_bus.Register<WindowResizeEvent>(RTY_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
@@ -27,8 +28,8 @@ namespace raytracy {
 			float y_offset = (last_mouse_position.y - mouse_position.y);
 			if (input.IsKeyPressed(KeyCode::LeftShift)) {
 				glm::vec3 translate_direction{};
-				auto& up = camera.GetUp();
-				auto& direction = camera.GetDirection();
+				auto& up = camera->GetUp();
+				auto& direction = camera->GetDirection();
 
 				if (y_offset < 0) {
 					translate_direction += glm::normalize(up);
@@ -42,8 +43,8 @@ namespace raytracy {
 				}
 				Translate(translate_direction * translation_speed);
 			} else {
-				camera.SetYaw(x_offset * rotation_speed);
-				camera.SetPitch(y_offset * rotation_speed);
+				camera->SetYaw(x_offset * rotation_speed);
+				camera->SetPitch(y_offset * rotation_speed);
 			} 
 			last_mouse_position = mouse_position;
 		} else {
@@ -53,41 +54,41 @@ namespace raytracy {
 	}
 
 	void PerspectiveCameraController::Translate(glm::vec3 const& amount) {
-		auto& camera_position = camera.GetPosition();
+		auto& camera_position = camera->GetPosition();
 		glm::vec3 new_position = camera_position + amount;
-		camera.SetPosition(new_position);
+		camera->SetPosition(new_position);
 	}
 
 	void PerspectiveCameraController::TranslateX(float const amount) {
-		auto& camera_position = camera.GetPosition();
+		auto& camera_position = camera->GetPosition();
 		glm::vec3 new_position = camera_position + glm::vec3(amount, 0.0f, 0.0f);
-		camera.SetPosition(new_position);
+		camera->SetPosition(new_position);
 	}
 
 	void PerspectiveCameraController::TranslateY(float const amount) {
-		auto& camera_position = camera.GetPosition();
+		auto& camera_position = camera->GetPosition();
 		glm::vec3 new_position = camera_position + glm::vec3(0.0f, amount, 0.0f);
-		camera.SetPosition(new_position);
+		camera->SetPosition(new_position);
 	}
 	void PerspectiveCameraController::TranslateZ(float const amount) {
-		auto& camera_position = camera.GetPosition();
+		auto& camera_position = camera->GetPosition();
 		glm::vec3 new_position = camera_position + glm::vec3(0.0f, 0.0f, amount);
-		camera.SetPosition(new_position);
+		camera->SetPosition(new_position);
 	}
 
 	void PerspectiveCameraController::RotateX(float const degree) {
-		camera.SetPitch(degree);
+		camera->SetPitch(degree);
 	}
 
 	void PerspectiveCameraController::RotateY(float const degree) {
-		camera.SetYaw(degree);
+		camera->SetYaw(degree);
 	}
 
 
 	bool PerspectiveCameraController::OnWindowResized(Event& e) {
 		auto& evt = static_cast<WindowResizeEvent&>(e);
 		aspect_ratio = (float)evt.GetWidth() / (float)evt.GetHeight();
-		camera.SetProjection(field_of_view, aspect_ratio);
+		camera->SetProjection(field_of_view, aspect_ratio);
 		return true;
 	}
 
@@ -95,7 +96,7 @@ namespace raytracy {
 		auto& evt = static_cast<MouseScrolledEvent&>(e);
 		auto y = evt.GetYOffset();
 		glm::vec3 translate_direction{};
-		auto& direction = camera.GetDirection();
+		auto& direction = camera->GetDirection();
 		
 		if (y < 0) {
 			translate_direction -= glm::normalize(direction);

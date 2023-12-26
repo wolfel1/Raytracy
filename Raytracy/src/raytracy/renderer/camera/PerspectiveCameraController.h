@@ -13,7 +13,7 @@ namespace raytracy {
 	private:
 		float aspect_ratio;
 		float field_of_view = 45.0f;
-		PerspectiveCamera camera;
+		std::shared_ptr<PerspectiveCamera> camera;
 
 		float translation_speed = 0.08f;
 		float scroll_speed = 0.5f;
@@ -28,7 +28,7 @@ namespace raytracy {
 
 		void OnUpdate(Timestep timestep);
 
-		PerspectiveCamera const& GetCamera() const {
+		std::shared_ptr<PerspectiveCamera> GetCamera() const {
 			return camera;
 		}
 

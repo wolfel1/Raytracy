@@ -2,6 +2,7 @@
 #include "Mesh.h"
 
 #include "../Renderer.h"
+#include "../ViewportScene.h"
 
 namespace raytracy::renderer {
 
@@ -11,6 +12,7 @@ namespace raytracy::renderer {
 	}
 
 	void Mesh::Init(shared_ptr<MeshData> const mesh_data) {
+		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
 		vertex_array = VertexArray::Create();
 

@@ -15,6 +15,7 @@ namespace raytracy {
 
 			glm::mat4 view_matrix;
 			glm::mat4 projection_matrix;
+			shared_ptr<UniformBuffer> camera_uniform_buffer;
 		};
 
 		SceneData scene_data{};
@@ -22,8 +23,6 @@ namespace raytracy {
 		bool is_initialized = false;
 
 		shared_ptr<RendererAPI> renderer_api = nullptr;
-
-		shared_ptr<UniformBuffer> camera_uniform_buffer;
 
 	public:
 		Renderer(const Renderer&) = delete;
@@ -35,19 +34,7 @@ namespace raytracy {
 
 		void Init();
 
-		void SetCameraUniformBuffer(shared_ptr<UniformBuffer> const buffer) {
-			 camera_uniform_buffer = buffer;
-		}
-		
-		shared_ptr<UniformBuffer> GetCameraUniformBuffer() const {
-			return camera_uniform_buffer;
-		}
-
-		bool HasNoCameraUniformBuffer() {
-			return !camera_uniform_buffer;
-		}
-
-		void BeginScene(PerspectiveCamera const& camera);
+		void BeginScene(std::shared_ptr<PerspectiveCamera> camera);
 		void Submit(shared_ptr<renderer::Mesh> const mesh);
 		void EndScene();
 

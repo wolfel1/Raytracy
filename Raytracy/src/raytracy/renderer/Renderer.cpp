@@ -27,11 +27,12 @@ namespace raytracy {
 		is_initialized = true;
 	}
 
-	void Renderer::BeginScene(PerspectiveCamera const& camera) {
+	void Renderer::BeginScene(std::shared_ptr<PerspectiveCamera> camera) {
 		RTY_ASSERT(is_initialized, "Renderer is not initialized!");
 		scene_data.meshes.clear();
-		scene_data.view_matrix = camera.GetViewMatrix();
-		scene_data.projection_matrix = camera.GetProjectionMatrix();
+		scene_data.view_matrix = camera->GetViewMatrix();
+		scene_data.projection_matrix = camera->GetProjectionMatrix();
+		scene_data.camera_uniform_buffer = camera->GetCameraUniformBuffer();
 	}
 
 	void Renderer::Submit(shared_ptr<renderer::Mesh> const mesh) {
@@ -50,9 +51,9 @@ namespace raytracy {
 			glm::mat4 model_view_matrix(scene_data.view_matrix * model_matrix);
 			glm::mat4 model_view_projection_matrix(scene_data.projection_matrix * scene_data.view_matrix * model_matrix);
 			auto normal_matrix = transpose(inverse(model_matrix));
-			camera_uniform_buffer->SetMat4("model_view_projection_matrix", model_view_projection_matrix);
-			camera_uniform_buffer->SetMat4("model_view_matrix", model_view_matrix);
-			camera_uniform_buffer->SetMat4("normal_matrix", normal_matrix);
+			scene_data.camera_uniform_buffer->SetMat4("model_view_projection_matrix", model_view_projection_matrix);
+			scene_data.camera_uniform_buffer->SetMat4("model_view_matrix", model_view_matrix);
+			scene_data.camera_uniform_buffer->SetMat4("normal_matrix", normal_matrix);
 
 			vertex_array->Bind();
 			shader->Bind();

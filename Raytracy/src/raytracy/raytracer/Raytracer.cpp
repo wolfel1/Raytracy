@@ -12,9 +12,9 @@ namespace raytracy {
 		delete[] accumulated_color_data;
 	}
 
-	void Raytracer::Submit(const Scene& scene, const Camera& camera,
+	void Raytracer::Submit(const raytracer::Scene& scene, const Camera& camera,
 		const shared_ptr<Image> image) {
-		active_scene = std::make_unique<Scene>(scene);
+		active_scene = std::make_unique<raytracer::Scene>(scene);
 		active_camera = std::make_unique<Camera>(camera);
 		image_ptr = image;
 		accumulated_color_data = new glm::vec4[image_ptr->GetWidth() * image_ptr->GetHeight()];
@@ -90,7 +90,7 @@ namespace raytracy {
 	}
 
 	glm::vec4 Raytracer::ComputePixelColor(const Ray& ray,
-		const Scene& objects,
+		const raytracer::Scene& objects,
 		uint32_t depth) {
 #define RECURSIVE 0
 #if RECURSIVE

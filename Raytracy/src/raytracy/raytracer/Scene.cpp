@@ -1,7 +1,7 @@
 #include "raytracypch.h"
 #include "Scene.h"
 
-namespace raytracy {
+namespace raytracy::raytracer {
 	bool Scene::HitObjects(const Ray& ray, float min, float max, Hit& hit) const {
 		Hit temp;
 		bool hit_anything = false;
@@ -19,3 +19,4 @@ namespace raytracy {
 		return hit_anything;
 	}
 }
+

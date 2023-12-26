@@ -2,7 +2,7 @@
 
 #include "shapes/Hitable.h"
 
-namespace raytracy {
+namespace raytracy::raytracer {
 	class Scene {
 		private:
 		std::vector<shared_ptr<raytracer::Hitable>> objects;

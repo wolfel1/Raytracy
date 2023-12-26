@@ -1,4 +1,16 @@
 @startuml renderer_classes
+class Scene
+Scene : -Scene()
+Scene : +Get()
+Scene : +AddCamera(camera: PerspectiveCamera)
+Scene : +AddMesh()
+
+Scene --> "1" PerspectiveCamera
+Scene --> "0..*" Mesh
+
+class PerspectiveCamera
+PerspectiveCamera --> "1" DirectionalLight
+
 abstract Mesh
 Mesh : -model_matrix: mat4
 Mesh : -origin: vec3
@@ -6,8 +18,8 @@ Mesh : -scale: float
 Mesh : +Mesh()
 Mesh : +Mesh(position: vec3, scale_factor: float)
 Mesh : +\~Mesh()
-Mesh : Translate(direction: vec3)
-Mesh : Scale(value float)
+Mesh : +Translate(direction: vec3)
+Mesh : +Scale(value float)
 Mesh : #Init(): void
 
 class Plane

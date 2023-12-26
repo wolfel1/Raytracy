@@ -22,6 +22,8 @@ public:
 		camera_controller->Translate({ 0.0f, 2.0f, 8.0f });
 		camera_controller->RotateX(-20.0f);
 
+		renderer::Scene::Create(camera_controller->GetCamera());
+
 		ground = make_shared<renderer::Plane>(glm::vec3(0.0f, -1.5f, 0.0f), 10.0f);
 		ground->SetDisplayColor({ 0.8f, 0.8f, 0.0f, 1.0f });
 		sphere = make_shared<renderer::Sphere>(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -48,7 +50,7 @@ public:
 		shared_ptr<Image> image = make_shared<Image>(width, height, samples_per_pixel, max_depth);
 
 		{
-			Scene scene;
+			raytracer::Scene scene;
 
 			auto material_ground =
 				make_shared<LambertianDiffuse>(glm::vec4(0.8f, 0.8f, 0.0f, 1.0f));
@@ -60,10 +62,10 @@ public:
 			scene.Add(make_shared<raytracer::Sphere>(sphere->GetOrigin(), sphere->GetScale(),
 													 material_center));
 
-			auto& viewport_camera = camera_controller->GetCamera();
-			glm::vec3 look_from = viewport_camera.GetPosition();
-			glm::vec3 look_at = viewport_camera.GetDirection();
-			glm::vec3 up = viewport_camera.GetUp();
+			auto viewport_camera = camera_controller->GetCamera();
+			glm::vec3 look_from = viewport_camera->GetPosition();
+			glm::vec3 look_at = viewport_camera->GetDirection();
+			glm::vec3 up = viewport_camera->GetUp();
 
 			Camera camera(look_from, look_at, up, camera_controller->GetFieldOfView(), aspect_ratio);
 

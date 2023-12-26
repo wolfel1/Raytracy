@@ -5,6 +5,7 @@
 
 #include "OpenGLRendererAPI.h"
 #include "../../Renderer.h"
+#include "../../ViewportScene.h"
 
 #include "glad/gl.h"
 
@@ -238,7 +239,7 @@ namespace raytracy {
 
 		glGetActiveUniformBlockiv(renderer_id, ubo_index, GL_UNIFORM_BLOCK_DATA_SIZE, &ubo_size);
 
-		auto size = uniform_block.uniform_names.size();
+		GLsizei size = uniform_block.uniform_names.size();
 		std::vector<GLuint> indices(size);
 		std::vector<int32_t> offsets(size);
 		std::vector<int32_t> types(size);
@@ -259,7 +260,9 @@ namespace raytracy {
 	}
 
 	void OpenGLShader::CreateCameraUniformBuffer() {
-		if (Renderer::Get().HasNoCameraUniformBuffer()) {
+		auto camera = renderer::Scene::Get()->GetCamera();
+		auto camera_uniform_buffer = camera->GetCameraUniformBuffer();
+		if (!camera_uniform_buffer) {
 			UniformBlock block("Camera", {
 				"model_view_matrix",
 				"model_view_projection_matrix",
@@ -268,15 +271,14 @@ namespace raytracy {
 
 			auto layout = GetUniformBufferLayout(block);
 
-			auto camera_uniform_buffer = UniformBuffer::Create("Camera", layout);
+			camera_uniform_buffer = UniformBuffer::Create("Camera", layout);
 			AddUniformBuffer("Camera", camera_uniform_buffer);
-			Renderer::Get().SetCameraUniformBuffer(camera_uniform_buffer);
+			camera->SetCameraUniformBuffer(camera_uniform_buffer);
 		} else {
 			Bind();
 			uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "Camera");
 			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Camera'!");
 
-			auto camera_uniform_buffer = Renderer::Get().GetCameraUniformBuffer();
 			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, camera_uniform_buffer->GetID());
 			AddUniformBuffer("Camera", camera_uniform_buffer);
 			Unbind();
