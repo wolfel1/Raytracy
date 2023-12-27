@@ -7,7 +7,6 @@ using namespace raytracy;
 
 class SandboxLayer : public Layer {
 private:
-	shared_ptr<renderer::Plane> ground;
 	shared_ptr<renderer::Sphere> sphere;
 
 	unique_ptr<PerspectiveCameraController> camera_controller;
@@ -24,9 +23,9 @@ public:
 
 		renderer::Scene::Create(camera_controller->GetCamera());
 
-		ground = make_shared<renderer::Plane>(glm::vec3(0.0f, -1.5f, 0.0f), 10.0f);
-		ground->SetDisplayColor({ 0.8f, 0.8f, 0.0f, 1.0f });
 		sphere = make_shared<renderer::Sphere>(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto material = make_shared<renderer::Material>(glm::vec4(0.5f, 0.0f, 0.0f, 1.0f));
+		sphere->SetMaterial(material);
 	}
 
 	void OnUpdate(Timestep timestep) override {
@@ -35,7 +34,6 @@ public:
 		auto& renderer = Renderer::Get();
 
 		renderer.BeginScene(camera_controller->GetCamera());
-		renderer.Submit(ground);
 		renderer.Submit(sphere);
 		renderer.EndScene();
 	}
@@ -57,8 +55,6 @@ public:
 			auto material_center =
 				make_shared<LambertianDiffuse>(glm::vec4(0.7f, 0.3f, 0.3f, 1.0f));
 
-			scene.Add(make_shared<raytracer::Plane>(ground->GetOrigin(), ground->GetScale(),
-													material_ground));
 			scene.Add(make_shared<raytracer::Sphere>(sphere->GetOrigin(), sphere->GetScale(),
 													 material_center));
 

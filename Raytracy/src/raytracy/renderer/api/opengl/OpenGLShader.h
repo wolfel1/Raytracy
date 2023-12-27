@@ -16,12 +16,7 @@ namespace raytracy {
 		virtual void Unbind() const override;
 
 		virtual BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const override;
-		void CreateCameraUniformBuffer();
-		void CreateLightUniformBuffer();
 
-		static shared_ptr<OpenGLShader> CreateFromFile(const std::string& name);
-
-		static shared_ptr<OpenGLShader> CreateFromDirectory(const std::string& directory_name);
 
 	private:
 
@@ -31,5 +26,7 @@ namespace raytracy {
 		void Compile(std::unordered_map<GLenum, std::string> shaderSources);
 
 		virtual void BindBuffer(shared_ptr<UniformBuffer> const uniform_buffer) override;
+		void CreateCameraUniformBuffer();
+		void CreateLightUniformBuffer();
 	};
 }

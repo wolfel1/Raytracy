@@ -7,33 +7,45 @@
 
 namespace raytracy::renderer {
 
+	class Material {
+	private:
+		glm::vec4 color = { 0.5f, 0.5f, 0.5f, 1.0f };
+
+		shared_ptr<Shader> shader;
+		shared_ptr<UniformBuffer> material_uniform_buffer;
+
+	public:
+		Material();
+		Material(glm::vec4 color);
+		~Material() = default;
+
+		shared_ptr<Shader> GetShader() const {
+			return shader;
+		}
+	};
+
 	class Mesh {
 	private:
 		shared_ptr<VertexArray> vertex_array;
-		shared_ptr<Shader> shader; 
 		shared_ptr<MeshData> mesh_data;
+		shared_ptr<Material> material;
 
 		glm::mat4 model_matrix = glm::mat4(1.0f);
 		glm::vec3 origin{};
 		float scale = 1.0f;
 
-		glm::vec4 display_color = { 0.5f, 0.5f, 0.5f, 1.0f };
-		shared_ptr<UniformBuffer> shading_uniform_buffer;
 
 	public:
 		Mesh() {}
 		Mesh(glm::vec3 const& position, float const scale_factor);
 		virtual ~Mesh() = default;
 
-		shared_ptr<VertexArray> GetVertexArray() const {
-			return vertex_array;
-		}
-		shared_ptr<Shader> GetShader() const {
-			return shader;
+		shared_ptr<Material> GetMaterial() const {
+			return material;
 		}
 
-		bool IsIndexed() const {
-			return mesh_data->is_indexed;
+		void SetMaterial(shared_ptr<Material> material) {
+			this->material = material;
 		}
 
 		glm::mat4 const& GetModelMatrix() const {
@@ -47,8 +59,8 @@ namespace raytracy::renderer {
 		float GetScale() const {
 			return scale;
 		}
-		
-		void SetDisplayColor(glm::vec4 const& color);
+
+		void Draw(shared_ptr<RendererAPI> api);
 
 		void Translate(glm::vec3 const& direction);
 

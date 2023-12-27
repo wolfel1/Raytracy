@@ -42,21 +42,6 @@ namespace raytracy {
 		return 0;
 	}
 
-	shared_ptr<OpenGLShader> OpenGLShader::CreateFromFile(const std::string& name) {
-		return make_shared<OpenGLShader>(name);
-	}
-
-	shared_ptr<OpenGLShader> OpenGLShader::CreateFromDirectory(const std::string& directory_name) {
-		std::string path = ShaderLibrary::rootPath + directory_name;
-		std::vector<std::string> filepaths;
-		for (const auto& file : std::filesystem::directory_iterator(path)) {
-			filepaths.push_back(file.path().string());
-		}
-
-		return make_shared<OpenGLShader>(filepaths);
-
-	}
-
 	OpenGLShader::OpenGLShader(const std::string& name) : Shader(name) {
 		RTY_PROFILE_FUNCTION();
 
@@ -288,8 +273,13 @@ namespace raytracy {
 	}
 
 	void OpenGLShader::CreateLightUniformBuffer() {
+		auto ubo_index = glGetUniformBlockIndex(renderer_id, "Light");
+		if (ubo_index == GL_INVALID_INDEX) {
+			return;
+		}
+
 		auto& scene_light = renderer::Scene::Get()->GetSceneLight();
-		;
+		
 		if (!scene_light.light_uniform_buffer) {
 			UniformBlock block("Light", {
 				"light_color",

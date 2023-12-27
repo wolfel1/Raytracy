@@ -69,7 +69,14 @@ DirectionalLight : +SetStrength(value: float) 0.0 < value < 1.0
 
 DirectionalLight "-light_uniform_buffer" --> "1" UniformBuffer
 
+class Material
+Material : color
+
+Material --> "1" Shader
+Material "-material_uniform_buffer" --> "1" UniformBuffer
+
 Mesh --> "1" MeshData
+Mesh --> "1" Material
 MeshData <|-- PlaneData
 MeshData <|-- CubeData
 MeshData <|-- SphereData

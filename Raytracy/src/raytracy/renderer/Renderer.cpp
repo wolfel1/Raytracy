@@ -44,8 +44,6 @@ namespace raytracy {
 		renderer_api->ClearViewport();
 
 		for (auto& mesh : scene_data.meshes) {
-			auto vertex_array = mesh->GetVertexArray();
-			auto shader = mesh->GetShader();
 
 			auto& model_matrix = mesh->GetModelMatrix();
 			glm::mat4 model_view_matrix(scene_data.view_matrix * model_matrix);
@@ -55,14 +53,7 @@ namespace raytracy {
 			scene_data.camera_uniform_buffer->SetMat4("model_view_matrix", model_view_matrix);
 			scene_data.camera_uniform_buffer->SetMat4("normal_matrix", normal_matrix);
 
-			vertex_array->Bind();
-			shader->Bind();
-
-			if (mesh->IsIndexed()) {
-				renderer_api->DrawIndexed(vertex_array);
-			} else {
-				renderer_api->Draw(vertex_array);
-			}
+			mesh->Draw(renderer_api);
 		}
 
 	}

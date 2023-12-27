@@ -24,10 +24,10 @@ namespace raytracy {
 
 	struct PlaneData : public MeshData {
 		virtual void Init() override {
-			vertices = { { {-1.0, 0.0f, -1.0}, {0.0f, 0.f, 0.0f}, DEFAULT_COLOR},
-			 { {1.0, 0.0f, -1.0}, {0.0f, 0.f, 0.0f}, DEFAULT_COLOR },
-			 { {1.0, 0.0f, 1.0}, {0.0f, 0.f, 0.0f}, DEFAULT_COLOR },
-			 { {-1.0, 0.0f, 1.0}, {0.0f, 0.f, 0.0f}, DEFAULT_COLOR } };
+			vertices = { { {-1.0, 0.0f, -1.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR},
+			 { {1.0, 0.0f, -1.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR },
+			 { {1.0, 0.0f, 1.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR },
+			 { {-1.0, 0.0f, 1.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR } };
 
 			indices = {
 				2, 1, 0,

@@ -25,31 +25,26 @@ namespace raytracy::renderer {
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 
+		material = make_shared<Material>();
+
 		if (mesh_data->is_indexed) {
 			auto index_buffer = IndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
 			vertex_array->SetIndexBuffer(index_buffer);
 		}
 
-		shader = ShaderLibrary::Get().Load("basic");
-		RTY_ASSERT(shader, "Could not create a shader program!");
-
-		UniformBlock shading_block("Shading", {
-			"display_color",
-});
-
-		auto layout = shader->GetUniformBufferLayout(shading_block);
-		shading_uniform_buffer = UniformBuffer::Create("Shading", layout);
-		shading_uniform_buffer->SetVec4("display_color", display_color);
-
-		shader->AddUniformBuffer("Shading", shading_uniform_buffer);
-
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
 		this->mesh_data = mesh_data;
 	}
 
-	void Mesh::SetDisplayColor(glm::vec4 const& color) {
-		display_color = color;
-		shading_uniform_buffer->SetVec4("display_color", color);
+	void Mesh::Draw(shared_ptr<RendererAPI> api) {
+		vertex_array->Bind();
+		material->GetShader()->Bind();
+
+		if (mesh_data->is_indexed) {
+			api->DrawIndexed(vertex_array);
+		} else {
+			api->Draw(vertex_array);
+		}
 	}
 
 	void Mesh::Translate(glm::vec3 const& direction) {
@@ -96,5 +91,25 @@ namespace raytracy::renderer {
 		auto data = make_shared<SphereData>();
 		data->Init();
 		Init(data);
+	}
+
+	Material::Material() {
+		shader = ShaderLibrary::Get().Load("default");
+		RTY_ASSERT(shader, "Could not create a shader program!");
+	}
+
+	Material::Material(glm::vec4 color) : color(color) {
+		shader = ShaderLibrary::Get().Load("basic");
+		RTY_ASSERT(shader, "Could not create a shader program!");
+
+		UniformBlock shading_block("Material", {
+			"color",
+		});
+
+		auto layout = shader->GetUniformBufferLayout(shading_block);
+		material_uniform_buffer = UniformBuffer::Create("Material", layout);
+		material_uniform_buffer->SetVec4("color", color);
+
+		shader->AddUniformBuffer("Material", material_uniform_buffer);
 	}
 }
