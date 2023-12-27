@@ -22,6 +22,10 @@ namespace raytracy::renderer {
 		shared_ptr<Shader> GetShader() const {
 			return shader;
 		}
+
+		glm::vec4 GetColor() const {
+			return color;
+		}
 	};
 
 	class Mesh {
@@ -33,7 +37,6 @@ namespace raytracy::renderer {
 		glm::mat4 model_matrix = glm::mat4(1.0f);
 		glm::vec3 origin{};
 		float scale = 1.0f;
-
 
 	public:
 		Mesh() {}

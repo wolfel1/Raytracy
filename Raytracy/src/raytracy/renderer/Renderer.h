@@ -3,6 +3,7 @@
 #include "api/RendererAPI.h"
 #include "model/Mesh.h"
 #include "camera/PerspectiveCamera.h"
+#include "ViewportScene.h"
 
 namespace raytracy {
 
@@ -34,9 +35,7 @@ namespace raytracy {
 
 		void Init();
 
-		void BeginScene(std::shared_ptr<PerspectiveCamera> camera);
-		void Submit(shared_ptr<renderer::Mesh> const mesh);
-		void EndScene();
+		void Submit(shared_ptr<renderer::Scene> const scene);
 
 		void Shutdown();
 
@@ -45,6 +44,8 @@ namespace raytracy {
 	private:
 		Renderer() {}
 
+		void BeginScene(std::shared_ptr<PerspectiveCamera> camera);
 		void Render();
+		void EndScene();
 	};
 }

@@ -11,8 +11,6 @@
 
 namespace raytracy {
 
-	static const glm::vec4 clear_color = { 0.01f, 0.01f, 0.01f, 1.0f };
-
 	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
 
 	void Renderer::Init() {
@@ -22,7 +20,7 @@ namespace raytracy {
 		renderer_api = RendererAPI::Create();
 		renderer_api->Init();
 
-		renderer_api->SetClearColor(clear_color);
+		renderer_api->SetClearColor({ 0.5f, 0.7f, 1.0f, 1.0f });
 
 		is_initialized = true;
 	}
@@ -35,8 +33,14 @@ namespace raytracy {
 		scene_data.camera_uniform_buffer = camera->GetCameraUniformBuffer();
 	}
 
-	void Renderer::Submit(shared_ptr<renderer::Mesh> const mesh) {
-		scene_data.meshes.push_back(mesh);
+	void Renderer::Submit(shared_ptr<renderer::Scene> const scene) {
+		BeginScene(scene->GetCamera());
+		scene_data.meshes = scene->GetMeshes();
+		EndScene();
+	}
+
+	void Renderer::EndScene() {
+		Render();
 	}
 
 	void Renderer::Render() {
@@ -58,9 +62,6 @@ namespace raytracy {
 
 	}
 
-	void Renderer::EndScene() {
-		Render();
-	}
 
 	void Renderer::Shutdown() {
 		RTY_PROFILE_FUNCTION();

@@ -24,6 +24,8 @@ namespace raytracy {
 		graphics_context->SetWindow(window);
 		Renderer::Get().Init();
 
+		Random::Init();
+
 		auto& event_bus = EventBus::Get();
 		event_bus.Register<WindowCloseEvent>(RTY_BIND_EVENT_FN(Application::OnWindowClose));
 		event_bus.Register<WindowResizeEvent>(RTY_BIND_EVENT_FN(Application::OnWindowResize)); 

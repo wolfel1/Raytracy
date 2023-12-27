@@ -7,7 +7,7 @@ using namespace raytracy;
 
 class SandboxLayer : public Layer {
 private:
-	shared_ptr<renderer::Sphere> sphere;
+	std::shared_ptr<renderer::Scene> scene;
 
 	unique_ptr<PerspectiveCameraController> camera_controller;
 
@@ -18,24 +18,28 @@ public:
 	void OnAttach() override {
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
 		camera_controller = make_unique<PerspectiveCameraController>(1000.0f / 700.0f);
-		camera_controller->Translate({ 0.0f, 2.0f, 8.0f });
+		camera_controller->Translate({ 0.0f, 5.0f, 20.0f });
 		camera_controller->RotateX(-20.0f);
 
 		renderer::Scene::Create(camera_controller->GetCamera());
+		scene = renderer::Scene::Get();
 
-		sphere = make_shared<renderer::Sphere>(glm::vec3(0.0f, 0.0f, 0.0f));
-		auto material = make_shared<renderer::Material>(glm::vec4(0.5f, 0.0f, 0.0f, 1.0f));
-		sphere->SetMaterial(material);
+		for (int a = 0; a < 10; a++) {
+			glm::vec3 center(Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f));
+
+			auto color = glm::vec4(Random::RandomVector(0.0f, 1.0f), 1.0f);
+			shared_ptr<renderer::Material>sphere_material = std::make_shared<renderer::Material>(color);
+			auto mesh = make_shared<renderer::Sphere>(center, Random::RandomFloat(0.1f, 1.0f));
+			mesh->SetMaterial(sphere_material);
+			scene->AddMesh(mesh);
+		}
+
 	}
 
 	void OnUpdate(Timestep timestep) override {
 		camera_controller->OnUpdate(timestep);
 
-		auto& renderer = Renderer::Get();
-
-		renderer.BeginScene(camera_controller->GetCamera());
-		renderer.Submit(sphere);
-		renderer.EndScene();
+		Renderer::Get().Submit(scene);
 	}
 
 	void RaytraceScene() {
@@ -50,13 +54,14 @@ public:
 		{
 			raytracer::Scene scene;
 
-			auto material_ground =
-				make_shared<LambertianDiffuse>(glm::vec4(0.8f, 0.8f, 0.0f, 1.0f));
-			auto material_center =
-				make_shared<LambertianDiffuse>(glm::vec4(0.7f, 0.3f, 0.3f, 1.0f));
+			for (auto mesh : this->scene->GetMeshes()) {
 
-			scene.Add(make_shared<raytracer::Sphere>(sphere->GetOrigin(), sphere->GetScale(),
-													 material_center));
+				auto material =
+					make_shared<LambertianDiffuse>(mesh->GetMaterial()->GetColor());
+
+				scene.Add(make_shared<raytracer::Sphere>(mesh->GetOrigin(), mesh->GetScale(),
+														 material));
+			}
 
 			auto viewport_camera = camera_controller->GetCamera();
 			glm::vec3 look_from = viewport_camera->GetPosition();

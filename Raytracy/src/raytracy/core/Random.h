@@ -12,6 +12,10 @@ namespace raytracy {
 
 	public:
 
+		static void Init() {
+			generator.seed(std::random_device()());
+		}
+
 		static float RandomFloat() {
 			// Returns a random real in [0,1).
 			return distribution(generator);

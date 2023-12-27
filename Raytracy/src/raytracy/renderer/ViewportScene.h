@@ -1,5 +1,6 @@
 #pragma once
 #include "./camera/PerspectiveCamera.h"
+#include "./model/Mesh.h"
 
 namespace raytracy::renderer {
 
@@ -14,6 +15,7 @@ namespace raytracy::renderer {
 	class Scene {
 	private:
 		std::shared_ptr<PerspectiveCamera> camera;
+		std::vector<std::shared_ptr<Mesh>> meshes;
 
 		DirectionalLight scene_light{};
 
@@ -33,6 +35,14 @@ namespace raytracy::renderer {
 
 		DirectionalLight& GetSceneLight() {
 			return scene_light;
+		}
+
+		void AddMesh(std::shared_ptr<Mesh> const mesh) {
+			meshes.push_back(mesh);
+		}
+
+		std::vector<std::shared_ptr<Mesh>> const& GetMeshes() const {
+			return meshes;
 		}
 
 	private:
