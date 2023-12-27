@@ -35,6 +35,10 @@ namespace raytracy {
 		float GetFieldOfView() const {
 			return field_of_view;
 		}
+		
+		float GetAspectRatio() const {
+			return aspect_ratio;
+		}
 
 		void Translate(glm::vec3 const& amount);
 		void TranslateX(float const amount);
