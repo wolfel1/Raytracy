@@ -106,8 +106,6 @@ namespace raytracy::renderer {
 
 		material_uniform_buffer = shader->GetMaterialUniformBuffer();
 		material_uniform_buffer->SetVec4("color", color);
-
-		shader->AddUniformBuffer("Material", material_uniform_buffer);
 	}
 	void Material::Draw() {
 		material_uniform_buffer->SetVec4("color", color);

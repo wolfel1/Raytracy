@@ -26,6 +26,7 @@ namespace raytracy {
 	}
 
 	void Renderer::BeginScene(std::shared_ptr<PerspectiveCamera> camera) {
+		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(is_initialized, "Renderer is not initialized!");
 		scene_data.meshes.clear();
 		scene_data.view_matrix = camera->GetViewMatrix();
@@ -34,6 +35,7 @@ namespace raytracy {
 	}
 
 	void Renderer::Submit(shared_ptr<renderer::Scene> const scene) {
+		RTY_PROFILE_FUNCTION();
 		BeginScene(scene->GetCamera());
 		scene_data.meshes = scene->GetMeshes();
 		EndScene();
@@ -65,6 +67,7 @@ namespace raytracy {
 
 	void Renderer::Shutdown() {
 		RTY_PROFILE_FUNCTION();
+		renderer_api->Shutdown();
 	}
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {

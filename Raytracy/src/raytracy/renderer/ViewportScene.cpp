@@ -14,8 +14,9 @@ namespace raytracy::renderer {
 	}
 
 	Scene::Scene(std::shared_ptr<PerspectiveCamera> camera) : camera(camera) {
-		scene_light.color = {1.0f, 1.0f, 1.0f};
-		scene_light.direction = {0.0f, 1.0f, 1.0f};
-		scene_light.strength = 1.0;
+		scene_light = make_shared<DirectionalLight>();
+		scene_light->color = {1.0f, 1.0f, 1.0f};
+		scene_light->direction = {0.0f, 1.0f, 1.0f};
+		scene_light->strength = 1.0;
 	}
 }

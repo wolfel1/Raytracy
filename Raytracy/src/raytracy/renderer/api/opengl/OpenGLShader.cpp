@@ -280,9 +280,9 @@ namespace raytracy {
 			return;
 		}
 
-		auto& scene_light = renderer::Scene::Get()->GetSceneLight();
+		auto scene_light = renderer::Scene::Get()->GetSceneLight();
 		
-		if (!scene_light.light_uniform_buffer) {
+		if (!scene_light->light_uniform_buffer) {
 			UniformBlock block("Light", {
 				"light_color",
 				"light_direction",
@@ -291,18 +291,18 @@ namespace raytracy {
 
 			auto layout = GetUniformBufferLayout(block);
 
-			scene_light.light_uniform_buffer = UniformBuffer::Create("Light", layout);
-			scene_light.light_uniform_buffer->SetVec3("light_color", scene_light.color);
-			scene_light.light_uniform_buffer->SetVec3("light_direction", scene_light.direction);
-			scene_light.light_uniform_buffer->SetFloat("light_strength", scene_light.strength);
-			AddUniformBuffer("Light", scene_light.light_uniform_buffer);
+			scene_light->light_uniform_buffer = UniformBuffer::Create("Light", layout);
+			scene_light->light_uniform_buffer->SetVec3("light_color", scene_light->color);
+			scene_light->light_uniform_buffer->SetVec3("light_direction", scene_light->direction);
+			scene_light->light_uniform_buffer->SetFloat("light_strength", scene_light->strength);
+			AddUniformBuffer("Light", scene_light->light_uniform_buffer);
 		} else {
 			Bind();
 			uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "Light");
 			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Light'!");
 
-			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, scene_light.light_uniform_buffer->GetID());
-			AddUniformBuffer("Light", scene_light.light_uniform_buffer);
+			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, scene_light->light_uniform_buffer->GetID());
+			AddUniformBuffer("Light", scene_light->light_uniform_buffer);
 			Unbind();
 		}
 	}
@@ -312,8 +312,6 @@ namespace raytracy {
 		if (ubo_index == GL_INVALID_INDEX) {
 			return;
 		}
-
-		auto& scene_light = renderer::Scene::Get()->GetSceneLight();
 
 		if (!material_uniform_buffer) {
 
@@ -326,14 +324,6 @@ namespace raytracy {
 			material_uniform_buffer = UniformBuffer::Create("Material", layout);
 			material_uniform_buffer->SetVec4("color", {1.0f, 1.0f, 1.0f, 1.0f});
 			AddUniformBuffer("Material", material_uniform_buffer);
-		} else {
-			Bind();
-			uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "Light");
-			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Material'!");
-
-			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, material_uniform_buffer->GetID());
-			AddUniformBuffer("Material", material_uniform_buffer);
-			Unbind();
 		}
 	}
 }

@@ -25,7 +25,7 @@ public:
 		renderer::Scene::Create(camera_controller->GetCamera());
 		scene = renderer::Scene::Get();
 
-		for (int a = 0; a < 10; a++) {
+		for (int a = 0; a < 100; a++) {
 			glm::vec3 center(Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f));
 
 			auto color = glm::vec4(Random::RandomVector(0.0f, 1.0f), 1.0f);
@@ -88,7 +88,12 @@ public:
 		}
 		return false;
 	}
-	~SandboxLayer() {}
+
+	void OnDetach() override {
+		scene->~Scene();
+	}
+
+	~SandboxLayer() = default;
 
 };
 

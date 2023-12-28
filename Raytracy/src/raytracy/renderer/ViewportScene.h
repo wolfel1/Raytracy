@@ -17,11 +17,12 @@ namespace raytracy::renderer {
 		std::shared_ptr<PerspectiveCamera> camera;
 		std::vector<std::shared_ptr<Mesh>> meshes;
 
-		DirectionalLight scene_light{};
+		shared_ptr<DirectionalLight> scene_light;
 
 		static std::shared_ptr<Scene> instance;
 	public:
 		Scene(const Scene&) = delete;
+		~Scene() = default;
 
 		static void Create(std::shared_ptr<PerspectiveCamera> camera);
 
@@ -29,11 +30,11 @@ namespace raytracy::renderer {
 			return instance;
 		}
 
-		std::shared_ptr<PerspectiveCamera> GetCamera() {
+		std::shared_ptr<PerspectiveCamera> GetCamera() const {
 			return camera;
 		}
 
-		DirectionalLight& GetSceneLight() {
+		shared_ptr<DirectionalLight> GetSceneLight() const {
 			return scene_light;
 		}
 

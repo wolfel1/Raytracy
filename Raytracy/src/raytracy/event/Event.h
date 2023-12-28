@@ -58,14 +58,9 @@ namespace raytracy {
 		void Register(const EventCallbackFn& callback) {
 			RTY_ASSERT((std::is_base_of<Event, T>::value), "Provided type is not a subclass of Event!");
 
-			auto node_handle = event_callback_map.extract((EventType) T::GetStaticType());
-			if (node_handle.empty()) {
-				std::vector<EventCallbackFn> callback_funcs;
-				callback_funcs.push_back(callback);
-				event_callback_map.insert({T::GetStaticType(), callback_funcs});
-			} else {
-				node_handle.mapped().push_back(callback);
-			}
+			std::vector<EventCallbackFn>& callback_funcs = event_callback_map[T::GetStaticType()];
+			callback_funcs.push_back(callback);
+			
 		}
 
 		template<typename T>
