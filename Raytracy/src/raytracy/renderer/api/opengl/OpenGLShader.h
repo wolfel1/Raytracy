@@ -7,6 +7,8 @@ typedef unsigned int GLenum;
 namespace raytracy {
 	class OpenGLShader : public Shader {
 
+
+
 	public:
 		OpenGLShader(const std::string& name);
 		OpenGLShader(const std::vector<std::string>& paths);
@@ -15,8 +17,9 @@ namespace raytracy {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const override;
 
+	protected:
+		virtual BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const override;
 
 	private:
 
@@ -28,5 +31,6 @@ namespace raytracy {
 		virtual void BindBuffer(shared_ptr<UniformBuffer> const uniform_buffer) override;
 		void CreateCameraUniformBuffer();
 		void CreateLightUniformBuffer();
+		void CreateMaterialUniformBuffer();
 	};
 }

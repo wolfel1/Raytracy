@@ -37,6 +37,8 @@ namespace raytracy::renderer {
 	}
 
 	void Mesh::Draw(shared_ptr<RendererAPI> api) {
+		material->Draw();
+
 		vertex_array->Bind();
 		material->GetShader()->Bind();
 
@@ -94,22 +96,20 @@ namespace raytracy::renderer {
 	}
 
 	Material::Material() {
-		shader = ShaderLibrary::Get().Load("default");
+		shader = ShaderLibrary::Get().Load("Default");
 		RTY_ASSERT(shader, "Could not create a shader program!");
 	}
 
 	Material::Material(glm::vec4 color) : color(color) {
-		shader = ShaderLibrary::Get().Load("basic");
+		shader = ShaderLibrary::Get().Load("Basic");
 		RTY_ASSERT(shader, "Could not create a shader program!");
 
-		UniformBlock shading_block("Material", {
-			"color",
-		});
-
-		auto layout = shader->GetUniformBufferLayout(shading_block);
-		material_uniform_buffer = UniformBuffer::Create("Material", layout);
+		material_uniform_buffer = shader->GetMaterialUniformBuffer();
 		material_uniform_buffer->SetVec4("color", color);
 
 		shader->AddUniformBuffer("Material", material_uniform_buffer);
+	}
+	void Material::Draw() {
+		material_uniform_buffer->SetVec4("color", color);
 	}
 }

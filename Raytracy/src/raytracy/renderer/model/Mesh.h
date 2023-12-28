@@ -26,6 +26,12 @@ namespace raytracy::renderer {
 		glm::vec4 GetColor() const {
 			return color;
 		}
+
+		void SetColor(glm::vec4 const& color) {
+			this->color = color;
+		}
+
+		void Draw();
 	};
 
 	class Mesh {
