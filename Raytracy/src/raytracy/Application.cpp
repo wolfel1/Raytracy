@@ -20,11 +20,8 @@ namespace raytracy {
 		instance = this;
 
 		window = Window::Create({ application_specification.name, application_specification.width, application_specification.height });
-		auto graphics_context = window->GetGraphicsContext();
-		graphics_context->SetWindow(window);
 		Renderer::Get().Init();
 
-		Random::Init();
 
 		auto& event_bus = EventBus::Get();
 		event_bus.Register<WindowCloseEvent>(RTY_BIND_EVENT_FN(Application::OnWindowClose));

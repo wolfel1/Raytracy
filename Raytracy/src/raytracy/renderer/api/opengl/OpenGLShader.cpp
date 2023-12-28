@@ -6,10 +6,13 @@
 #include "OpenGLRendererAPI.h"
 #include "../../Renderer.h"
 #include "../../ViewportScene.h"
+#include "../Shader.h"
 
 #include "glad/gl.h"
 
 namespace raytracy {
+
+	uint32_t OpenGLShader::index = 0;
 
 	static VertexDataType ConvertOpenGLBaseTypeInVertexDataType(int32_t type) {
 		switch (type) {
@@ -41,8 +44,31 @@ namespace raytracy {
 		RTY_ASSERT(false, "Unknown shader type!");
 		return 0;
 	}
+	shared_ptr<OpenGLShader> OpenGLShader::CreateFromFile(const std::string& name) {
+			return make_shared<OpenGLShader>(name);
+	}
 
-	OpenGLShader::OpenGLShader(const std::string& name) : Shader(name) {
+	shared_ptr<OpenGLShader> OpenGLShader::CreateFromDirectory(const std::string& directory_name) {
+		std::string path = ShaderLibrary::rootPath + directory_name;
+		std::vector<std::string> filepaths;
+		for (const auto& file : std::filesystem::directory_iterator(path)) {
+			filepaths.push_back(file.path().string());
+		}
+
+
+			return make_shared<OpenGLShader>(filepaths);
+
+	}
+
+	void OpenGLShader::AddUniformBuffer(std::string const& name, shared_ptr<OpenGLUniformBuffer> const uniform_buffer) {
+		Bind();
+		BindBuffer(uniform_buffer);
+		uniform_buffer->Link(index);
+		Unbind();
+		index++;
+	}
+
+	OpenGLShader::OpenGLShader(const std::string& name) : name(name) {
 		RTY_PROFILE_FUNCTION();
 
 		std::string path = ShaderLibrary::rootPath + name + ".glsl";
@@ -204,7 +230,7 @@ namespace raytracy {
 		renderer_id = program;
 	}
 
-	void OpenGLShader::BindBuffer(shared_ptr<UniformBuffer> const uniform_buffer) {
+	void OpenGLShader::BindBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer) {
 		auto& name = uniform_buffer->GetName();
 		auto uniform_block_index = glGetUniformBlockIndex(renderer_id, name.c_str());
 		GLCall(glUniformBlockBinding(renderer_id, uniform_block_index, index));
@@ -260,7 +286,7 @@ namespace raytracy {
 
 			auto layout = GetUniformBufferLayout(block);
 
-			camera_uniform_buffer = UniformBuffer::Create("Camera", layout);
+			camera_uniform_buffer = OpenGLUniformBuffer::Create("Camera", layout);
 			AddUniformBuffer("Camera", camera_uniform_buffer);
 			camera->SetCameraUniformBuffer(camera_uniform_buffer);
 		} else {
@@ -291,7 +317,7 @@ namespace raytracy {
 
 			auto layout = GetUniformBufferLayout(block);
 
-			scene_light->light_uniform_buffer = UniformBuffer::Create("Light", layout);
+			scene_light->light_uniform_buffer = OpenGLUniformBuffer::Create("Light", layout);
 			scene_light->light_uniform_buffer->SetVec3("light_color", scene_light->color);
 			scene_light->light_uniform_buffer->SetVec3("light_direction", scene_light->direction);
 			scene_light->light_uniform_buffer->SetFloat("light_strength", scene_light->strength);
@@ -321,7 +347,7 @@ namespace raytracy {
 
 			auto layout = GetUniformBufferLayout(block);
 
-			material_uniform_buffer = UniformBuffer::Create("Material", layout);
+			material_uniform_buffer = OpenGLUniformBuffer::Create("Material", layout);
 			material_uniform_buffer->SetVec4("color", {1.0f, 1.0f, 1.0f, 1.0f});
 			AddUniformBuffer("Material", material_uniform_buffer);
 		}

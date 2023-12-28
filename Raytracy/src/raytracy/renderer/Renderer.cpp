@@ -3,21 +3,19 @@
 
 #include "api/Shader.h"
 #include "api/Buffer.h"
-#include "api/VertexArray.h"
-#include "api/GraphicsContext.h"
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_inverse.hpp>
 
 
 namespace raytracy {
 
-	RendererAPI::API RendererAPI::graphics_api = RendererAPI::API::OpenGL;
+	API Renderer::graphics_api = API::OpenGL;
 
 	void Renderer::Init() {
 		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(!is_initialized, "Renderer is already initialized!");
 
-		renderer_api = RendererAPI::Create();
+		renderer_api = OpenGLRendererAPI::Create();
 		renderer_api->Init();
 
 		renderer_api->SetClearColor({ 0.5f, 0.7f, 1.0f, 1.0f });

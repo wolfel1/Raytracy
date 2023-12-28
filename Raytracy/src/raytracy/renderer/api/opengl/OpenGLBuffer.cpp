@@ -28,7 +28,7 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	}
 
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count) : IndexBuffer(count) {
+	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count) : count(count) {
 		GLCall(glCreateBuffers(1, &renderer_id));
 		GLCall(glNamedBufferData(renderer_id, count * sizeof(uint32_t), indices, GL_STATIC_DRAW));
 	}
@@ -45,7 +45,7 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 	}
 
-	OpenGLUniformBuffer::OpenGLUniformBuffer(std::string const& name, const BufferLayout& layout) : UniformBuffer(name, layout) {
+	OpenGLUniformBuffer::OpenGLUniformBuffer(std::string const& name, const BufferLayout& layout) : name(name), layout(layout) {
 		GLCall(glCreateBuffers(1, &renderer_id));
 		glNamedBufferData(renderer_id, layout.GetStride(), NULL, GL_DYNAMIC_COPY);
 	}

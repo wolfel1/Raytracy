@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../api/Shader.h"
-#include "../api/Buffer.h"
-#include "../api/VertexArray.h"
+#include "../api/opengl/OpenGLShader.h"
+#include "../api/opengl/OpenGLBuffer.h"
+#include "../api/opengl/OpenGLVertexArray.h"
+#include "../api/opengl/OpenGLRendererAPI.h"
 #include "Primitives.h"
 
 namespace raytracy::renderer {
@@ -11,15 +12,15 @@ namespace raytracy::renderer {
 	private:
 		glm::vec4 color = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-		shared_ptr<Shader> shader;
-		shared_ptr<UniformBuffer> material_uniform_buffer;
+		shared_ptr<OpenGLShader> shader;
+		shared_ptr<OpenGLUniformBuffer> material_uniform_buffer;
 
 	public:
 		Material();
 		Material(glm::vec4 color);
 		~Material() = default;
 
-		shared_ptr<Shader> GetShader() const {
+		shared_ptr<OpenGLShader> GetShader() const {
 			return shader;
 		}
 
@@ -36,7 +37,7 @@ namespace raytracy::renderer {
 
 	class Mesh {
 	private:
-		shared_ptr<VertexArray> vertex_array;
+		shared_ptr<OpenGLVertexArray> vertex_array;
 		shared_ptr<MeshData> mesh_data;
 		shared_ptr<Material> material;
 
@@ -69,7 +70,7 @@ namespace raytracy::renderer {
 			return scale;
 		}
 
-		void Draw(shared_ptr<RendererAPI> api);
+		void Draw(shared_ptr<OpenGLRendererAPI> api);
 
 		void Translate(glm::vec3 const& direction);
 

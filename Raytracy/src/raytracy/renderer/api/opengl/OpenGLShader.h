@@ -1,11 +1,16 @@
 #pragma once
 
-#include "../Shader.h"
+#include "OpenGLBuffer.h"
 
 typedef unsigned int GLenum;
 
 namespace raytracy {
-	class OpenGLShader : public Shader {
+	class OpenGLShader {
+	protected:
+		std::string name = "";
+		uint32_t renderer_id{};
+		static uint32_t index;
+		shared_ptr<OpenGLUniformBuffer> material_uniform_buffer;
 
 
 
@@ -14,13 +19,17 @@ namespace raytracy {
 		OpenGLShader(const std::vector<std::string>& paths);
 		~OpenGLShader();
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+		const std::string& GetName() const { return name; }
 
+		 void Bind() const;
+		 void Unbind() const;
+		 static shared_ptr<OpenGLShader> CreateFromFile(const std::string& name);
+		 static shared_ptr<OpenGLShader> CreateFromDirectory(const std::string& directory_name);
 
-	protected:
-		virtual BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const override;
-
+		 shared_ptr<OpenGLUniformBuffer> GetMaterialUniformBuffer() const {
+			 return material_uniform_buffer;
+		 }
+		 void AddUniformBuffer(std::string const& name, shared_ptr<OpenGLUniformBuffer> const uniform_buffer);
 	private:
 
 		std::string ReadFile(const std::string& path);
@@ -28,7 +37,8 @@ namespace raytracy {
 		void PreProcess(const std::string& path, std::unordered_map<GLenum, std::string>& shaderSources);
 		void Compile(std::unordered_map<GLenum, std::string> shaderSources);
 
-		virtual void BindBuffer(shared_ptr<UniformBuffer> const uniform_buffer) override;
+		BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const;
+		void BindBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer) ;
 		void CreateCameraUniformBuffer();
 		void CreateLightUniformBuffer();
 		void CreateMaterialUniformBuffer();

@@ -9,7 +9,7 @@ namespace raytracy::renderer {
 		glm::vec3 direction;
 		float strength;
 
-		shared_ptr<UniformBuffer> light_uniform_buffer;
+		shared_ptr<OpenGLUniformBuffer> light_uniform_buffer;
 	};
 
 	class Scene {

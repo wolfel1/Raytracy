@@ -5,43 +5,11 @@
 typedef unsigned int GLenum;
 
 namespace raytracy {
-	class Shader {
-	protected:
-		std::string name = "";
-		uint32_t renderer_id{};
-		static uint32_t index;
-		shared_ptr<UniformBuffer> material_uniform_buffer;
-
-	public:
-	
-		virtual ~Shader() = default;
-
-		const std::string& GetName() const { return name; }
-
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
-
-		void AddUniformBuffer(std::string const& name, shared_ptr<UniformBuffer> const uniform_buffer);
-
-		static shared_ptr<Shader> CreateFromFile(const std::string& name);
-		static shared_ptr<Shader> CreateFromDirectory(const std::string& directory_name);
-
-		shared_ptr<UniformBuffer> GetMaterialUniformBuffer() const {
-			return material_uniform_buffer;
-		}
-		
-		protected:
-		Shader() = default;
-		Shader(const std::string& name) : name(name) {}
-
-		virtual void BindBuffer(shared_ptr<UniformBuffer> const uniform_buffer) = 0;
-		virtual BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const = 0;
-
-	};
+	class OpenGLShader;
 
 	class ShaderLibrary {
 	private:
-		std::unordered_map<std::string, shared_ptr<Shader>> shader_programs;
+		std::unordered_map<std::string, shared_ptr<OpenGLShader>> shader_programs;
 
 	public:
 		static const std::string rootPath;
@@ -54,8 +22,8 @@ namespace raytracy {
 			return library;
 		}
 
-		shared_ptr<Shader> Load(const std::string& name);
-		void Add(const shared_ptr<Shader>& shader_program);
+		shared_ptr<OpenGLShader> Load(const std::string& name);
+		void Add(const shared_ptr<OpenGLShader> shader_program);
 		void Remove(const std::string& name);
 
 		bool Exist(const std::string& name);

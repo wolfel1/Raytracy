@@ -5,7 +5,7 @@
 #include "../event/KeyEvent.h"
 #include "../event/MouseEvent.h"
 
-#include "../renderer/api/RendererAPI.h"
+#include "../renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 
@@ -35,10 +35,8 @@ namespace raytracy {
 		{
 			RTY_PROFILE_SCOPE("CreateWindow");
 #ifdef RTY_DEBUG
-			if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL) {
+			if (Renderer::GetAPI() == API::OpenGL) {
 				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-			} else if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan) {
-				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 			}
 #endif
 			glfwWindowHint(GLFW_SAMPLES, 4);
@@ -47,7 +45,7 @@ namespace raytracy {
 		}
 		window_data.v_sync = false;
 
-		graphics_context = GraphicsContext::Create();
+		graphics_context = OpenGLContext::Create();
 		graphics_context->Init(window_handle);
 
 		glfwSetWindowUserPointer(window_handle, &window_data);
@@ -97,6 +95,8 @@ namespace raytracy {
 });
 
 		}
+
+		SetVSync(false);
 	}
 
 	Window::~Window() {
@@ -110,8 +110,21 @@ namespace raytracy {
 	void Window::OnUpdate() {
 		RTY_PROFILE_FUNCTION();
 
-		graphics_context->SwapBuffers();
+		SwapBuffers();
 		glfwPollEvents();
+	}
+
+	void Window::SwapBuffers() {
+		glfwSwapBuffers(window_handle);
+	}
+
+	void Window::SetVSync(bool enabled) {
+		window_data.v_sync = enabled;
+		if (enabled) {
+			glfwSwapInterval(1);
+		} else {
+			glfwSwapInterval(0);
+		}
 	}
 
 
@@ -119,10 +132,6 @@ namespace raytracy {
 		glfwSetWindowTitle(window_handle, name.c_str());
 	}
 
-	void Window::SetVSync(bool enabled) {
-		window_data.v_sync = enabled;
-		graphics_context->SetVSync(enabled);
-	}
 
 	void Window::Shutdown() {
 		graphics_context.reset();

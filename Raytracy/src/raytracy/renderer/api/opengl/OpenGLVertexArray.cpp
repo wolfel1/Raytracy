@@ -44,7 +44,7 @@ namespace raytracy {
 		GLCall(glBindVertexArray(0));
 	}
 
-	void OpenGLVertexArray::SetVertexBuffer(const shared_ptr<VertexBuffer>& vertex_buffer) {
+	void OpenGLVertexArray::SetVertexBuffer(const shared_ptr<OpenGLVertexBuffer> vertex_buffer) {
 		const auto& layout = vertex_buffer->GetLayout();
 		RTY_ASSERT(layout.GetElements().size(), "Vertex buffer has no layout!");
 
@@ -61,22 +61,18 @@ namespace raytracy {
 										 ConvertVertexDataTypeInOpenGLBaseType(elements[i].type),
 										 elements[i].normalized ? GL_TRUE : GL_FALSE,
 										 layout.GetStride(),
-										 (const void*) elements[i].offset
+										 (const void*)elements[i].offset
 			));
 		}
-		VertexArray::vertex_buffer = vertex_buffer;
+		this->vertex_buffer = vertex_buffer;
 	}
 
-	void OpenGLVertexArray::SetIndexBuffer(const shared_ptr<IndexBuffer>& index_buffer) {
+	void OpenGLVertexArray::SetIndexBuffer(const shared_ptr<OpenGLIndexBuffer> index_buffer) {
 		GLCall(glBindVertexArray(renderer_id));
 		auto opengl_index_buffer = std::dynamic_pointer_cast<OpenGLIndexBuffer>(index_buffer);
 		RTY_ASSERT(opengl_index_buffer, "Index buffer suits not to opengl!");
 		opengl_index_buffer->Bind();
 
-		VertexArray::index_buffer = index_buffer;
+		this->index_buffer = index_buffer;
 	}
-
-
-
-
 }

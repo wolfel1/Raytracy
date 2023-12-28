@@ -3,6 +3,7 @@
 
 #include "../Renderer.h"
 #include "../ViewportScene.h"
+#include "../api/Shader.h"
 
 namespace raytracy::renderer {
 
@@ -14,9 +15,9 @@ namespace raytracy::renderer {
 	void Mesh::Init(shared_ptr<MeshData> const mesh_data) {
 		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
-		vertex_array = VertexArray::Create();
+		vertex_array = OpenGLVertexArray::Create();
 
-		auto vertex_buffer = VertexBuffer::Create(mesh_data->vertices);
+		auto vertex_buffer = OpenGLVertexBuffer::Create(mesh_data->vertices);
 		vertex_buffer->SetLayout({
 			{ "position", VertexDataType::Float3 },
 			{ "normal", VertexDataType::Float3 },
@@ -28,7 +29,7 @@ namespace raytracy::renderer {
 		material = make_shared<Material>();
 
 		if (mesh_data->is_indexed) {
-			auto index_buffer = IndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
+			auto index_buffer = OpenGLIndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
 			vertex_array->SetIndexBuffer(index_buffer);
 		}
 
@@ -36,7 +37,7 @@ namespace raytracy::renderer {
 		this->mesh_data = mesh_data;
 	}
 
-	void Mesh::Draw(shared_ptr<RendererAPI> api) {
+	void Mesh::Draw(shared_ptr<OpenGLRendererAPI> api) {
 		material->Draw();
 
 		vertex_array->Bind();

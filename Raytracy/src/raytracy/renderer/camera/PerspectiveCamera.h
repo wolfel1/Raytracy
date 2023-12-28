@@ -2,7 +2,7 @@
 
 
 #include <glm/glm.hpp>
-#include "../api/Buffer.h"
+#include "../api/opengl/OpenGLBuffer.h"
 
 namespace raytracy {
 
@@ -19,7 +19,7 @@ namespace raytracy {
 		float near_clip = 0.1f;
 		float far_clip = 100.0f;
 
-		shared_ptr<UniformBuffer> camera_uniform_buffer;
+		shared_ptr<OpenGLUniformBuffer> camera_uniform_buffer;
 
 	public:
 		PerspectiveCamera(float field_of_view, float aspect_ratio);
@@ -69,11 +69,11 @@ namespace raytracy {
 			return up;
 		}
 
-		void SetCameraUniformBuffer(shared_ptr<UniformBuffer> const buffer) {
+		void SetCameraUniformBuffer(shared_ptr<OpenGLUniformBuffer> const buffer) {
 			camera_uniform_buffer = buffer;
 		}
 
-		shared_ptr<UniformBuffer> GetCameraUniformBuffer() const {
+		shared_ptr<OpenGLUniformBuffer> GetCameraUniformBuffer() const {
 			return camera_uniform_buffer;
 		}
 

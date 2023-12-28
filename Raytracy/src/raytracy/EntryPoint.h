@@ -13,6 +13,8 @@ namespace raytracy {
 
 	int Main(int argc, char** argv) {
 		Log::Init();
+		Random::Init();
+
 		RTY_BASE_INFO("Starting Raytracy...");
 
 		RTY_PROFILE_BEGIN_SESSION("Startup", "startup.json");

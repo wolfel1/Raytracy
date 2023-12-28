@@ -1,16 +1,21 @@
 #pragma once
 
-#include "../GraphicsContext.h"
-
 namespace raytracy {
-	class OpenGLContext : public GraphicsContext {
+	class Window;
+
+	class OpenGLContext {
+
+	private:
 
 	public:
-		OpenGLContext() = default;
+		OpenGLContext() {}
+		~OpenGLContext() = default;
 
-		virtual void Init(void* window_handle) override;
-		virtual void SwapBuffers() override;
-		virtual void SetVSync(bool enabled) override;
-		virtual void Shutdown() override {};
+		void Init(void* window_handle);
+		void Shutdown() {};
+
+		static shared_ptr<OpenGLContext> Create() {
+			return make_shared<OpenGLContext>();
+		};
 	};
 }

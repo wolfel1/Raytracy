@@ -1,20 +1,34 @@
 #pragma once
 
-#include "../VertexArray.h"
+#include "OpenGLBuffer.h"
 
 namespace raytracy {
-	class OpenGLVertexArray : public VertexArray {
-		
-		public:
+	class OpenGLVertexArray {
+	private:
+		uint32_t renderer_id{};
+		shared_ptr<OpenGLVertexBuffer> vertex_buffer;
+		shared_ptr<OpenGLIndexBuffer> index_buffer;
+
+	public:
 		OpenGLVertexArray();
-		~OpenGLVertexArray();
-
-		virtual void Bind() override;
-		virtual void Unbind() override;
-
-		virtual void SetVertexBuffer(const shared_ptr<VertexBuffer>& vertex_buffer) override;
-		virtual void SetIndexBuffer(const shared_ptr<IndexBuffer>& vertex_buffer) override;
-
+		~OpenGLVertexArray(); 
 		
+		static shared_ptr<OpenGLVertexArray> Create() {
+			return make_shared<OpenGLVertexArray>();
+		}
+
+		void Bind();
+		void Unbind();
+
+		void SetVertexBuffer(const shared_ptr<OpenGLVertexBuffer> vertex_buffer);
+		void SetIndexBuffer(const shared_ptr<OpenGLIndexBuffer> vertex_buffer);
+
+		const shared_ptr<OpenGLVertexBuffer> GetVertexBuffer() const {
+			return vertex_buffer;
+		}
+
+		const shared_ptr<OpenGLIndexBuffer> GetIndexBuffer() const {
+			return index_buffer;
+		}
 	};
 }

@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Core.h"
-#include "../renderer/api/GraphicsContext.h"
+#include "../renderer/api/opengl/OpenGLContext.h"
 
 struct GLFWwindow;
 
@@ -21,7 +21,7 @@ namespace raytracy {
 
 		WindowData window_data;
 
-		shared_ptr<GraphicsContext> graphics_context;
+		shared_ptr<OpenGLContext> graphics_context;
 
 	public:
 
@@ -43,10 +43,7 @@ namespace raytracy {
 		void SetTitle(const std::string& name);
 		std::string GetName() const { return window_data.name; }
 
-		shared_ptr<GraphicsContext> GetGraphicsContext() const {
-			return graphics_context;
-		}
-
+		void SwapBuffers();
 		void SetVSync(bool enabled);
 		bool IsVSync() const { return window_data.v_sync; }
 

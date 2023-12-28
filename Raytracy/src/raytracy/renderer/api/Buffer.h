@@ -111,75 +111,10 @@ namespace raytracy {
 		}
 	};
 
-	class VertexBuffer {
-	protected:
-		uint32_t renderer_id{};
-
-		BufferLayout layout;
-		uint32_t count{};
-
-	public:
-		virtual ~VertexBuffer() = default;
-
-		static shared_ptr<VertexBuffer> Create(size_t size);
-		static shared_ptr<VertexBuffer> Create(std::vector<Vertex>& vertices);
-
-		const BufferLayout& GetLayout() const {
-			return layout;
-		}
-		void SetLayout(const BufferLayout& layout) {
-			this->layout = layout;
-		}
-		uint32_t GetCount() { return count; }
-	};
-
-	class IndexBuffer {
-	protected:
-		uint32_t renderer_id{};
-		uint32_t count{};
-
-	public:
-		static shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count);
-		virtual ~IndexBuffer() = default;
-
-		uint32_t GetCount() { return count; }
-
-	protected:
-		IndexBuffer(uint32_t count) : count(count) {}
-	};
-
 	struct UniformBlock {
 		std::string name;
 		std::vector<const char*> uniform_names;
 
 		UniformBlock(std::string const& name, const std::initializer_list<const char*>& uniform_names) : name(name), uniform_names(uniform_names) {}
-	};
-
-	class UniformBuffer {
-
-	protected:
-		uint32_t renderer_id{};
-		BufferLayout layout;
-		std::string name;
-
-	public:
-		static shared_ptr<UniformBuffer> Create(std::string const& name, const BufferLayout& layout);
-
-		UniformBuffer(std::string const& name, const BufferLayout& layout) : name(name), layout(layout) {}
-		virtual ~UniformBuffer() = default;
-
-		const BufferLayout& GetLayout() const {
-			return layout;
-		}
-
-		const std::string& GetName() const { return name; }
-		const uint32_t GetID() const { return renderer_id; }
-
-		virtual void Link(uint32_t const index) const = 0;
-		virtual void SetFloat(const std::string& name, const float value) const = 0;
-		virtual void SetVec3(const std::string& name, const glm::vec3& value) const = 0;
-		virtual void SetVec4(const std::string& name, const glm::vec4& value) const = 0;
-		virtual void SetMat3(const std::string& name, const glm::mat3& value) const = 0;
-		virtual void SetMat4(const std::string& name, const glm::mat4& value) const = 0;
 	};
 }

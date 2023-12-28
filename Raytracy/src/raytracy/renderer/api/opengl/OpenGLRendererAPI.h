@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../RendererAPI.h"
-#include "../Buffer.h"
+#include "OpenGLVertexArray.h"
 
 namespace raytracy {
 
@@ -13,22 +12,29 @@ namespace raytracy {
 #else
 #define GLCall(x) x
 #endif
+		
 
-	class OpenGLRendererAPI : public RendererAPI {
+	class OpenGLRendererAPI {
 
 	public:
+		virtual ~OpenGLRendererAPI() = default;
 
-		virtual void Init() override;
 
-		virtual void ClearViewport() override;
+		void Init();
 
-		virtual void SetClearColor(const glm::vec4& clear_color) override;
+		void ClearViewport();
 
-		virtual void DrawIndexed(const shared_ptr<VertexArray> vertex_array) override;
-		virtual void Draw(const shared_ptr<VertexArray> vertex_array) override;
+		 void SetClearColor(const glm::vec4& clear_color) ;
 
-		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
+		 void DrawIndexed(const shared_ptr<OpenGLVertexArray> vertex_array) ;
+		 void Draw(const shared_ptr<OpenGLVertexArray> vertex_array) ;
 
-		virtual void Shutdown() override {}
+		 void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) ;
+
+		virtual void Shutdown() {}
+
+		static shared_ptr<OpenGLRendererAPI> Create() {
+			return make_shared< OpenGLRendererAPI>();
+		}
 	};
 }
