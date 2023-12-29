@@ -17,7 +17,7 @@ namespace raytracy {
 	class OpenGLRendererAPI {
 
 	public:
-		virtual ~OpenGLRendererAPI() = default;
+		~OpenGLRendererAPI() = default;
 
 
 		void Init();
@@ -31,10 +31,10 @@ namespace raytracy {
 
 		 void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) ;
 
-		virtual void Shutdown() {}
+		void Shutdown() {}
 
 		static shared_ptr<OpenGLRendererAPI> Create() {
-			return make_shared< OpenGLRendererAPI>();
+			return make_shared<OpenGLRendererAPI>();
 		}
 	};
 }

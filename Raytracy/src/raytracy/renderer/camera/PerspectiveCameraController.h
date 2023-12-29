@@ -25,6 +25,7 @@ namespace raytracy {
 
 	public:
 		PerspectiveCameraController(float aspect_ratio);
+		~PerspectiveCameraController() = default;
 
 		void OnUpdate(Timestep timestep);
 

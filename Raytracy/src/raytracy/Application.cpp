@@ -67,13 +67,14 @@ namespace raytracy {
 
 	void Application::Shutdown() {
 		RTY_PROFILE_FUNCTION();
-		Renderer::Get().Shutdown();
-		window->Shutdown();
 
 		for (auto& layer : layer_stack)
 			layer->OnDetach();
 
 		layer_stack.clear();
+		window->Shutdown();
+		Renderer::Get().Shutdown();
+		ShaderLibrary::Get().Shutdown();
 
 		running = false;
 	}

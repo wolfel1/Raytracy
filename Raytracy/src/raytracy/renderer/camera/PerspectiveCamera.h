@@ -23,6 +23,7 @@ namespace raytracy {
 
 	public:
 		PerspectiveCamera(float field_of_view, float aspect_ratio);
+		~PerspectiveCamera() = default;
 
 		void SetPosition(glm::vec3 const& position) {
 			this->position = position; RecalculateViewMatrix();

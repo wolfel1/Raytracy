@@ -48,7 +48,7 @@ public:
 
 		uint32_t width = 720;
 		uint32_t height = static_cast<uint32_t>(width / aspect_ratio);
-		uint32_t samples_per_pixel = 100;
+		uint32_t samples_per_pixel = 50;
 		uint32_t max_depth = 50;
 		shared_ptr<Image> image = make_shared<Image>(width, height, samples_per_pixel, max_depth);
 
@@ -88,10 +88,10 @@ public:
 		}
 		return false;
 	}
-
+	
 	void OnDetach() override {
-		scene->~Scene();
-	}
+		renderer::Scene::Destroy();
+	};
 
 	~SandboxLayer() = default;
 

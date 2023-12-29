@@ -129,7 +129,7 @@ namespace raytracy {
 			} else {
 				glm::vec3 unit_direction = glm::normalize(current_ray.GetDirection());
 				auto hit_value = 0.5f * (unit_direction.y + 1.0f);
-				glm::vec4 color = glm::vec4(1.0f) * (1.0f - hit_value) +
+				glm::vec4 color = glm::vec4(1.0f) * (hit_value) +
 					glm::vec4(0.5f, 0.7f, 1.0f, 1.0f) * hit_value;
 				return current_attenuation * color;
 			}

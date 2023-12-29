@@ -9,13 +9,14 @@ namespace raytracy {
 
 	class ShaderLibrary {
 	private:
-		std::unordered_map<std::string, shared_ptr<OpenGLShader>> shader_programs;
+		std::unordered_map<std::string, shared_ptr<OpenGLShader>> shaders;
 
 	public:
 		static const std::string rootPath;
 
 	public:
 		ShaderLibrary(const ShaderLibrary&) = delete;
+		~ShaderLibrary() = default;
 
 		static ShaderLibrary& Get() {
 			static ShaderLibrary library;
@@ -27,6 +28,10 @@ namespace raytracy {
 		void Remove(const std::string& name);
 
 		bool Exist(const std::string& name);
+
+		void Shutdown() {
+			shaders.clear();
+		}
 
 	private:
 		ShaderLibrary() {};

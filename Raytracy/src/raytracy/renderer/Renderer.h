@@ -32,6 +32,7 @@ namespace raytracy {
 
 	public:
 		Renderer(const Renderer&) = delete;
+		~Renderer() = default;
 
 		static Renderer& Get() {
 			static Renderer renderer;

@@ -65,7 +65,9 @@ namespace raytracy {
 
 	void Renderer::Shutdown() {
 		RTY_PROFILE_FUNCTION();
-		renderer_api->Shutdown();
+		renderer_api = nullptr;
+		scene_data.meshes.clear();
+		scene_data.camera_uniform_buffer = nullptr;
 	}
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {

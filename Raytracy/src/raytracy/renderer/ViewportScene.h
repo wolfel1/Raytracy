@@ -30,6 +30,10 @@ namespace raytracy::renderer {
 			return instance;
 		}
 
+		static void Destroy() {
+			instance = nullptr;
+		}
+
 		std::shared_ptr<PerspectiveCamera> GetCamera() const {
 			return camera;
 		}
