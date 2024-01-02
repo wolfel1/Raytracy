@@ -12,7 +12,6 @@ namespace raytracy {
 
 	class Raytracer {
 	private:
-
 		std::thread raytracing_thread;
 
 		std::unique_ptr<raytracer::Scene> active_scene;
@@ -26,6 +25,7 @@ namespace raytracy {
 	public:
 		Raytracer();
 		~Raytracer();
+		void RaytraceScene();
 		void Submit(const raytracer::Scene& objects, const Camera& camera, const shared_ptr<Image> image);
 
 	private:

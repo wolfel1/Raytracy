@@ -1,0 +1,45 @@
+@startuml raytracer
+
+struct Sphere
+Sphere : +center: vec3
+Sphere : +radius: float
+
+struct Scene
+Scene --> "0..*" Sphere
+
+struct Material
+Material : +albedo: vec4
+Material : +fuzzy: float
+Material : +index_of_refraction: float
+
+struct Camera
+Camera : +pos: vec3
+Camera : +direction: vec3
+Camera : +up: vec3
+Camera : +right: vec3
+
+struct Ray
+Ray : direction: vec3
+Ray : origin: vec3
+
+struct RenderState
+RenderState : +point: vec3
+RenderState : +normal: vec3
+RenderState : +hit_value: float
+RenderState : +front_face: bool
+RenderState : +SetFaceNormal(Ray ray, outward_normal: vec3)
+RenderState --> "1" Material
+
+struct Image
+Image : +accumulated_color_data: vec4[]
+Image : +width: float
+Image : +height: float
+Image : +samples: int
+Image : +max_depth: int
+
+class Raytracer
+Raytracer : +Raytracer()
+Raytracer : +Submit(objects: Scene, camera: Camera, image: Image)
+Raytracer : -RayTrace()
+Raytracer : -ComputePixelColor(ray: Ray, objects: Scene, depth: int)
+@enduml

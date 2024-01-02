@@ -8,8 +8,54 @@ namespace raytracy {
 	Raytracer::Raytracer() {}
 
 	Raytracer::~Raytracer() {
-		raytracing_thread.join();
 		delete[] accumulated_color_data;
+	}
+
+	void Raytracer::RaytraceScene() {
+		const auto aspect_ratio = 16.0f/9.0f;
+
+		uint32_t width = 720;
+		uint32_t height = static_cast<uint32_t>(width / aspect_ratio);
+		uint32_t samples_per_pixel = 50;
+		uint32_t max_depth = 50;
+		shared_ptr<Image> image = make_shared<Image>(width, height, samples_per_pixel, max_depth);
+
+		{
+			raytracer::Scene scene;
+			auto world_material =
+				make_shared<LambertianDiffuse>(glm::vec4(0.2f, 1.0f, 0.2f, 1.0f));
+
+			scene.Add(make_shared<raytracer::Sphere>(glm::vec3(0.0f, -101.0f, 0.0f), 100.0f,
+													 world_material));
+
+			auto diffuse_material =
+				make_shared<LambertianDiffuse>(glm::vec4(1.0f, 0.2f, 0.2f, 1.0f));
+
+			scene.Add(make_shared<raytracer::Sphere>(glm::vec3(0.0f, 0.0f, 0.0f), 0.75f,
+														 diffuse_material));
+
+			auto metal_material =
+				make_shared<Metal>(glm::vec4(1.0f, 1.0f, 0.2f, 1.0f), 0.0f);
+
+			scene.Add(make_shared<raytracer::Sphere>(glm::vec3(2.0f, 0.0f, 0.0f), 0.75f,
+													 metal_material));
+
+			auto dielectric_material =
+				make_shared<Dielectric>(1.5f);
+
+			scene.Add(make_shared<raytracer::Sphere>(glm::vec3(-2.0f, 0.0f, 0.0f), 0.75f,
+													 dielectric_material));
+			
+
+			glm::vec3 look_from({0.0f, 0.0f, 5.0f});
+			glm::vec3 look_at({ 0.0f, 0.0f, -1.0f });
+			glm::vec3 up({ 0.0f, 1.0f, 0.0f });
+
+			Camera camera(look_from, look_at, up, 45.0f, aspect_ratio);
+
+			Submit(scene, camera, image);
+		}
+		image->WriteImage();
 	}
 
 	void Raytracer::Submit(const raytracer::Scene& scene, const Camera& camera,
@@ -33,6 +79,7 @@ namespace raytracy {
 		RTY_RAYTRACER_INFO("Successfully submitted!");
 
 		raytracing_thread = std::thread{ &Raytracer::RayTrace, this };
+		raytracing_thread.join();
 	}
 
 	void Raytracer::RayTrace() {
@@ -129,7 +176,7 @@ namespace raytracy {
 			} else {
 				glm::vec3 unit_direction = glm::normalize(current_ray.GetDirection());
 				auto hit_value = 0.5f * (unit_direction.y + 1.0f);
-				glm::vec4 color = glm::vec4(1.0f) * (hit_value) +
+				glm::vec4 color = glm::vec4(1.0f) * (1.0f-hit_value) +
 					glm::vec4(0.5f, 0.7f, 1.0f, 1.0f) * hit_value;
 				return current_attenuation * color;
 			}

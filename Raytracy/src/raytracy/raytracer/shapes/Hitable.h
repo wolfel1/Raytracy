@@ -30,24 +30,4 @@ namespace raytracy::raytracer {
 								Hit& hit) const override;
 	};
 
-	class Plane : public Hitable {
-	private:
-		glm::vec3 start_point;
-		glm::vec3 normal;
-		glm::vec3 u, v, w;
-		float size;
-		float d;
-
-	public:
-		Plane();
-		Plane(glm::vec3 center, float size, shared_ptr<Material> material);
-		~Plane() = default;
-
-		virtual bool IsHit(const Ray& ray, float min, float max,
-								Hit& hit) const override;
-
-	private:
-		void Init();
-	};
-
 }

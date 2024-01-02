@@ -105,7 +105,10 @@ raytracy::Application* raytracy::CreateApplication() {
 
 	Application* app = new Application(spec);
 
-	app->PushLayer(make_shared<SandboxLayer>());
+	Raytracer r;
+	r.RaytraceScene();
+
+	//app->PushLayer(make_shared<SandboxLayer>());
 
 	return app;
 }
