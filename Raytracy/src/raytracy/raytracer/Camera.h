@@ -4,7 +4,7 @@
 #include "Ray.h"
 
 namespace raytracy {
-	class Camera {
+	/*class Camera {
 	private:
 		glm::vec3 origin;
 		glm::vec3 lower_left_corner;
@@ -16,5 +16,5 @@ namespace raytracy {
 		~Camera() = default;
 
 		Ray ShootRay(float s, float t) const;
-	};
+	};*/
 }

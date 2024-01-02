@@ -4,7 +4,7 @@
 
 namespace raytracy {
 
-	class Ray {
+	/*class Ray {
 	private:
 		glm::vec3 origin{};
 		glm::vec3 direction{};
@@ -18,5 +18,5 @@ namespace raytracy {
 		glm::vec3 GetDirection() const { return direction; }
 
 		glm::vec3 PointingAt(float length) const { return origin + direction * length; }
-	};
+	};*/
 }

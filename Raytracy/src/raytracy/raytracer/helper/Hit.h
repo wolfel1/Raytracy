@@ -8,7 +8,7 @@ namespace raytracy {
 
 	class Material;
 
-	struct Hit {
+	/*struct Hit {
 		glm::vec3 point{};
 		glm::vec3 normal{};
 		shared_ptr<Material> material;
@@ -19,5 +19,5 @@ namespace raytracy {
 			front_face = glm::dot(ray.GetDirection(), outward_normal) < 0;
 			normal = glm::normalize(front_face ? outward_normal : -outward_normal);
 		}
-	};
+	};*/
 }

@@ -22,22 +22,22 @@ struct Ray
 Ray : direction: vec3
 Ray : origin: vec3
 
-struct RenderState
-RenderState : +point: vec3
-RenderState : +normal: vec3
-RenderState : +hit_value: float
-RenderState : +front_face: bool
-RenderState : +SetFaceNormal(Ray ray, outward_normal: vec3)
-RenderState --> "1" Material
+struct Hit
+Hit : +point: vec3
+Hit : +normal: vec3
+Hit : +hit_value: float
+Hit : +front_face: bool
+Hit : +SetFaceNormal(Ray ray, outward_normal: vec3)
+Hit --> "1" Material
 
 struct Image
-Image : +accumulated_color_data: vec4[]
 Image : +width: float
 Image : +height: float
 Image : +samples: int
 Image : +max_depth: int
 
 class Raytracer
+Raytracer : -accumulated_color_data: vec4[]
 Raytracer : +Raytracer()
 Raytracer : +Submit(objects: Scene, camera: Camera, image: Image)
 Raytracer : -RayTrace()

@@ -3,20 +3,55 @@
 #include <thread>
 
 #include <glm/glm.hpp>
-#include "Ray.h"
-#include "Scene.h"
-#include "Camera.h"
-#include "Image.h"
 
 namespace raytracy {
+
+	struct Sphere {
+		glm::vec4 color;
+		glm::vec3 origin;
+		float radius;
+	};
+
+	struct Scene {
+		std::vector<Sphere> spheres;
+	};
+
+	struct Camera {
+		glm::vec3 position;
+		glm::vec3 direction;
+		glm::vec3 up;
+		glm::vec3 right;
+	};
+
+	struct Ray {
+		glm::vec3 direction;
+		glm::vec3 origin;
+	};
+
+	struct Hit {
+		glm::vec3 point{};
+		glm::vec3 normal{};
+		glm::vec4 color{};
+		float hit_value{};
+		bool front_face{};
+
+		inline void SetFaceNormal(const Ray& ray, const glm::vec3& outward_normal) {
+			front_face = glm::dot(ray.direction, outward_normal) < 0;
+			normal = glm::normalize(front_face ? outward_normal : -outward_normal);
+		}
+	};
+
+	struct Image {
+		uint32_t width;
+		uint32_t height;
+		uint32_t samples;
+		uint32_t max_depth;
+	};
 
 	class Raytracer {
 	private:
 		std::thread raytracing_thread;
 
-		std::unique_ptr<raytracer::Scene> active_scene;
-		std::unique_ptr<Camera> active_camera;
-		std::shared_ptr<Image> image_ptr;
 
 		glm::vec4* accumulated_color_data = nullptr;
 
@@ -26,10 +61,9 @@ namespace raytracy {
 		Raytracer();
 		~Raytracer();
 		void RaytraceScene();
-		void Submit(const raytracer::Scene& objects, const Camera& camera, const shared_ptr<Image> image);
+		void Submit();
 
-	private:
-		void RayTrace();
-		glm::vec4 ComputePixelColor(const Ray& ray, const raytracer::Scene& objects, uint32_t depth);
+		private:
+		void Raytrace();
 	};
 }

@@ -3,7 +3,7 @@
 #include "Camera.h"
 
 namespace raytracy {
-	Camera::Camera(const glm::vec3& look_from, const glm::vec3& look_at, const glm::vec3& up, float field_of_view, float aspect_ratio) {
+	/*Camera::Camera(const glm::vec3& look_from, const glm::vec3& look_at, const glm::vec3& up, float field_of_view, float aspect_ratio) {
 		auto theta = glm::radians(field_of_view);
 		auto height = glm::tan(theta / 2);
 		auto viewport_height = 2.0f * height;
@@ -21,5 +21,5 @@ namespace raytracy {
 
 	Ray Camera::ShootRay(float s, float t) const {
 		return Ray(origin , lower_left_corner + s * horizontal_axis + t * vertical_axis - origin);
-	}
+	}*/
 }

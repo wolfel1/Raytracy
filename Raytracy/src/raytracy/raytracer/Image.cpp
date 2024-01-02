@@ -11,12 +11,13 @@ namespace raytracy {
 		image_raw_data = new glm::vec4[width * height];
 		std::copy(data, data + width * height, image_raw_data);
 	}
+	
 
-	void Image::WriteImage() {
+	void Image::WriteImage(const glm::vec4* data) {
 		RTY_PROFILE_FUNCTION();
-		RTY_ASSERT(image_raw_data, "No image data!");
+		RTY_ASSERT(data, "No image data!");
 
-		if (image_raw_data) {
+		if (data) {
 
 			std::ofstream output_stream("./image.ppm", std::ios::out | std::ios::binary);
 			output_stream << "P3\n" << width << ' ' << height << "\n255\n";
@@ -34,7 +35,7 @@ namespace raytracy {
 			}
 
 			output_stream.close();
-			RTY_RAYTRACER_TRACE("Done.");
+			RTY_RAYTRACER_TRACE("Saved.");
 
 		}
 	}

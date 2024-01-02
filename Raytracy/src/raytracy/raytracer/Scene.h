@@ -3,7 +3,7 @@
 #include "shapes/Hitable.h"
 
 namespace raytracy::raytracer {
-	class Scene {
+	/*class Scene {
 		private:
 		std::vector<shared_ptr<raytracer::Hitable>> objects;
 
@@ -16,7 +16,7 @@ namespace raytracy::raytracer {
 		void Add(shared_ptr<raytracer::Hitable> object) { objects.push_back(object); }
 
 		bool HitObjects(const Ray& ray, float min, float max, Hit& hit) const;
-	};
+	};*/
 }
 
 

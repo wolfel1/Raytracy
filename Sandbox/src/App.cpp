@@ -44,7 +44,7 @@ public:
 	}
 
 	void RaytraceScene() {
-		const auto aspect_ratio = camera_controller->GetAspectRatio();
+		/*const auto aspect_ratio = camera_controller->GetAspectRatio();
 
 		uint32_t width = 720;
 		uint32_t height = static_cast<uint32_t>(width / aspect_ratio);
@@ -75,7 +75,7 @@ public:
 			raytracer.Submit(scene, camera, image);
 		}
 
-		image->WriteImage();
+		image->WriteImage();*/
 	}
 
 	bool OnKeyReleased(Event& e) {

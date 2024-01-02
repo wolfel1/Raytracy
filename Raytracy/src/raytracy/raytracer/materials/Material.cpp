@@ -4,7 +4,7 @@
 #include <glm/geometric.hpp>
 
 namespace raytracy {
-	bool LambertianDiffuse::Scatter(const Ray& incoming_ray, const Hit& hit, glm::vec4& attenuation, Ray& scattered) const {
+	/*bool LambertianDiffuse::Scatter(const Ray& incoming_ray, const Hit& hit, glm::vec4& attenuation, Ray& scattered) const {
 		auto scatter_direction = hit.normal + Random::RandomUnitVector();
 
 		if (glm::all(glm::lessThan(glm::abs(scatter_direction), glm::vec3(1e-8f)))) {
@@ -47,7 +47,7 @@ namespace raytracy {
 		}
 		scattered = Ray(hit.point, refracted_direction);
 		return true;
-	}
+	}*/
 	
 	
 }

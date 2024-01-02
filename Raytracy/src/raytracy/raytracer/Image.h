@@ -24,6 +24,6 @@ namespace raytracy {
 
 		void SetData(const glm::vec4* data);
 
-		void WriteImage();
+		void WriteImage(const glm::vec4* data);
 	};
 }

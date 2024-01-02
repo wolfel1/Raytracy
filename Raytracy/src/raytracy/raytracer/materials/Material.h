@@ -5,7 +5,7 @@
 
 namespace raytracy {
 
-	class Material {
+	/*class Material {
 	public:
 		virtual bool Scatter(const Ray& incoming_ray, const Hit& hit,
 							 glm::vec4& attenuation, Ray& scattered) const = 0;
@@ -57,6 +57,6 @@ namespace raytracy {
 			reflectance = reflectance * reflectance;
 			return reflectance + (1.0f - reflectance) * glm::pow((1.0f - cosine), 5.0f);
 		}
-	};
+	};*/
 }
 

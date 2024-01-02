@@ -7,7 +7,7 @@
 
 namespace raytracy::raytracer {
 
-	class Hitable {
+	/*class Hitable {
 	protected:
 		shared_ptr<Material> material;
 
@@ -28,6 +28,6 @@ namespace raytracy::raytracer {
 
 		virtual bool IsHit(const Ray& ray, float min, float max,
 								Hit& hit) const override;
-	};
+	};*/
 
 }

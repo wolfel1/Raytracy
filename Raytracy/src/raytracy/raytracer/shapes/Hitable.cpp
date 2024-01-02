@@ -5,7 +5,7 @@
 #include <cmath>
 
 namespace raytracy::raytracer {
-	Sphere::Sphere() : radius(1.0f) {
+	/*Sphere::Sphere() : radius(1.0f) {
 		center = { 0.0f,0.0f,0.0f };
 	}
 
@@ -41,5 +41,5 @@ namespace raytracy::raytracer {
 		hit.SetFaceNormal(ray, outward_normal);
 		hit.material = material;
 		return true;
-	}
+	}*/
 }
