@@ -37,8 +37,9 @@ namespace raytracy {
 
 		hit.hit_value = hit_value;
 		hit.point = ray.origin + ray.direction * hit_value;
-		hit.normal = glm::normalize(hit.point - sphere.origin);
-		hit.color = sphere.color;
+		glm::vec3 outward_normal = (hit.point - sphere.origin) / sphere.radius;
+		hit.SetFaceNormal(ray, outward_normal);
+		hit.material = sphere.material;
 		return true;
 	}
 
@@ -64,13 +65,32 @@ namespace raytracy {
 		for (uint32_t i = 0; i < image.max_depth; i++) {
 			Hit hit;
 			if (Trace(current_ray, 0.001f, infinity, hit)) {
+				auto scatter_direction = hit.normal + Random::RandomUnitVector();
+
+				if (glm::all(glm::lessThan(glm::abs(scatter_direction), glm::vec3(1e-8f)))) {
+					scatter_direction = hit.normal;
+				}
+
+				current_ray = Ray(hit.point, scatter_direction);
+				current_attenuation *= hit.material.color;
 				/*Ray scattered_ray;
 				glm::vec4 attenuation(1.0f);
 				if (hit.material->Scatter(current_ray, hit, attenuation, scattered_ray)) {
 					current_attenuation *= attenuation;
 					current_ray = scattered_ray;
-				} else {*/
-				return hit.color;
+				} else {*//*bool LambertianDiffuse::Scatter(const Ray& incoming_ray, const Hit& hit, glm::vec4& attenuation, Ray& scattered) const {
+
+		return true;
+	}
+
+	bool Metal::Scatter(const Ray& incoming_ray, const Hit& hit, glm::vec4& attenuation, Ray& scattered) const {
+		glm::vec3 reflected_ray = glm::reflect(incoming_ray.GetDirection(), hit.normal);
+
+		scattered =
+			Ray(hit.point, reflected_ray + Random::RandomVectorInUnitSphere() * fuzzy);
+		attenuation = albedo;
+		return (glm::dot(scattered.GetDirection(), hit.normal)) > 0;
+	}*/
 
 			} else {
 				glm::vec3 unit_direction = glm::normalize(current_ray.direction);
@@ -111,7 +131,7 @@ namespace raytracy {
 	}
 
 	void Raytracer::RaytraceScene() {
-		const auto aspect_ratio = 16.0f/9.0f;
+		const auto aspect_ratio = 16.0f / 9.0f;
 
 		image.width = 720;
 		image.height = static_cast<uint32_t>(image.width / aspect_ratio);
@@ -119,29 +139,30 @@ namespace raytracy {
 		image.max_depth = 50;
 
 
-		/*auto world_material =
-			make_shared<LambertianDiffuse>(glm::vec4(0.2f, 1.0f, 0.2f, 1.0f));*/
-		scene.spheres.push_back({ glm::vec4(0.2f, 1.0f, 0.2f, 1.0f), glm::vec3(0.0f, -101.0f, 0.0f), 100.0f });
+		Material world_material;
+		world_material.color = glm::vec4(0.2f, 1.0f, 0.2f, 1.0f);
+		scene.spheres.push_back({ world_material, glm::vec3(0.0f, -101.0f, 0.0f), 100.0f });
 
-		/*auto diffuse_material =
-			make_shared<LambertianDiffuse>(glm::vec4(1.0f, 0.2f, 0.2f, 1.0f));*/
+		Material diffuse_material;
+		diffuse_material.color = glm::vec4(1.0f, 0.2f, 0.2f, 1.0f);
 
-		scene.spheres.push_back({ glm::vec4(1.0f, 0.2f, 0.2f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.75f });
+		scene.spheres.push_back({ diffuse_material, glm::vec3(0.0f, 0.0f, 0.0f), 0.75f });
 
-		/*auto metal_material =
-			make_shared<Metal>(glm::vec4(1.0f, 1.0f, 0.2f, 1.0f), 0.0f);*/
+		Material metal_material;
+		metal_material.color = glm::vec4(1.0f, 1.0f, 0.2f, 1.0f);
+		metal_material.metallic = 1.0f;
 
-		scene.spheres.push_back({ glm::vec4(1.0f, 1.0f, 0.2f, 1.0f), glm::vec3(2.0f, 0.0f, 0.0f), 0.75f });
+		scene.spheres.push_back({ metal_material, glm::vec3(2.0f, 0.0f, 0.0f), 0.75f });
 
-		/*auto dielectric_material =
-			make_shared<Dielectric>(1.5f);*/
+		Material dielectric_material;
+		dielectric_material.roughness = 0.0f;
 
-		scene.spheres.push_back({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-2.0f, 0.0f, 0.0f), 0.75f });
+		scene.spheres.push_back({ dielectric_material, glm::vec3(-2.0f, 0.0f, 0.0f), 0.75f });
 
 
 		glm::vec3 position({ 0.0f, 0.0f, 5.0f });
-		glm::vec3 direction({ 0.0f, 0.0f, -1.0f});
-		glm::vec3 right{1.0f, 0.0f, 0.0f};
+		glm::vec3 direction({ 0.0f, 0.0f, -1.0f });
+		glm::vec3 right{ 1.0f, 0.0f, 0.0f };
 		glm::vec3 up{ 0.0f, 1.0f, 0.0f };
 
 		camera = { position, direction, up, right };
@@ -194,7 +215,7 @@ namespace raytracy {
 						auto target = camera.inverse_projection * glm::vec4(coord, 1.0f, 1.0f);
 						Ray ray{};
 						ray.origin = camera.position;
-						ray.direction = glm::vec3(camera.inverse_view * glm::vec4(glm::normalize(glm::vec3(target)/ target.w), 0));//glm::normalize(camera.direction + coord.s * camera.right + coord.t * camera.up);
+						ray.direction = glm::vec3(camera.inverse_view * glm::vec4(glm::normalize(glm::vec3(target) / target.w), 0));
 						accumulated_color += ComputePixelColor(ray);
 					}
 					accumulated_color /= (float)image.samples;

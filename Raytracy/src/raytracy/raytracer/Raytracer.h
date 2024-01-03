@@ -6,8 +6,14 @@
 
 namespace raytracy {
 
+	struct Material {
+		glm::vec4 color{1.0f};
+		float metallic = 0.0f;
+		float roughness = 0.5f;
+	};
+
 	struct Sphere {
-		glm::vec4 color;
+		Material material;
 		glm::vec3 origin;
 		float radius;
 	};
@@ -26,14 +32,14 @@ namespace raytracy {
 	};
 
 	struct Ray {
-		glm::vec3 direction;
 		glm::vec3 origin;
+		glm::vec3 direction;
 	};
 
 	struct Hit {
 		glm::vec3 point{};
 		glm::vec3 normal{};
-		glm::vec4 color{};
+		Material material;
 		float hit_value{};
 		bool front_face{};
 
