@@ -111,7 +111,7 @@ namespace raytracy {
 	}
 
 	void Raytracer::RaytraceScene() {
-		const auto aspect_ratio = 1.0f;
+		const auto aspect_ratio = 16.0f/9.0f;
 
 		image.width = 720;
 		image.height = static_cast<uint32_t>(image.width / aspect_ratio);
@@ -139,12 +139,14 @@ namespace raytracy {
 		scene.spheres.push_back({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-2.0f, 0.0f, 0.0f), 0.75f });
 
 
-		glm::vec3 look_from({ 0.0f, 0.0f, 5.0f });
+		glm::vec3 position({ 0.0f, 0.0f, 5.0f });
 		glm::vec3 direction({ 0.0f, 0.0f, -1.0f});
 		glm::vec3 right{1.0f, 0.0f, 0.0f};
 		glm::vec3 up{ 0.0f, 1.0f, 0.0f };
 
-		camera = { look_from, direction, up, right };
+		camera = { position, direction, up, right };
+		camera.inverse_projection = glm::inverse(glm::perspective(glm::radians(45.0f), aspect_ratio, 0.1f, 100.0f));
+		camera.inverse_view = glm::inverse(glm::lookAt(position, position + direction, up));
 
 		Submit();
 
@@ -189,9 +191,10 @@ namespace raytracy {
 					for (uint32_t sample = 0; sample < image.samples; ++sample) {
 						glm::vec2 coord = { (float)x / (float)image.width, (float)y / (float)image.height };
 						coord = coord * 2.0f - 1.0f;
+						auto target = camera.inverse_projection * glm::vec4(coord, 1.0f, 1.0f);
 						Ray ray{};
 						ray.origin = camera.position;
-						ray.direction = glm::normalize(camera.direction + coord.s * camera.right + coord.t * camera.up);
+						ray.direction = glm::vec3(camera.inverse_view * glm::vec4(glm::normalize(glm::vec3(target)/ target.w), 0));//glm::normalize(camera.direction + coord.s * camera.right + coord.t * camera.up);
 						accumulated_color += ComputePixelColor(ray);
 					}
 					accumulated_color /= (float)image.samples;
