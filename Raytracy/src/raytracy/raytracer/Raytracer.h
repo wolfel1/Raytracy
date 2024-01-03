@@ -2,20 +2,21 @@
 
 #include <thread>
 
+#include "../renderer/camera/PerspectiveCamera.h"
 #include <glm/glm.hpp>
 
 namespace raytracy {
 
 	struct Material {
-		glm::vec4 color{1.0f};
+		glm::vec4 color{ 1.0f };
 		float metallic = 0.0f;
 		float roughness = 0.5f;
 	};
 
 	struct Sphere {
-		Material material;
 		glm::vec3 origin;
 		float radius;
+		Material material;
 	};
 
 	struct Scene {
@@ -26,6 +27,8 @@ namespace raytracy {
 		glm::vec3 position;
 		glm::vec3 direction;
 		glm::vec3 up;
+		glm::mat4 inverse_projection;
+		glm::mat4 inverse_view;
 	};
 
 	struct Ray {
@@ -55,20 +58,28 @@ namespace raytracy {
 
 	class Raytracer {
 	private:
-		std::thread raytracing_thread;
+		Scene scene{};
+		Camera camera{};
+		Image image{};
 
+		std::thread raytracing_thread;
 
 		glm::vec4* accumulated_color_data = nullptr;
 
 		std::vector<uint32_t> horizontal_iterator, vertical_iterator;
+		std::vector<glm::vec3> ray_directions;
 
 	public:
 		Raytracer();
 		~Raytracer();
-		void RaytraceScene();
 		void Submit();
 
-		private:
+	private:
+		void Preprocess();
+		glm::vec4 ComputePixelColor(const Ray& ray);
+		void WriteImage(const glm::vec4* data);
+		bool HitSphere(const Ray& ray, float min, float max, Hit& hit, Sphere const& sphere);
+		bool Trace(const Ray& ray, float min, float max, Hit& hit);
 		void Raytrace();
 	};
 }

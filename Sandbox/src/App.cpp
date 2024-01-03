@@ -44,38 +44,8 @@ public:
 	}
 
 	void RaytraceScene() {
-		/*const auto aspect_ratio = camera_controller->GetAspectRatio();
-
-		uint32_t width = 720;
-		uint32_t height = static_cast<uint32_t>(width / aspect_ratio);
-		uint32_t samples_per_pixel = 50;
-		uint32_t max_depth = 50;
-		shared_ptr<Image> image = make_shared<Image>(width, height, samples_per_pixel, max_depth);
-
-		{
-			raytracer::Scene scene;
-
-			for (auto mesh : this->scene->GetMeshes()) {
-
-				auto material =
-					make_shared<LambertianDiffuse>(mesh->GetMaterial()->GetColor());
-
-				scene.Add(make_shared<raytracer::Sphere>(mesh->GetOrigin(), mesh->GetScale(),
-														 material));
-			}
-
-			auto viewport_camera = camera_controller->GetCamera();
-			glm::vec3 look_from = viewport_camera->GetPosition();
-			glm::vec3 look_at = viewport_camera->GetDirection();
-			glm::vec3 up = viewport_camera->GetUp();
-
-			Camera camera(look_from, look_at, up, camera_controller->GetFieldOfView(), aspect_ratio);
-
 			Raytracer raytracer;
-			raytracer.Submit(scene, camera, image);
-		}
-
-		image->WriteImage();*/
+			raytracer.Submit();
 	}
 
 	bool OnKeyReleased(Event& e) {
@@ -105,10 +75,7 @@ raytracy::Application* raytracy::CreateApplication() {
 
 	Application* app = new Application(spec);
 
-	Raytracer r;
-	r.RaytraceScene();
-
-	//app->PushLayer(make_shared<SandboxLayer>());
+	app->PushLayer(make_shared<SandboxLayer>());
 
 	return app;
 }

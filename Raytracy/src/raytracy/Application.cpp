@@ -92,8 +92,10 @@ namespace raytracy {
 			minimized = true;
 			return true;
 		}
-
+		application_specification.width = evt.GetWidth();
+		application_specification.width = evt.GetHeight();
 		minimized = false;
+
 		return Renderer::Get().OnWindowResize(evt.GetWidth(), evt.GetHeight());
 	}
 	

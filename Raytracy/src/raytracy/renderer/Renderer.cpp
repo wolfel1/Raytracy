@@ -18,7 +18,7 @@ namespace raytracy {
 		renderer_api = OpenGLRendererAPI::Create();
 		renderer_api->Init();
 
-		renderer_api->SetClearColor({ 0.5f, 0.7f, 1.0f, 1.0f });
+		renderer_api->SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
 		is_initialized = true;
 	}
