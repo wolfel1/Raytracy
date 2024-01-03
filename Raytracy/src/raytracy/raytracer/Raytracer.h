@@ -26,9 +26,6 @@ namespace raytracy {
 		glm::vec3 position;
 		glm::vec3 direction;
 		glm::vec3 up;
-		glm::vec3 right;
-		glm::mat4 inverse_projection{};
-		glm::mat4 inverse_view{};
 	};
 
 	struct Ray {

@@ -9,6 +9,8 @@ namespace raytracy {
 	Camera camera{};
 	Image image{};
 
+	std::vector<glm::vec3> ray_directions;
+
 	Raytracer::Raytracer() {}
 
 	Raytracer::~Raytracer() {
@@ -165,9 +167,22 @@ namespace raytracy {
 		glm::vec3 right{ 1.0f, 0.0f, 0.0f };
 		glm::vec3 up{ 0.0f, 1.0f, 0.0f };
 
-		camera = { position, direction, up, right };
-		camera.inverse_projection = glm::inverse(glm::perspective(glm::radians(45.0f), aspect_ratio, 0.1f, 100.0f));
-		camera.inverse_view = glm::inverse(glm::lookAt(position, position + direction, up));
+		camera = { position, direction, up };
+		auto inverse_projection = glm::inverse(glm::perspective(glm::radians(45.0f), aspect_ratio, 0.1f, 100.0f));
+		auto inverse_view = glm::inverse(glm::lookAt(position, position + direction, up));
+		ray_directions.resize(image.width * image.height);
+		for (uint32_t y = 0; y < image.height; y++)
+		{
+			for (uint32_t x = 0; x < image.width; x++)
+			{
+				glm::vec2 coord = { (float)x / (float)image.width, (float)y / (float)image.height };
+				coord = coord * 2.0f - 1.0f; // -1 -> 1
+
+				glm::vec4 target = inverse_projection * glm::vec4(coord.x, coord.y, 1, 1);
+				glm::vec3 rayDirection = glm::vec3(inverse_view * glm::vec4(glm::normalize(glm::vec3(target) / target.w), 0)); // World space
+				ray_directions[x + y * image.width] = rayDirection;
+			}
+		}
 
 		Submit();
 
@@ -210,12 +225,9 @@ namespace raytracy {
 
 					glm::vec4 accumulated_color(0.0f);
 					for (uint32_t sample = 0; sample < image.samples; ++sample) {
-						glm::vec2 coord = { (float)x / (float)image.width, (float)y / (float)image.height };
-						coord = coord * 2.0f - 1.0f;
-						auto target = camera.inverse_projection * glm::vec4(coord, 1.0f, 1.0f);
 						Ray ray{};
 						ray.origin = camera.position;
-						ray.direction = glm::vec3(camera.inverse_view * glm::vec4(glm::normalize(glm::vec3(target) / target.w), 0));
+						ray.direction = ray_directions[x + y * image.width];
 						accumulated_color += ComputePixelColor(ray);
 					}
 					accumulated_color /= (float)image.samples;
