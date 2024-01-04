@@ -1,3 +1,4 @@
+#type vertex
 #version 450 core
 
 layout(location = 0) in vec3 in_vertex_position;
@@ -10,7 +11,16 @@ layout(std140, binding = 0) uniform Camera {
   mat4 normal_matrix;
 };
 
-
 void main() {
 	gl_Position = model_view_projection_matrix * vec4(in_vertex_position, 1.0);
+}
+
+#type fragment
+#version 450 core
+
+layout(location = 0) out vec4 out_color;
+
+void main() {
+
+	out_color = vec4(1.0, 0.0, 1.0, 1.0);
 }
