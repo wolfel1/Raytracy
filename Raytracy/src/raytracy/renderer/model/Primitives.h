@@ -8,6 +8,7 @@ namespace raytracy {
 		glm::vec3 position;
 		glm::vec3 normal;
 		glm::vec4 color;
+		glm::vec2 tex_coords;
 	};
 
 	static const glm::vec4 DEFAULT_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -22,10 +23,10 @@ namespace raytracy {
 
 	struct QuadData : public MeshData {
 		QuadData() {
-			vertices = { { {-1.0, -1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR},
-			 { {1.0, -1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR },
-			 { {1.0, 1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR },
-			 { {-1.0, 1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR } };
+			vertices = { { {-1.0, -1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR, {0.0f, 0.0f}},
+			 { {1.0, -1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR, {1.0f, 0.0f} },
+			 { {1.0, 1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR, {1.0f, 1.0f} },
+			 { {-1.0, 1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR, {0.0f, 1.0f} } };
 
 			indices = {
 				0, 1, 2,
@@ -43,52 +44,52 @@ namespace raytracy {
 			vertices = {
 				//positions					//normals
 				//back
-				{{1.0f, -1.0f, -1.0f},		{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR},
-				{{-1.0f, -1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR			  }	,
-				{{-1.0f,  1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR			  }	,
-				{{-1.0f,  1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR			  }	,
-				{{1.0f,  1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR			  }	,
-				{{1.0f, -1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR			  }	,
+				{{1.0f, -1.0f, -1.0f},		{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR, {1.0f, 0.0f}},
+				{{-1.0f, -1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR, {0.0f, 0.0f}			  }	,
+				{{-1.0f,  1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR, {0.0f, 1.0f}			  }	,
+				{{-1.0f,  1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR	, {0.0f, 1.0f}		  }	,
+				{{1.0f,  1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR, {1.0f, 1.0f}			  }	,
+				{{1.0f, -1.0f, -1.0f,},	{0.0f,  0.0f, -1.0f}, DEFAULT_COLOR, {1.0f, 0.0f}			  }	,
 
 				//front													  	
-				{{-1.0f, -1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR			  }	,
-				{{ 1.0f, -1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR			  }	,
-				{{ 1.0f,  1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR			  }	,
-				{{ 1.0f,  1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR			  }	,
-				{{-1.0f,  1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR			  }	,
-				{{-1.0f, -1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR			  }	,
+				{{-1.0f, -1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR, {0.0f, 0.0f}			  }	,
+				{{ 1.0f, -1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR, {1.0f, 0.0f}			  }	,
+				{{ 1.0f,  1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR, {1.0f, 1.0f}			  }	,
+				{{ 1.0f,  1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR, {1.0f, 1.0f}			  }	,
+				{{-1.0f,  1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR, {0.0f, 1.0f}			  }	,
+				{{-1.0f, -1.0f,  1.0f},		{0.0f,  0.0f, 1.0f}, DEFAULT_COLOR, {0.0f, 0.0f}			  }	,
 
 				//left													  	
-				{{-1.0f,  -1.0f,  -1.0f },	{	-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR	  }	,
-				{{-1.0f,  -1.0f, 1.0f 	},	{-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR		  }	,
-				{{-1.0f, 1.0f, 1.0f 	},	{-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR		  }	,
-				{{-1.0f, 1.0f, 1.0f	},	{-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR		  }	,
-				{{-1.0f, 1.0f,  -1.0f 	},	{-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR		  }	,
-				{{-1.0f,  -1.0f,  -1.0f },	{	-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR	  }	,
+				{{-1.0f,  -1.0f,  -1.0f },	{	-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 0.0f}	  }	,
+				{{-1.0f,  -1.0f, 1.0f 	},	{-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 1.0f}		  }	,
+				{{-1.0f, 1.0f, 1.0f 	},	{-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 1.0f}		  }	,
+				{{-1.0f, 1.0f, 1.0f	},	{-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 1.0f}		  }	,
+				{{-1.0f, 1.0f,  -1.0f 	},	{-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 0.0f}		  }	,
+				{{-1.0f,  -1.0f,  -1.0f },	{	-1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 0.0f}	  }	,
 
 				//right													  	
-				{ {1.0f,  -1.0f,  1.0f},		{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR			  }	,
-				{ {1.0f,  -1.0f, -1.0f},		{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR			  }	,
-				{ {1.0f, 1.0f, -1.0f	},	{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR			  }	,
-				{ {1.0f, 1.0f, -1.0f	},	{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR			  }	,
-				{ {1.0f, 1.0f,  1.0f	},	{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR			  }	,
-				{ {1.0f,  -1.0f,  1.0f},		{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR			  }	,
+				{ {1.0f,  -1.0f,  1.0f},		{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 1.0f}			  }	,
+				{ {1.0f,  -1.0f, -1.0f},		{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 0.0f}			  }	,
+				{ {1.0f, 1.0f, -1.0f	},	{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 0.0f}			  }	,
+				{ {1.0f, 1.0f, -1.0f	},	{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 0.0f}			  }	,
+				{ {1.0f, 1.0f,  1.0f	},	{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 1.0f}			  }	,
+				{ {1.0f,  -1.0f,  1.0f},		{1.0f,  0.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 1.0f}			  }	,
 
 				//bottom												  	
-			   {{ -1.0f, -1.0f, -1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			   {{  1.0f, -1.0f, -1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			   {{  1.0f, -1.0f,  1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			   {{  1.0f, -1.0f,  1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			   {{ -1.0f, -1.0f,  1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			   {{ -1.0f, -1.0f, -1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR			  }	,
+			   {{ -1.0f, -1.0f, -1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 0.0f}			  }	,
+			   {{  1.0f, -1.0f, -1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 0.0f}			  }	,
+			   {{  1.0f, -1.0f,  1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 1.0f}			  }	,
+			   {{  1.0f, -1.0f,  1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 1.0f}			  }	,
+			   {{ -1.0f, -1.0f,  1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 1.0f}			  }	,
+			   {{ -1.0f, -1.0f, -1.0f},		{0.0f, -1.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 0.0f}			  }	,
 
 			   //top													  	
-			  {{ -1.0f,  1.0f, 1.0f	},	{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			  {{  1.0f,  1.0f, 1.0f	},	{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			  {{  1.0f,  1.0f,  -1.0f},		{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			  {{  1.0f,  1.0f,  -1.0f},		{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			  {{ -1.0f,  1.0f,  -1.0f},		{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR			  }	,
-			  {{ -1.0f,  1.0f, 1.0f},		{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR			  }
+			  {{ -1.0f,  1.0f, 1.0f	},	{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 1.0f}			  }	,
+			  {{  1.0f,  1.0f, 1.0f	},	{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 1.0f}			  }	,
+			  {{  1.0f,  1.0f,  -1.0f},		{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 0.0f}			  }	,
+			  {{  1.0f,  1.0f,  -1.0f},		{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR, {1.0f, 0.0f}			  }	,
+			  {{ -1.0f,  1.0f,  -1.0f},		{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 0.0f}			  }	,
+			  {{ -1.0f,  1.0f, 1.0f},		{0.0f,  1.0f,  0.0f}, DEFAULT_COLOR, {0.0f, 1.0f}			  }
 			};
 
 
@@ -127,16 +128,16 @@ namespace raytracy {
 			vertices = {
 				//positions					//normals
 				//back
-				{{1.0f, -1.0f, -1.0f},		{1.0f,  -1.0f, -1.0f}, DEFAULT_COLOR},
-				{{-1.0f, -1.0f, -1.0f,},	{-1.0f, -1.0f, -1.0f,}, DEFAULT_COLOR			  }	,
-				{{-1.0f,  1.0f, -1.0f,},	{-1.0f,  1.0f, -1.0f,}, DEFAULT_COLOR			  }	,
-				{{1.0f,  1.0f, -1.0f,},	{1.0f,  1.0f, -1.0f,}, DEFAULT_COLOR			  }	,
+				{{1.0f, -1.0f, -1.0f},		{1.0f,  -1.0f, -1.0f}, DEFAULT_COLOR, {1.0f, 0.0f}},
+				{{-1.0f, -1.0f, -1.0f,},	{-1.0f, -1.0f, -1.0f,}, DEFAULT_COLOR, {0.0f, 0.0f}			  }	,
+				{{-1.0f,  1.0f, -1.0f,},	{-1.0f,  1.0f, -1.0f,}, DEFAULT_COLOR, {0.0f, 1.0f}			  }	,
+				{{1.0f,  1.0f, -1.0f,},	{1.0f,  1.0f, -1.0f,}, DEFAULT_COLOR, {1.0f, 1.0f}			  }	,
 
 				//front													  	
-				{{-1.0f, -1.0f,  1.0f},		{-1.0f, -1.0f,  1.0f}, DEFAULT_COLOR			  }	,
-				{{ 1.0f, -1.0f,  1.0f},		{ 1.0f, -1.0f,  1.0f}, DEFAULT_COLOR			  }	,
-				{{ 1.0f,  1.0f,  1.0f},		{ 1.0f,  1.0f,  1.0f}, DEFAULT_COLOR			  }	,
-				{{-1.0f,  1.0f,  1.0f},		{-1.0f,  1.0f,  1.0f}, DEFAULT_COLOR			  }	,
+				{{-1.0f, -1.0f,  1.0f},		{-1.0f, -1.0f,  1.0f}, DEFAULT_COLOR, {0.0f, 0.0f}			  }	,
+				{{ 1.0f, -1.0f,  1.0f},		{ 1.0f, -1.0f,  1.0f}, DEFAULT_COLOR, {1.0f, 0.0f}			  }	,
+				{{ 1.0f,  1.0f,  1.0f},		{ 1.0f,  1.0f,  1.0f}, DEFAULT_COLOR, {1.0f, 1.0f}			  }	,
+				{{-1.0f,  1.0f,  1.0f},		{-1.0f,  1.0f,  1.0f}, DEFAULT_COLOR, {0.0f, 1.0f}			  }	,
 			};
 
 			is_indexed = true;
@@ -153,6 +154,7 @@ namespace raytracy {
 			uint32_t ring_count = 18;
 			float x, y, z, xz;
 			float nx, ny, nz;
+			float s, t;
 			float segment_step = 2 * PI / segment_count;
 			float ring_step = PI / ring_count;
 			float segment_angle, ring_angle;
@@ -172,7 +174,10 @@ namespace raytracy {
 					ny = y;
 					nz = z;
 
-					vertices.push_back({ {x, y, z}, {nx, ny, nz}, DEFAULT_COLOR });
+
+					s = (float)j / segment_count;
+					t = (float)i / ring_count;
+					vertices.push_back({ {x, y, z}, {nx, ny, nz}, DEFAULT_COLOR, { s, t }});
 				}
 			}
 

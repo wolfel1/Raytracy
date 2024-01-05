@@ -21,7 +21,8 @@ namespace raytracy::renderer {
 		vertex_buffer->SetLayout({
 			{ "position", VertexDataType::Float3 },
 			{ "normal", VertexDataType::Float3 },
-			{ "color", VertexDataType::Float4 }
+			{ "color", VertexDataType::Float4 },
+			{ "tex_coords", VertexDataType::Float2 }
 		});
 
 		vertex_array->SetVertexBuffer(vertex_buffer);

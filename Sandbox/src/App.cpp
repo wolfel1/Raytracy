@@ -25,8 +25,14 @@ public:
 		renderer::Scene::Create(camera_controller->GetCamera());
 		scene = renderer::Scene::Get();
 
-		auto mesh = make_shared<renderer::Plane>();
+		auto mesh = make_shared<renderer::Plane>(glm::vec3(-2.5f, 0.0f, 0.0f));
 		scene->AddMesh(mesh);
+
+		auto sphere = make_shared<renderer::Sphere>(glm::vec3(2.5f, 0.0f, 0.0f));
+		scene->AddMesh(sphere);
+
+		auto cube = make_shared<renderer::Cube>();
+		scene->AddMesh(cube);
 		/*for (int a = 0; a < 100; a++) {
 			glm::vec3 center(Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f));
 

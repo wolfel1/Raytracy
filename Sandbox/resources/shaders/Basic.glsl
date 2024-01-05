@@ -4,6 +4,7 @@
 layout(location = 0) in vec3 in_vertex_position;
 layout(location = 1) in vec3 in_vertex_normal;
 layout(location = 2) in vec4 in_vertex_color;
+layout(location = 3) in vec2 in_vertex_tex_coords;
 
 layout(std140, binding = 0) uniform Camera {
   mat4 model_view_matrix;
@@ -13,12 +14,14 @@ layout(std140, binding = 0) uniform Camera {
 
 layout(location = 0) out vec3 out_vertex_normal;
 layout(location = 1) out vec4 out_vertex_color;
-layout(location = 2) out vec3 out_frag_position;
+layout(location = 2) out vec2 out_vertex_tex_coords;
+layout(location = 3) out vec3 out_frag_position;
 
 void main() {
 	out_vertex_normal = mat3(normal_matrix) * in_vertex_normal;
 	out_frag_position = vec3(model_view_matrix * vec4(in_vertex_position, 1.0));
 	out_vertex_color = in_vertex_color;
+	out_vertex_tex_coords = in_vertex_tex_coords;
 	gl_Position = model_view_projection_matrix * vec4(in_vertex_position, 1.0);
 }
 
@@ -27,7 +30,8 @@ void main() {
 
 layout(location = 0) in vec3 vertex_normal;
 layout(location = 1) in vec4 vertex_color;
-layout(location = 2) in vec3 frag_position;
+layout(location = 2) in vec2 vertex_tex_coords;
+layout(location = 3) in vec3 frag_position;
 
 layout(std140, binding = 1) uniform Light {
   vec3 light_color;
@@ -49,5 +53,5 @@ void main() {
 	vec3 diffuse = diffuse_impact * light_color;
 
 	vec3 result = (light_ambient + diffuse) * color.rgb;
-	out_color = vec4(result, color.a);
+	out_color = vec4(vertex_tex_coords, 0.0, color.a);
 }
