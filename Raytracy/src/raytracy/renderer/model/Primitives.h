@@ -12,26 +12,24 @@ namespace raytracy {
 
 	static const glm::vec4 DEFAULT_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	struct MeshData {
+	 struct MeshData {
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 
 		std::string name = "Custom";
 		bool is_indexed = false;
-
-		virtual void Init() {}
 	};
 
-	struct PlaneData : public MeshData {
-		virtual void Init() override {
-			vertices = { { {-1.0, 0.0f, -1.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR},
-			 { {1.0, 0.0f, -1.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR },
-			 { {1.0, 0.0f, 1.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR },
-			 { {-1.0, 0.0f, 1.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR } };
+	struct QuadData : public MeshData {
+		QuadData() {
+			vertices = { { {-1.0, -1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR},
+			 { {1.0, -1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR },
+			 { {1.0, 1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR },
+			 { {-1.0, 1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR } };
 
 			indices = {
-				2, 1, 0,
-				0, 3, 2
+				0, 1, 2,
+				2, 3, 0
 			};
 			is_indexed = true;
 
@@ -39,8 +37,8 @@ namespace raytracy {
 		}
 	};
 
-	struct FlatCubeData : public MeshData {
-		virtual void Init() override {
+	 struct FlatCubeData : public MeshData {
+		FlatCubeData() {
 
 			vertices = {
 				//positions					//normals
@@ -98,8 +96,8 @@ namespace raytracy {
 		}
 	};
 
-	struct CubeData : public MeshData {
-		virtual void Init() override {
+	 struct CubeData : public MeshData {
+		CubeData() {
 
 			indices = {
 				//back
@@ -146,8 +144,8 @@ namespace raytracy {
 		}
 	};
 
-	struct SphereData : public MeshData {
-		virtual void Init() override {
+	 struct SphereData : public MeshData {
+		SphereData() {
 			//vertices
 			const float PI = std::numbers::pi_v<float>;
 			float radius = 1.0f;

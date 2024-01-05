@@ -19,13 +19,15 @@ public:
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
 		auto spec = Application::Get().GetSpecification();
 		camera_controller = make_unique<PerspectiveCameraController>(static_cast<float>(spec.width) / static_cast<float>(spec.height));
-		camera_controller->Translate({ 0.0f, 5.0f, 20.0f });
+		camera_controller->Translate({ 0.0f, 5.0f, 10.0f });
 		camera_controller->RotateX(-20.0f);
 
 		renderer::Scene::Create(camera_controller->GetCamera());
 		scene = renderer::Scene::Get();
 
-		for (int a = 0; a < 100; a++) {
+		auto mesh = make_shared<renderer::Plane>();
+		scene->AddMesh(mesh);
+		/*for (int a = 0; a < 100; a++) {
 			glm::vec3 center(Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f));
 
 			auto color = glm::vec4(Random::RandomVector(0.0f, 1.0f), 1.0f);
@@ -33,7 +35,7 @@ public:
 			auto mesh = make_shared<renderer::Sphere>(center, Random::RandomFloat(0.1f, 1.0f));
 			mesh->SetMaterial(sphere_material);
 			scene->AddMesh(mesh);
-		}
+		}*/
 
 	}
 

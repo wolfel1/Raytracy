@@ -10,14 +10,13 @@ namespace raytracy::renderer {
 
 	class Material {
 	private:
-		glm::vec4 color = { 0.5f, 0.5f, 0.5f, 1.0f };
+		glm::vec4 color ;
 
 		shared_ptr<OpenGLShader> shader;
 		shared_ptr<OpenGLUniformBuffer> material_uniform_buffer;
 
 	public:
-		Material();
-		Material(glm::vec4 color);
+		Material(glm::vec4 color = { 0.5f, 0.5f, 0.5f, 1.0f });
 		~Material() = default;
 
 		shared_ptr<OpenGLShader> GetShader() const {
@@ -38,8 +37,9 @@ namespace raytracy::renderer {
 	class Mesh {
 	private:
 		shared_ptr<OpenGLVertexArray> vertex_array;
-		shared_ptr<MeshData> mesh_data;
 		shared_ptr<Material> material;
+
+		bool is_indexed = false;
 
 		glm::mat4 model_matrix = glm::mat4(1.0f);
 		glm::vec3 origin{};
@@ -74,6 +74,8 @@ namespace raytracy::renderer {
 
 		void Translate(glm::vec3 const& direction);
 
+		void Rotate(glm::vec3 const& axis, float const value);
+
 		void Scale(float const value);
 
 		protected:
@@ -82,6 +84,7 @@ namespace raytracy::renderer {
 
 	class Plane : public Mesh {
 	private:
+		static QuadData data;
 
 	public:
 		Plane();
@@ -91,6 +94,7 @@ namespace raytracy::renderer {
 
 	class Cube : public Mesh {
 	private:
+		static CubeData data;
 
 	public:
 		Cube();
@@ -100,6 +104,7 @@ namespace raytracy::renderer {
 
 	class Sphere : public Mesh {
 	private:
+		static SphereData data;
 
 	public:
 		Sphere();
