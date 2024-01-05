@@ -39,4 +39,26 @@ namespace raytracy {
 	bool ShaderLibrary::Exist(const std::string& name) {
 		return shaders.find(name) != shaders.end();
 	}
+
+	std::string ShaderLibrary::ReadFile(const std::string& path) {
+
+		std::string result;
+		std::ifstream in(path, std::ios::in | std::ios::binary);
+		if (in) {
+			in.seekg(0, std::ios::end);
+			size_t size = in.tellg();
+			if (size != -1) {
+				result.resize(in.tellg());
+				in.seekg(0, std::ios::beg);
+				in.read(&result[0], result.size());
+				in.close();
+			} else {
+				RTY_RENDERER_ERROR("Could not read from file '{0}'", path);
+			}
+		} else {
+			RTY_RENDERER_ERROR("Could not open file '{0}'", path);
+		}
+
+		return result;
+	}
 }

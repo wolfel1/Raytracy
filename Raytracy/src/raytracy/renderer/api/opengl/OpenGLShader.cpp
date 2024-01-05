@@ -72,7 +72,7 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 
 		std::string path = ShaderLibrary::rootPath + name + ".glsl";
-		std::string source = ReadFile(path);
+		std::string source = ShaderLibrary::ReadFile(path);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
 
@@ -97,28 +97,6 @@ namespace raytracy {
 
 	OpenGLShader::~OpenGLShader() {
 		glDeleteProgram(renderer_id);
-	}
-
-	std::string OpenGLShader::ReadFile(const std::string& path) {
-
-		std::string result;
-		std::ifstream in(path, std::ios::in | std::ios::binary);
-		if (in) {
-			in.seekg(0, std::ios::end);
-			size_t size = in.tellg();
-			if (size != -1) {
-				result.resize(in.tellg());
-				in.seekg(0, std::ios::beg);
-				in.read(&result[0], result.size());
-				in.close();
-			} else {
-				RTY_RENDERER_ERROR("Could not read from file '{0}'", path);
-			}
-		} else {
-			RTY_RENDERER_ERROR("Could not open file '{0}'", path);
-		}
-
-		return result;
 	}
 
 	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source) {
@@ -157,7 +135,7 @@ namespace raytracy {
 		count = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;
 		name = path.substr(lastSlash, count);
 
-		std::string source = ReadFile(path);
+		std::string source = ShaderLibrary::ReadFile(path);
 		shaderSources[ShaderTypeFromString(type)] = source;
 	}
 

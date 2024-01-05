@@ -8,7 +8,7 @@
 namespace raytracy {
 
 	enum class API {
-		None = 0, OpenGL = 1, Vulkan = 2
+		None = 0, OpenGL = 1
 	};
 
 	class Renderer {

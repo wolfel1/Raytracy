@@ -32,7 +32,6 @@ namespace raytracy {
 		 void AddUniformBuffer(std::string const& name, shared_ptr<OpenGLUniformBuffer> const uniform_buffer);
 	private:
 
-		std::string ReadFile(const std::string& path);
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
 		void PreProcess(const std::string& path, std::unordered_map<GLenum, std::string>& shaderSources);
 		void Compile(std::unordered_map<GLenum, std::string> shaderSources);
