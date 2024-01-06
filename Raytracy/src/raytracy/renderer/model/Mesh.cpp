@@ -12,6 +12,10 @@ namespace raytracy::renderer {
 		Scale(scale_factor);
 	}
 
+	Mesh::~Mesh() {
+		material->Destroy();
+	}
+
 	void Mesh::Init(shared_ptr<MeshData> const mesh_data) {
 		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
@@ -66,43 +70,22 @@ namespace raytracy::renderer {
 	}
 
 	QuadData Plane::data;
-	Plane::Plane() {
-		Init(make_shared<MeshData>(data));
-		Rotate({1.0f, 0.0f, 0.0f}, glm::radians(-90.0f));
-	}
 
-	Plane::Plane(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
+	Plane::Plane(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
 		Init(make_shared<MeshData>(data));
 		Rotate({ 1.0f, 0.0f, 0.0f }, glm::radians(-90.0f));
 	}
 
-	CubeData Cube::data;
-	Cube::Cube() {
-		Init(make_shared<MeshData>(data));
-	}
-
-	Cube::Cube(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
+	FlatCubeData Cube::data;
+	Cube::Cube(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
 		Init(make_shared<MeshData>(data));
 	}
 
 	SphereData Sphere::data;
-	Sphere::Sphere() {
-		Init(make_shared<MeshData>(data));
-	}
-
-	Sphere::Sphere(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
+	Sphere::Sphere(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
 		Init(make_shared<MeshData>(data));
 	}
 
 
-	Material::Material(glm::vec4 color) : color(color) {
-		shader = ShaderLibrary::Get().Load("Basic");
-		RTY_ASSERT(shader, "Could not create a shader program!");
-
-		material_uniform_buffer = shader->GetMaterialUniformBuffer();
-		material_uniform_buffer->SetVec4("color", color);
-	}
-	void Material::Draw() {
-		material_uniform_buffer->SetVec4("color", color);
-	}
+	
 }

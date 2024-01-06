@@ -46,12 +46,12 @@ layout(std140, binding = 2) uniform Material {
 layout(location = 0) out vec4 out_color;
 
 void main() {
-	vec3 light_ambient = light_color * light_strength;
+	vec3 light_ambient = light_color;
 
 	vec3  normal = normalize(vertex_normal);
 	float diffuse_impact = max(0.0, dot(normal, light_direction));
-	vec3 diffuse = diffuse_impact * light_color;
+	vec3 diffuse = diffuse_impact * light_color * light_strength;
 
 	vec3 result = (light_ambient + diffuse) * color.rgb;
-	out_color = vec4(vertex_tex_coords, 0.0, color.a);
+	out_color = vec4(result, color.a);
 }

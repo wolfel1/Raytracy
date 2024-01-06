@@ -23,10 +23,10 @@ namespace raytracy {
 
 	struct QuadData : public MeshData {
 		QuadData() {
-			vertices = { { {-1.0, -1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR, {0.0f, 0.0f}},
-			 { {1.0, -1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR, {1.0f, 0.0f} },
-			 { {1.0, 1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR, {1.0f, 1.0f} },
-			 { {-1.0, 1.0f, 0.0}, {0.0f, 1.0f, 0.0f}, DEFAULT_COLOR, {0.0f, 1.0f} } };
+			vertices = { { {-1.0, -1.0f, 0.0}, {0.0f, 0.0f, 1.0f}, DEFAULT_COLOR, {0.0f, 0.0f}},
+			 { {1.0, -1.0f, 0.0}, {0.0f, 0.0f, 1.0f}, DEFAULT_COLOR, {1.0f, 0.0f} },
+			 { {1.0, 1.0f, 0.0}, {0.0f, 0.0f, 1.0f}, DEFAULT_COLOR, {1.0f, 1.0f} },
+			 { {-1.0, 1.0f, 0.0}, {0.0f, 0.0f, 1.0f}, DEFAULT_COLOR, {0.0f, 1.0f} } };
 
 			indices = {
 				0, 1, 2,

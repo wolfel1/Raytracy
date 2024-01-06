@@ -78,7 +78,6 @@ namespace raytracy {
 
 		CreateCameraUniformBuffer();
 		CreateLightUniformBuffer();
-		CreateMaterialUniformBuffer();
 	}
 
 	OpenGLShader::OpenGLShader(const std::vector<std::string>& paths) {
@@ -92,7 +91,6 @@ namespace raytracy {
 
 		CreateCameraUniformBuffer();
 		CreateLightUniformBuffer();
-		CreateMaterialUniformBuffer();
 	}
 
 	OpenGLShader::~OpenGLShader() {
@@ -308,26 +306,6 @@ namespace raytracy {
 			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, scene_light->light_uniform_buffer->GetID());
 			AddUniformBuffer("Light", scene_light->light_uniform_buffer);
 			Unbind();
-		}
-	}
-
-	void OpenGLShader::CreateMaterialUniformBuffer() {
-		auto ubo_index = glGetUniformBlockIndex(renderer_id, "Material");
-		if (ubo_index == GL_INVALID_INDEX) {
-			return;
-		}
-
-		if (!material_uniform_buffer) {
-
-			UniformBlock block("Material", {
-				"color",
-			});
-
-			auto layout = GetUniformBufferLayout(block);
-
-			material_uniform_buffer = OpenGLUniformBuffer::Create("Material", layout);
-			material_uniform_buffer->SetVec4("color", {1.0f, 1.0f, 1.0f, 1.0f});
-			AddUniformBuffer("Material", material_uniform_buffer);
 		}
 	}
 }
