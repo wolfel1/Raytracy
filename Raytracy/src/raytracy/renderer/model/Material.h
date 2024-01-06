@@ -2,6 +2,7 @@
 
 #include "../api/opengl/OpenGLShader.h"
 namespace raytracy::renderer {
+
 	class Material {
 	private:
 		glm::vec4 color;

@@ -230,7 +230,7 @@ namespace raytracy {
 
 		glGetActiveUniformBlockiv(renderer_id, ubo_index, GL_UNIFORM_BLOCK_DATA_SIZE, &ubo_size);
 
-		GLsizei size = uniform_block.uniform_names.size();
+		GLsizei size = static_cast<GLsizei>(uniform_block.uniform_names.size());
 		std::vector<GLuint> indices(size);
 		std::vector<int32_t> offsets(size);
 		std::vector<int32_t> types(size);

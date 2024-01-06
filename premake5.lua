@@ -60,6 +60,7 @@ project "Raytracy"
 
 	defines {
 		"_CRT_SECURE_NO_WARNINGS",
+		"_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS",
 		"GLFW_INCLUDE_NONE"
 	}
 
@@ -117,6 +118,11 @@ project "Sandbox"
 		"Raytracy/vendor",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glm}"
+	}
+
+	defines {
+		"_CRT_SECURE_NO_WARNINGS",
+		"_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS"
 	}
 
 	links {
