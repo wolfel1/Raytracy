@@ -40,6 +40,8 @@ namespace raytracy {
 			return GL_VERTEX_SHADER;
 		if (type == "fragment" || type == "pixel" || type == ".frag")
 			return GL_FRAGMENT_SHADER;
+		if (type == "compute")
+			return GL_COMPUTE_SHADER;
 
 		RTY_ASSERT(false, "Unknown shader type!");
 		return 0;
@@ -66,6 +68,11 @@ namespace raytracy {
 		uniform_buffer->Link(index);
 		Unbind();
 		index++;
+	}
+
+	void OpenGLShader::SetInt(uint32_t value) {
+		int texLoc = glGetUniformLocation(renderer_id, "tex");
+		GLCall(glUniform1i(texLoc, value));
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name) : name(name) {
@@ -251,6 +258,10 @@ namespace raytracy {
 	}
 
 	void OpenGLShader::CreateCameraUniformBuffer() {
+		auto ubo_index = glGetUniformBlockIndex(renderer_id, "Camera");
+		if (ubo_index == GL_INVALID_INDEX) {
+			return;
+		}
 		auto camera = renderer::Scene::Get()->GetCamera();
 		auto camera_uniform_buffer = camera->GetCameraUniformBuffer();
 		if (!camera_uniform_buffer) {

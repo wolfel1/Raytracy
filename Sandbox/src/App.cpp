@@ -11,6 +11,7 @@ private:
 
 	unique_ptr<PerspectiveCameraController> camera_controller;
 
+
 public:
 	SandboxLayer() : Layer("SandboxLayer") {
 	}
@@ -25,14 +26,14 @@ public:
 		renderer::Scene::Create(camera_controller->GetCamera());
 		scene = renderer::Scene::Get();
 
-		auto mesh = make_shared<renderer::Plane>(glm::vec3(-2.5f, 0.0f, 0.0f));
+		/*auto mesh = make_shared<renderer::Plane>(glm::vec3(-2.5f, 0.0f, 0.0f));
 		scene->AddMesh(mesh);
 
 		auto sphere = make_shared<renderer::Sphere>(glm::vec3(2.5f, 0.0f, 0.0f));
 		scene->AddMesh(sphere);
 
 		auto cube = make_shared<renderer::Cube>();
-		scene->AddMesh(cube);
+		scene->AddMesh(cube);*/
 		/*for (int a = 0; a < 100; a++) {
 			glm::vec3 center(Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f));
 
@@ -49,12 +50,9 @@ public:
 		camera_controller->OnUpdate(timestep);
 
 		Renderer::Get().Submit(scene);
+		
 	}
 
-	void RaytraceScene() {
-			Raytracer raytracer;
-			raytracer.Submit();
-	}
 
 	bool OnKeyReleased(Event& e) {
 		KeyReleasedEvent evt = static_cast<KeyReleasedEvent&>(e);
@@ -62,7 +60,7 @@ public:
 			WindowCloseEvent e;
 			EventBus::Get().Notify(e);
 		} else if (evt.GetKeyCode() == KeyCode::R) {
-			RaytraceScene();
+			//RaytraceScene();
 		}
 		return false;
 	}

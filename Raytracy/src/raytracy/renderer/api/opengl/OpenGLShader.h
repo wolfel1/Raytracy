@@ -25,6 +25,8 @@ namespace raytracy {
 		BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const;
 
 		void AddUniformBuffer(std::string const& name, shared_ptr<OpenGLUniformBuffer> const uniform_buffer);
+
+		void SetInt(uint32_t value);
 	private:
 
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);

@@ -1,10 +1,13 @@
 #include "raytracypch.h"
 #include "OpenGLTexture.h"
 
+#include "OpenGLRendererAPI.h"
+
+#include <glad/gl.h>
 #include <stb_image.h>
 
 namespace raytracy {
-	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height) : Texture(width, height) {
+	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height) : OpenGLTexture(width, height) {
 
 		internalFormat = GL_RGBA8;
 		dataFormat = GL_RGBA;
@@ -19,7 +22,7 @@ namespace raytracy {
 		glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : Texture(path) {
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : OpenGLTexture(path) {
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(1);
 		stbi_uc* data = nullptr;
@@ -67,7 +70,7 @@ namespace raytracy {
 		glDeleteTextures(1, &renderer_id);
 	}
 
-	void OpenGLTexture2D::SetData(void* data, uint32_t size) {
+	void OpenGLTexture::SetData(void* data, uint32_t size) {
 
 		uint32_t bpp = dataFormat == GL_RGBA ? 4 : 3;
 		RTY_ASSERT(size == width * height * bpp, "Data must be an entire Texture!");
@@ -75,7 +78,21 @@ namespace raytracy {
 		glTextureSubImage2D(renderer_id, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
-	void OpenGLTexture2D::Bind(uint32_t slot) const {
+	void OpenGLTexture::Bind(uint32_t slot) const {
 		glBindTextureUnit(slot, renderer_id);
+	}
+
+	OpenGLImageTexture2D::OpenGLImageTexture2D(uint32_t width, uint32_t height) : OpenGLTexture(width, height) {
+		internalFormat = GL_RGBA32F;
+		dataFormat = GL_RGBA;
+
+		glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id);
+		glTextureStorage2D(renderer_id, 1, internalFormat, width, height);
+		glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		GLCall(glBindImageTexture(0, renderer_id, 0, GL_FALSE, 0, GL_READ_WRITE, internalFormat));
 	}
 }

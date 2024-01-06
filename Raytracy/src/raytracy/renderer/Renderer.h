@@ -4,6 +4,7 @@
 #include "model/Mesh.h"
 #include "camera/PerspectiveCamera.h"
 #include "ViewportScene.h"
+#include "api/opengl/OpenGLTexture.h"
 
 namespace raytracy {
 
@@ -29,6 +30,9 @@ namespace raytracy {
 		bool is_initialized = false;
 
 		shared_ptr<OpenGLRendererAPI> renderer_api = nullptr;
+
+		bool raytrace = true;
+		shared_ptr<OpenGLImageTexture2D> raytracer_output = nullptr;
 
 	public:
 		Renderer(const Renderer&) = delete;

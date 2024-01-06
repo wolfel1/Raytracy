@@ -1,9 +1,9 @@
 #pragma once
 
-#include <glad/gl.h>
+typedef unsigned int GLenum;
 
 namespace raytracy {
-	class Texture {
+	class OpenGLTexture {
 
 	protected:
 		std::string path;
@@ -12,9 +12,9 @@ namespace raytracy {
 		GLenum internalFormat{}, dataFormat{};
 
 	public:
-		Texture(uint32_t width, uint32_t height) : width(width), height(height) {}
-		Texture(const std::string& path) : path(path) {}
-		virtual ~Texture() = default;
+		OpenGLTexture(uint32_t width, uint32_t height) : width(width), height(height) {}
+		OpenGLTexture(const std::string& path) : path(path) {}
+		virtual ~OpenGLTexture() = default;
 
 		uint32_t GetWidth() const {
 			return width;
@@ -24,33 +24,39 @@ namespace raytracy {
 			return height;
 		}
 
-		virtual void SetData(void* data, uint32_t size) = 0;
+		void SetData(void* data, uint32_t size);
 
-		virtual void Bind(uint32_t slot = 0) const = 0;
+		void Bind(uint32_t slot = 0) const;
 
-		bool operator==(const Texture& other) const {
-			return renderer_id == ((Texture&)other).renderer_id;
+		bool operator==(const OpenGLTexture& other) const {
+			return renderer_id == ((OpenGLTexture&)other).renderer_id;
 		}
 
 	};
 
-	class OpenGLTexture2D : public Texture {
+	class OpenGLTexture2D : public OpenGLTexture {
 
 	public:
 		OpenGLTexture2D(uint32_t width, uint32_t height);
 		OpenGLTexture2D(const std::string& path);
 		virtual ~OpenGLTexture2D();
 
-
-		virtual void SetData(void* data, uint32_t size) override;
-
-		virtual void Bind(uint32_t slot = 0) const override; 
-
 		static shared_ptr<OpenGLTexture2D> Create(uint32_t width, uint32_t height) {
 			return make_shared<OpenGLTexture2D>(width, height);
 		}
 		static shared_ptr<OpenGLTexture2D> Create(const std::string& path) {
 			return make_shared<OpenGLTexture2D>(path);
+		}
+	};
+
+	class OpenGLImageTexture2D : public OpenGLTexture {
+
+	public:
+		OpenGLImageTexture2D(uint32_t width, uint32_t height);
+		virtual ~OpenGLImageTexture2D() = default;
+
+		static shared_ptr<OpenGLImageTexture2D> Create(uint32_t width, uint32_t height) {
+			return make_shared<OpenGLImageTexture2D>(width, height);
 		}
 	};
 }

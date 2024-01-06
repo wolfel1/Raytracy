@@ -3,7 +3,8 @@
 
 #include "api/Shader.h"
 #include "api/Buffer.h"
-#include <GLFW/glfw3.h>
+
+#include <glad/gl.h>
 #include <glm/gtc/matrix_inverse.hpp>
 
 
@@ -20,6 +21,8 @@ namespace raytracy {
 
 		renderer_api->SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
+		raytracer_output = OpenGLImageTexture2D::Create(512, 512);
+
 		is_initialized = true;
 	}
 
@@ -33,10 +36,27 @@ namespace raytracy {
 	}
 
 	void Renderer::Submit(shared_ptr<renderer::Scene> const scene) {
-		RTY_PROFILE_FUNCTION();
-		BeginScene(scene->GetCamera());
-		scene_data.meshes = scene->GetMeshes();
-		EndScene();
+		RTY_PROFILE_FUNCTION(); 
+		if (raytrace) {
+			auto raytracer = ShaderLibrary::Get().Load("raytrace_kernel");
+			auto shader = ShaderLibrary::Get().Load("raytrace_output");
+			renderer_api->ClearViewport();
+
+			raytracer->Bind();
+			glDispatchCompute(raytracer_output->GetWidth(), raytracer_output->GetHeight(), 1);
+
+			// make sure writing to image has finished before read
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+			raytracer_output->Bind(0);
+			shader->Bind();
+			shader->SetInt(0);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		} else {
+			BeginScene(scene->GetCamera());
+			scene_data.meshes = scene->GetMeshes();
+			EndScene();
+		}
 	}
 
 	void Renderer::EndScene() {
