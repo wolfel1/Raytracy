@@ -20,6 +20,7 @@ IncludeDir["spdlog"] = "Raytracy/vendor/spdlog/include"
 IncludeDir["glm"] = "Raytracy/vendor/glm"
 IncludeDir["glfw"] = "Raytracy/vendor/glfw/include"
 IncludeDir["glad"] = "Raytracy/vendor/glad/include"
+IncludeDir["stb_image"] = "Raytracy/vendor/stb_image"
 
 
 group "Dependencies"
@@ -67,7 +68,8 @@ project "Raytracy"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.glfw}",
-		"%{IncludeDir.glad}"
+		"%{IncludeDir.glad}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links {
