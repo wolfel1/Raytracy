@@ -11,8 +11,6 @@
 #include "raytracy/core/Timestep.h"
 #include "raytracy/core/KeyCodes.h"
 
-#include "raytracy/raytracer/Raytracer.h"
-
 #include "raytracy/renderer/Renderer.h"
 #include "raytracy/renderer/model/Mesh.h"
 #include "raytracy/renderer/ViewportScene.h"

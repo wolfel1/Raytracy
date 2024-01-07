@@ -1,0 +1,43 @@
+@startuml rendering
+autoactivate on
+hide footbox
+participant App
+participant Application
+
+Application -> Renderer : Init()
+create RendererAPI
+Renderer -> RendererAPI : <<create>>
+return api
+Renderer -> Raytracer : Init(api)
+create "raytracing_canvas: Texture2D" as Texture2D
+Raytracer -> Texture2D : <<create>>
+return
+Raytracer -> ShaderLibrary : Load("raytrace_kernel")
+return
+Raytracer -> ShaderLibrary : Load("raytrace_output")
+return
+return
+return
+
+...
+
+App -> Renderer : Submit(scene)
+alt raytracing
+
+    Renderer -> Raytracer : Raytrace(scene)
+    Raytracer -> RendererAPI : StartComputeShader()
+    return
+    Raytracer -> RendererAPI : SetBarrier()
+    return
+    return
+
+else
+
+    Renderer -> Renderer : BeginScene()
+    return
+    Renderer -> Renderer : EndScene()
+    return
+
+end
+return
+@enduml

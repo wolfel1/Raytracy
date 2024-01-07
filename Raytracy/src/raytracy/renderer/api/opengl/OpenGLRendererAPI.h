@@ -12,7 +12,7 @@ namespace raytracy {
 #else
 #define GLCall(x) x
 #endif
-		
+
 
 	class OpenGLRendererAPI {
 
@@ -24,12 +24,17 @@ namespace raytracy {
 
 		void ClearViewport();
 
-		 void SetClearColor(const glm::vec4& clear_color) ;
+		void SetClearColor(const glm::vec4& clear_color);
 
-		 void DrawIndexed(const shared_ptr<OpenGLVertexArray> vertex_array) ;
-		 void Draw(const shared_ptr<OpenGLVertexArray> vertex_array) ;
+		void DrawIndexed(const shared_ptr<OpenGLVertexArray> vertex_array);
+		void Draw(const shared_ptr<OpenGLVertexArray> vertex_array);
+		void Draw(uint32_t count);
 
-		 void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) ;
+		void LaunchComputeShader(uint32_t num_groups_x, uint32_t num_groups_y, uint32_t num_groups_z);
+
+		void SetMemoryBarrier();
+
+		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
 		void Shutdown() {}
 

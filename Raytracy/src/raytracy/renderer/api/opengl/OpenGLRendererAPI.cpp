@@ -73,6 +73,18 @@ namespace raytracy {
 		GLCall(glDrawArrays(GL_TRIANGLES, 0, vertex_buffer->GetCount()));
 	}
 
+	void OpenGLRendererAPI::Draw(uint32_t count) {
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, count);
+	}
+
+	void OpenGLRendererAPI::LaunchComputeShader(uint32_t num_groups_x, uint32_t num_groups_y, uint32_t num_groups_z) {
+		glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
+	}
+
+	void OpenGLRendererAPI::SetMemoryBarrier() {
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	}
+
 	void OpenGLRendererAPI::DrawIndexed(const shared_ptr<OpenGLVertexArray> vertex_array) {
 		auto index_buffer = vertex_array->GetIndexBuffer();
 		//InstrumentationTimer timer("Render", true);

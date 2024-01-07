@@ -32,7 +32,7 @@ namespace raytracy {
 		shared_ptr<OpenGLRendererAPI> renderer_api = nullptr;
 
 		bool raytrace = true;
-		shared_ptr<OpenGLImageTexture2D> raytracer_output = nullptr;
+		shared_ptr<OpenGLTexture2D> raytracer_output;
 
 	public:
 		Renderer(const Renderer&) = delete;

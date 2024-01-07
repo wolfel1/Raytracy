@@ -3,18 +3,11 @@
 
 #include <execution>
 
-#include "../Application.h"
-#include "../renderer/ViewportScene.h"
+#include "../../Application.h"
+
+#include <glad/gl.h>
 
 namespace raytracy {
-
-
-
-	Raytracer::Raytracer() {}
-
-	Raytracer::~Raytracer() {
-		delete[] accumulated_color_data;
-	}
 
 	
 
@@ -90,6 +83,28 @@ namespace raytracy {
 
 	}
 
+	void Raytracer::Init(shared_ptr<OpenGLRendererAPI> const api) {
+		renderer_api = api;
+		raytracing_canvas = OpenGLTexture2D::Create(512, 512, GL_RGBA32F);
+		raytracing_kernel = ShaderLibrary::Get().Load("raytrace_kernel");
+		raytracing_output = ShaderLibrary::Get().Load("raytrace_output");
+	}
+
+	void Raytracer::Raytrace(shared_ptr<renderer::Scene> const scene) {
+		renderer_api->ClearViewport();
+
+		raytracing_kernel->Bind();
+		raytracing_canvas->BindImage();
+		renderer_api->LaunchComputeShader(raytracing_canvas->GetWidth(), raytracing_canvas->GetHeight(), 1);
+
+		renderer_api->SetMemoryBarrier();
+
+		raytracing_canvas->Bind(0);
+		raytracing_output->Bind();
+		raytracing_output->SetInt(0);
+		renderer_api->Draw(4);
+	}
+
 	void Raytracer::Submit() {
 		Preprocess();
 
@@ -110,13 +125,11 @@ namespace raytracy {
 
 		RTY_RAYTRACER_INFO("Successfully submitted!");
 
-		raytracing_thread = std::thread{ &Raytracer::Raytrace, this };
-		raytracing_thread.join();
 
 		WriteImage(accumulated_color_data);
 	}
 
-	void Raytracer::Raytrace() {
+	void Raytracer::RayTrace() {
 		RTY_PROFILE_FUNCTION();
 		{
 			InstrumentationTimer t("Raytracing", true);

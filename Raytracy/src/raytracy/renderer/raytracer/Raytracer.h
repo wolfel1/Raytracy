@@ -2,7 +2,11 @@
 
 #include <thread>
 
-#include "../renderer/camera/PerspectiveCamera.h"
+#include "../camera/PerspectiveCamera.h"
+#include "../api/opengl/OpenGLTexture.h"
+#include "../api/opengl/OpenGLRendererAPI.h"
+#include "../api/opengl/OpenGLShader.h"
+#include "../ViewportScene.h"
 #include <glm/glm.hpp>
 
 namespace raytracy {
@@ -62,24 +66,38 @@ namespace raytracy {
 		Camera camera{};
 		Image image{};
 
-		std::thread raytracing_thread;
 
 		glm::vec4* accumulated_color_data = nullptr;
 
 		std::vector<uint32_t> horizontal_iterator, vertical_iterator;
 		std::vector<glm::vec3> ray_directions;
+		shared_ptr<OpenGLRendererAPI> renderer_api = nullptr;
+
+		shared_ptr<OpenGLTexture2D> raytracing_canvas = nullptr;
+
+		shared_ptr<OpenGLShader> raytracing_kernel;
+		shared_ptr<OpenGLShader> raytracing_output;
 
 	public:
-		Raytracer();
-		~Raytracer();
-		void Submit();
+		Raytracer(const Raytracer&) = delete;
+		~Raytracer() = default;
+
+		static Raytracer& Get() {
+			static Raytracer raytracer;
+			return raytracer;
+		}
+		void Init(shared_ptr<OpenGLRendererAPI> const renderer_api);
+		void Raytrace(shared_ptr<renderer::Scene> const scene);
 
 	private:
+		Raytracer() {}
+
+		void Submit();
 		void Preprocess();
+		void RayTrace();
 		glm::vec4 ComputePixelColor(const Ray& ray);
 		void WriteImage(const glm::vec4* data);
 		bool HitSphere(const Ray& ray, float min, float max, Hit& hit, Sphere const& sphere);
 		bool Trace(const Ray& ray, float min, float max, Hit& hit);
-		void Raytrace();
 	};
 }
