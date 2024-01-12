@@ -9,7 +9,7 @@
 
 namespace raytracy {
 
-	
+	GLuint scene_buffer;
 
 	void Raytracer::Preprocess() {
 		/*const auto aspect_ratio = 16.0f / 9.0f;
@@ -57,8 +57,8 @@ namespace raytracy {
 			Material material;
 			material.color = mesh->GetMaterial()->GetColor();
 
-			scene.spheres.push_back({mesh->GetOrigin(), mesh->GetScale(),
-													 material});
+			//scene.spheres.push_back({mesh->GetOrigin(), mesh->GetScale(),
+			//										 material});
 		}
 
 		camera.position = viewport_camera->GetPosition();
@@ -85,9 +85,20 @@ namespace raytracy {
 
 	void Raytracer::Init(shared_ptr<OpenGLRendererAPI> const api) {
 		renderer_api = api;
-		raytracing_canvas = OpenGLTexture2D::Create(512, 512, GL_RGBA32F);
+
+		auto& app_spec = Application::Get().GetSpecification();
+		raytracing_canvas = OpenGLTexture2D::Create(app_spec.width, app_spec.height, GL_RGBA32F);
 		raytracing_kernel = ShaderLibrary::Get().Load("raytrace_kernel");
 		raytracing_output = ShaderLibrary::Get().Load("raytrace_output");
+
+		glCreateBuffers(1, &scene_buffer);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, scene_buffer);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 8192, NULL, GL_DYNAMIC_COPY);
+
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, scene_buffer);
+
+		Sphere sphere = {{1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, 1.0f};
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Sphere), &sphere);
 	}
 
 	void Raytracer::Raytrace(shared_ptr<renderer::Scene> const scene) {
@@ -101,7 +112,7 @@ namespace raytracy {
 
 		raytracing_canvas->Bind(0);
 		raytracing_output->Bind();
-		raytracing_output->SetInt(0);
+		raytracing_output->SetInt("tex", 0);
 		renderer_api->Draw(4);
 	}
 
@@ -260,7 +271,7 @@ namespace raytracy {
 		hit.point = ray.origin + ray.direction * hit_value;
 		glm::vec3 outward_normal = (hit.point - sphere.origin) / sphere.radius;
 		hit.SetFaceNormal(ray, outward_normal);
-		hit.material = sphere.material;
+		//hit.material = sphere.material;
 		return true;
 	}
 

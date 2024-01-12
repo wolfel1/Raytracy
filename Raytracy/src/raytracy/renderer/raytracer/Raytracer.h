@@ -18,9 +18,9 @@ namespace raytracy {
 	};
 
 	struct Sphere {
+		glm::vec4 color;
 		glm::vec3 origin;
 		float radius;
-		Material material;
 	};
 
 	struct Scene {
@@ -71,6 +71,7 @@ namespace raytracy {
 
 		std::vector<uint32_t> horizontal_iterator, vertical_iterator;
 		std::vector<glm::vec3> ray_directions;
+
 		shared_ptr<OpenGLRendererAPI> renderer_api = nullptr;
 
 		shared_ptr<OpenGLTexture2D> raytracing_canvas = nullptr;

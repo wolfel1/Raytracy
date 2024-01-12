@@ -32,7 +32,6 @@ namespace raytracy {
 		shared_ptr<OpenGLRendererAPI> renderer_api = nullptr;
 
 		bool raytrace = true;
-		shared_ptr<OpenGLTexture2D> raytracer_output;
 
 	public:
 		Renderer(const Renderer&) = delete;
@@ -51,6 +50,10 @@ namespace raytracy {
 		void Submit(shared_ptr<renderer::Scene> const scene);
 
 		void Shutdown();
+
+		void ToggleRaytracing() {
+			raytrace = !raytrace;
+		}
 
 		bool OnWindowResize(uint32_t width, uint32_t height);
 

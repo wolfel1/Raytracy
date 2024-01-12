@@ -21,18 +21,18 @@ public:
 		auto spec = Application::Get().GetSpecification();
 		camera_controller = make_unique<PerspectiveCameraController>(static_cast<float>(spec.width) / static_cast<float>(spec.height));
 		camera_controller->Translate({ 0.0f, 5.0f, 10.0f });
-		camera_controller->RotateX(-20.0f);
+		camera_controller->RotateX(-25.0f);
 
 		renderer::Scene::Create(camera_controller->GetCamera());
 		scene = renderer::Scene::Get();
 
 		/*auto mesh = make_shared<renderer::Plane>(glm::vec3(-2.5f, 0.0f, 0.0f));
-		scene->AddMesh(mesh);
+		scene->AddMesh(mesh);*/
 
-		auto sphere = make_shared<renderer::Sphere>(glm::vec3(2.5f, 0.0f, 0.0f));
+		auto sphere = make_shared<renderer::Sphere>(glm::vec3(0.0f, 0.0f, 0.0f));
 		scene->AddMesh(sphere);
 
-		auto cube = make_shared<renderer::Cube>();
+		/*auto cube = make_shared<renderer::Cube>();
 		scene->AddMesh(cube);*/
 		/*for (int a = 0; a < 100; a++) {
 			glm::vec3 center(Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f));
@@ -60,7 +60,7 @@ public:
 			WindowCloseEvent e;
 			EventBus::Get().Notify(e);
 		} else if (evt.GetKeyCode() == KeyCode::R) {
-			//RaytraceScene();
+			Renderer::Get().ToggleRaytracing();
 		}
 		return false;
 	}

@@ -17,6 +17,6 @@ namespace raytracy::renderer {
 		scene_light = make_shared<DirectionalLight>();
 		scene_light->color = {1.0f, 1.0f, 1.0f};
 		scene_light->direction = {0.0f, 0.5f, 1.0f};
-		scene_light->strength = 0.5f;
+		scene_light->strength = 0.4f;
 	}
 }

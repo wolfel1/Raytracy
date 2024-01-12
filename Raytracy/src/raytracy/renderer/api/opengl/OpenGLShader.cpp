@@ -70,8 +70,8 @@ namespace raytracy {
 		index++;
 	}
 
-	void OpenGLShader::SetInt(uint32_t value) {
-		int texLoc = glGetUniformLocation(renderer_id, "tex");
+	void OpenGLShader::SetInt(std::string const& name, uint32_t value) {
+		int texLoc = glGetUniformLocation(renderer_id, name.c_str());
 		GLCall(glUniform1i(texLoc, value));
 	}
 
