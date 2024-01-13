@@ -76,6 +76,8 @@ namespace raytracy {
 		renderer_api = nullptr;
 		scene_data.meshes.clear();
 		scene_data.camera_uniform_buffer = nullptr;
+
+		Raytracer::Get().Shutdown();
 	}
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {

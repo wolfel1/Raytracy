@@ -11,77 +11,6 @@ namespace raytracy {
 
 	GLuint scene_buffer;
 
-	void Raytracer::Preprocess() {
-		/*const auto aspect_ratio = 16.0f / 9.0f;
-
-		image.width = 720;
-		image.height = static_cast<uint32_t>(image.width / aspect_ratio);
-		image.samples = 50;
-		image.max_depth = 50;
-
-		Material world_material;
-		world_material.color = glm::vec4(0.2f, 1.0f, 0.2f, 1.0f);
-		scene.spheres.push_back({ world_material, glm::vec3(0.0f, -101.0f, 0.0f), 100.0f });
-
-		Material diffuse_material;
-		diffuse_material.color = glm::vec4(1.0f, 0.2f, 0.2f, 1.0f);
-
-		scene.spheres.push_back({ diffuse_material, glm::vec3(0.0f, 0.0f, 0.0f), 0.75f });
-
-		Material metal_material;
-		metal_material.color = glm::vec4(1.0f, 1.0f, 0.2f, 1.0f);
-		metal_material.metallic = 1.0f;
-
-		scene.spheres.push_back({ metal_material, glm::vec3(2.0f, 0.0f, 0.0f), 0.75f });
-
-		Material dielectric_material;
-		dielectric_material.roughness = 0.0f;
-
-		scene.spheres.push_back({ dielectric_material, glm::vec3(-2.0f, 0.0f, 0.0f), 0.75f });
-
-		glm::vec3 position({ 0.0f, 0.0f, 5.0f });
-		glm::vec3 direction({ 0.0f, 0.0f, -1.0f });
-		glm::vec3 right{ 1.0f, 0.0f, 0.0f };
-		glm::vec3 up{ 0.0f, 1.0f, 0.0f };*/
-
-		auto& app_spec = Application::Get().GetSpecification();
-		image.width = app_spec.width;
-		image.height = app_spec.height;
-		image.samples = 50;
-		image.max_depth = 50;
-
-		auto viewport_scene = renderer::Scene::Get();
-		auto viewport_camera = viewport_scene->GetCamera();
-		for (auto& mesh : viewport_scene->GetMeshes()) {
-
-			Material material;
-			material.color = mesh->GetMaterial()->GetColor();
-
-			//scene.spheres.push_back({mesh->GetOrigin(), mesh->GetScale(),
-			//										 material});
-		}
-
-		camera.position = viewport_camera->GetPosition();
-		camera.direction = viewport_camera->GetDirection();
-		camera.up = viewport_camera->GetUp();
-
-		camera.inverse_projection = glm::inverse(viewport_camera->GetProjectionMatrix());
-		camera.inverse_view = glm::inverse(viewport_camera->GetViewMatrix());
-		ray_directions.resize(image.width * image.height);
-		for (uint32_t y = 0; y < image.height; y++)
-		{
-			for (uint32_t x = 0; x < image.width; x++)
-			{
-				glm::vec2 coord = { (float)x / (float)image.width, (float)y / (float)image.height };
-				coord = coord * 2.0f - 1.0f; // -1 -> 1
-
-				glm::vec4 target = camera.inverse_projection * glm::vec4(coord.x, coord.y, 1, 1);
-				glm::vec3 rayDirection = glm::vec3(camera.inverse_view * glm::vec4(glm::normalize(glm::vec3(target) / target.w), 0)); // World space
-				ray_directions[x + y * image.width] = rayDirection;
-			}
-		}
-
-	}
 
 	void Raytracer::Init(shared_ptr<OpenGLRendererAPI> const api) {
 		renderer_api = api;
@@ -97,11 +26,26 @@ namespace raytracy {
 
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, scene_buffer);
 
-		Sphere sphere = {{1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, 1.0f};
-		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Sphere), &sphere);
+		UniformBlock block("SceneData", {
+			"inverse_view",
+			"inverse_projection",
+			"camera_position",
+			"samples",
+			"camera_direction",
+			"max_depth"
+		});
+
+		auto layout = raytracing_kernel->GetUniformBufferLayout(block);
+
+		scene_data_uniform_buffer = OpenGLUniformBuffer::Create("SceneData", layout);
+		raytracing_kernel->AddUniformBuffer("SceneData", scene_data_uniform_buffer);
+
+		//Submit();
 	}
 
 	void Raytracer::Raytrace(shared_ptr<renderer::Scene> const scene) {
+		Preprocess(scene);
+
 		renderer_api->ClearViewport();
 
 		raytracing_kernel->Bind();
@@ -116,8 +60,90 @@ namespace raytracy {
 		renderer_api->Draw(4);
 	}
 
+
+	void Raytracer::Preprocess(shared_ptr<renderer::Scene> const scene) {
+//		const auto aspect_ratio = 16.0f / 9.0f;
+//
+//		image.width = 720;
+//		image.height = static_cast<uint32_t>(image.width / aspect_ratio);
+//		image.samples = 50;
+//		image.max_depth = 50;
+//
+//		Material world_material;
+//		world_material.color = glm::vec4(0.2f, 1.0f, 0.2f, 1.0f);
+//		scene.spheres.push_back({ glm::vec4(0.2f, 1.0f, 0.2f, 1.0f), glm::vec3(0.0f, -101.0f, 0.0f), 100.0f });
+//
+//		Material diffuse_material;
+//		diffuse_material.color = glm::vec4(1.0f, 0.2f, 0.2f, 1.0f);
+//
+//		scene.spheres.push_back({ glm::vec4(1.0f, 0.2f, 0.2f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.75f });
+//
+//		Material metal_material;
+//		metal_material.color = glm::vec4(1.0f, 1.0f, 0.2f, 1.0f);
+//		metal_material.metallic = 1.0f;
+//
+//		scene.spheres.push_back({ glm::vec4(1.0f, 1.0f, 0.2f, 1.0f), glm::vec3(2.0f, 0.0f, 0.0f), 0.75f });
+//
+//		Material dielectric_material;
+//		dielectric_material.roughness = 0.0f;
+//
+//		scene.spheres.push_back({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-2.0f, 0.0f, 0.0f), 0.75f });
+//
+//		glm::vec3 position({ 0.0f, 0.0f, 5.0f });
+//		glm::vec3 direction({ 0.0f, 0.0f, -1.0f });
+//		glm::vec3 right{ 1.0f, 0.0f, 0.0f };
+//		glm::vec3 up{ 0.0f, 1.0f, 0.0f };
+//
+//
+//		/*auto viewport_scene = renderer::Scene::Get();
+//		auto viewport_camera = viewport_scene->GetCamera();
+//		for (auto& mesh : viewport_scene->GetMeshes()) {
+//
+//			Material material;
+//			material.color = mesh->GetMaterial()->GetColor();
+//
+//			scene.spheres.push_back({mesh->GetOrigin(), mesh->GetScale(),
+//												 material});
+//		}
+//*/
+//		camera.position = position;
+//		camera.direction = direction;
+//		camera.up = up;
+//
+//		auto projection_matrix = glm::perspective(glm::radians(45.0f), aspect_ratio, 0.001f, 100.0f);
+//		auto view_matrix = glm::lookAt(position, position + direction, up);
+//		auto inverse_projection = glm::inverse(projection_matrix);
+//		auto inverse_view = glm::inverse(view_matrix);
+//		ray_directions.resize(image.width * image.height);
+//		for (uint32_t y = 0; y < image.height; y++)
+//		{
+//			for (uint32_t x = 0; x < image.width; x++)
+//			{
+//				glm::vec2 coord = { (float)x / (float)image.width, (float)y / (float)image.height };
+//				coord = coord * 2.0f - 1.0f; // -1 -> 1
+//
+//				glm::vec4 target = inverse_projection * glm::vec4(coord.x, coord.y, 1, 1);
+//				glm::vec3 rayDirection = glm::vec3(inverse_view * glm::vec4(glm::normalize(glm::vec3(target) / target.w), 0)); // World space
+//				ray_directions[x + y * image.width] = rayDirection;
+//			}
+//		}
+		std::vector<Sphere> spheres;
+		for (auto mesh : scene->GetMeshes()) {
+			spheres.push_back({mesh->GetMaterial()->GetColor(), mesh->GetOrigin(), mesh->GetScale()});
+		}
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Sphere) * spheres.size(), spheres.data());
+
+		auto camera = scene->GetCamera();
+		scene_data_uniform_buffer->SetMat4("inverse_view", glm::inverse(camera->GetViewMatrix()));
+		scene_data_uniform_buffer->SetMat4("inverse_projection", glm::inverse(camera->GetProjectionMatrix()));
+		scene_data_uniform_buffer->SetVec3("camera_position", camera->GetPosition());
+		scene_data_uniform_buffer->SetVec3("camera_direction", camera->GetDirection());
+		scene_data_uniform_buffer->SetInt("samples", 10);
+		scene_data_uniform_buffer->SetInt("max_depth", 50);
+	}
+
 	void Raytracer::Submit() {
-		Preprocess();
+		//Preprocess();
 
 		RTY_ASSERT(image.width * image.height != 0, "Image has no dimensions!");
 		accumulated_color_data = new glm::vec4[image.width * image.height];
@@ -132,10 +158,10 @@ namespace raytracy {
 			vertical_iterator[i] = i;
 		}
 #endif
-		
+
 
 		RTY_RAYTRACER_INFO("Successfully submitted!");
-
+		RayTrace();
 
 		WriteImage(accumulated_color_data);
 	}
@@ -186,14 +212,14 @@ namespace raytracy {
 					accumulated_color = glm::sqrt(accumulated_color);
 					accumulated_color = glm::clamp(accumulated_color, glm::vec4(0.0f), glm::vec4(1.0f));
 					accumulated_color_data[x + y * image_ptr->GetWidth()] = accumulated_color;
+					}
 				}
-			}
 #endif
 			RTY_RAYTRACER_TRACE("Done.");
 		}
 	}
 
-	
+
 
 	glm::vec4 Raytracer::ComputePixelColor(const Ray& ray) {
 		Ray current_ray = ray;
@@ -208,11 +234,11 @@ namespace raytracy {
 				}
 
 				current_ray = Ray(hit.point, scatter_direction);
-				current_attenuation *= hit.material.color;
+				current_attenuation *= hit.color;
 			} else {
 				glm::vec3 unit_direction = glm::normalize(current_ray.direction);
-				auto hit_value = 0.5f * (unit_direction.y + 1.0f);
-				glm::vec4 color(0.1f, 0.1f, 0.1f, 1.0f);
+				auto ambient = 0.5f * (unit_direction.y + 1.0f);
+				glm::vec4 color = (1.0f - ambient) * glm::vec4(1.0f) + ambient * glm::vec4(0.2f, 0.1f, 0.2f, 1.0f);
 				return current_attenuation * color;
 			}
 		}
@@ -269,9 +295,9 @@ namespace raytracy {
 
 		hit.hit_value = hit_value;
 		hit.point = ray.origin + ray.direction * hit_value;
-		glm::vec3 outward_normal = (hit.point - sphere.origin) / sphere.radius;
-		hit.SetFaceNormal(ray, outward_normal);
-		//hit.material = sphere.material;
+		hit.normal = (hit.point - sphere.origin) / sphere.radius;
+		//hit.SetFaceNormal(ray, outward_normal);
+		hit.color = sphere.color;
 		return true;
 	}
 
@@ -291,5 +317,9 @@ namespace raytracy {
 		return hit_anything;
 	}
 
+	void Raytracer::Shutdown() {
+		renderer_api = nullptr;
+		scene_data_uniform_buffer = nullptr;
+	}
 
 }  // namespace raytracy

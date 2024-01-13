@@ -77,6 +77,17 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 	}
 
+	void OpenGLUniformBuffer::SetInt(const std::string& name, const int value) const {
+		auto& elements = layout.GetElements();
+
+		auto element = std::find_if(elements.begin(), elements.end(), [&name](const BufferElement& element) { return element.name == name; });
+		RTY_ASSERT(element != elements.end(), "No uniform found with name {0}!", name);
+
+		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, renderer_id));
+		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, element->offset, SizeOfVertexDataType(element->type), &value));
+		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+	}
+
 	void OpenGLUniformBuffer::SetVec3(const std::string& name, const glm::vec3& value) const {
 		auto& elements = layout.GetElements();
 

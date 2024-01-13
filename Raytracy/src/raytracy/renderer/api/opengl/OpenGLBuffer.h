@@ -79,6 +79,7 @@ namespace raytracy {
 		void Link(uint32_t const index) const;
 
 		void SetFloat(const std::string& name, const float value) const;
+		void SetInt(const std::string& name, const int value) const;
 		void SetVec3(const std::string& name, const glm::vec3& value) const;
 		void SetVec4(const std::string& name, const glm::vec4& value) const;
 		void SetMat3(const std::string& name, const glm::mat3& value) const;

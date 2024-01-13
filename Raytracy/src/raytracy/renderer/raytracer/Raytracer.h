@@ -43,7 +43,7 @@ namespace raytracy {
 	struct Hit {
 		glm::vec3 point{};
 		glm::vec3 normal{};
-		Material material;
+		glm::vec4 color{};
 		float hit_value{};
 		bool front_face{};
 
@@ -79,6 +79,8 @@ namespace raytracy {
 		shared_ptr<OpenGLShader> raytracing_kernel;
 		shared_ptr<OpenGLShader> raytracing_output;
 
+		shared_ptr<OpenGLUniformBuffer> scene_data_uniform_buffer;
+
 	public:
 		Raytracer(const Raytracer&) = delete;
 		~Raytracer() = default;
@@ -90,11 +92,13 @@ namespace raytracy {
 		void Init(shared_ptr<OpenGLRendererAPI> const renderer_api);
 		void Raytrace(shared_ptr<renderer::Scene> const scene);
 
+		void Shutdown();
+
 	private:
 		Raytracer() {}
 
 		void Submit();
-		void Preprocess();
+		void Preprocess(shared_ptr<renderer::Scene> const scene);
 		void RayTrace();
 		glm::vec4 ComputePixelColor(const Ray& ray);
 		void WriteImage(const glm::vec4* data);

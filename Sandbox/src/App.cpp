@@ -30,7 +30,10 @@ public:
 		scene->AddMesh(mesh);*/
 
 		auto sphere = make_shared<renderer::Sphere>(glm::vec3(0.0f, 0.0f, 0.0f));
-		scene->AddMesh(sphere);
+		scene->AddMesh(sphere); 
+		auto ground = make_shared<renderer::Sphere>(glm::vec3(0.0f, -22.0f, 0.0f), 20.0f);
+		ground->GetMaterial()->SetColor({0.1f, 0.8f, 0.0f, 1.0f});
+		scene->AddMesh(ground);
 
 		/*auto cube = make_shared<renderer::Cube>();
 		scene->AddMesh(cube);*/

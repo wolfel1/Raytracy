@@ -19,17 +19,33 @@ struct Hit {
 	vec3 normal;
 };
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+struct Camera {
+	vec3 position;
+	vec3 direction;
+	vec3 up;
+	vec3 right;
+};
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 layout(rgba32f, binding = 0) uniform image2D imgOutput;
 
+layout(std140, binding = 0) uniform SceneData {
+    mat4 inverse_view;
+    mat4 inverse_projection;
+    vec3 camera_position;
+	int samples;
+	vec3 camera_direction;
+	int max_depth;
+};
 layout(std430, binding = 0) buffer Scene {
     Sphere spheres[];
 };
 
 vec4 computePixelColor(Ray ray);
-bool trace(inout Ray ray, float minimum, float maximum, inout Hit hit);
-bool hitSphere(const Ray ray, float minimum, float maximum, inout Hit hit, const Sphere sphere);
+bool trace(in Ray ray, float minimum, float maximum, inout Hit hit);
+bool hitSphere(in Ray ray, float minimum, float maximum, inout Hit hit, const Sphere sphere);
+
 
 void main() {
     vec4 value = vec4(0.0, 0.0, 0.0, 1.0);
@@ -40,20 +56,20 @@ void main() {
         return;
     }
 
-    float horizontal_coefficient = (float(texelCoord.x) - float(image_size.x) / 2) / float(image_size.x);
-    float vertical_coefficient = (float(texelCoord.y) - float(image_size.y) / 2) / float(image_size.x);
-    vec3 direction = vec3(0.0, 0.0, -1.0);
-    vec3 right = vec3(1.0, 0.0, 0.0);
-    vec3 up = vec3(0.0, 1.0, 0.0);
+    vec3 direction = normalize(camera_direction);
 
     vec4 accumulated_color = vec4(0.0);
-    for (int test = 0; test < 10; ++test) {
+    for (int test = 0; test < samples; ++test) {
         Ray ray;
-        ray.origin = vec3(0.0, 0.0, 5.0);
-        ray.direction = normalize(direction + horizontal_coefficient * right + vertical_coefficient * up);
+        ray.origin = camera_position;
+        vec2 coord = vec2(float(texelCoord.x) / float(image_size.x), float(texelCoord.y) / float(image_size.y));
+        coord = coord * 2.0 - 1.0; // -1 -> 1
+
+        vec4 target = inverse_projection * vec4(coord.x, coord.y, 1, 1);
+        ray.direction = vec3(inverse_view * vec4(normalize(vec3(target) / target.w), 0));
         accumulated_color += computePixelColor(ray);
     }
-    accumulated_color /= float(10);
+    accumulated_color /= float(samples);
     accumulated_color = sqrt(accumulated_color);
     accumulated_color = clamp(accumulated_color, vec4(0.0), vec4(1.0));
         
@@ -63,34 +79,30 @@ void main() {
 vec4 computePixelColor(Ray ray) {
     Ray current_ray = ray;
     vec4 current_attenuation = vec4(1.0);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < max_depth; i++) {
         Hit hit;
         if (trace(current_ray, 0.001, 3.40282e+038, hit)) {
-            // auto scatter_direction = hit.normal + Random::RandomUnitVector();
+            vec3 scatter_direction = reflect(current_ray.direction, hit.normal);
 
-            // if (glm::all(glm::lessThan(glm::abs(scatter_direction), glm::vec3(1e-8f)))) {
-            //     scatter_direction = hit.normal;
-            // }
-
-            // current_ray = Ray(hit.point, hit.normal);
-            // current_attenuation *= hit.color;
-            return hit.color;
+            current_ray.origin = hit.point;
+            current_ray.direction = scatter_direction;
+            current_attenuation = current_attenuation * hit.color;
         } else {
             vec3 unit_direction = normalize(current_ray.direction);
-            float hit_value = 0.5 * (unit_direction.y + 1.0);
-            vec4 color = vec4(0.1, 0.8, 0.8, 1.0);
+            float ambient = 0.5 * (unit_direction.y + 1.0);
+            vec4 color = (1.0 - ambient) * vec4(1.0) + ambient * vec4(0.4275, 0.8078, 0.8078, 1.0);
             return current_attenuation * color;
         }
     }
     return vec4(0);
 }
 
-bool trace(inout Ray ray, float minimum, float maximum, inout Hit hit) {
+bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 	Hit temp;
 	bool hit_anything = false;
 	float closest = maximum;
 
-	for (int i = 0; i < spheres.length(); i++) {
+	for (int i = 0; i < spheres.length(); ++i) {
 		if (hitSphere(ray, minimum, closest, temp, spheres[i])) {
 			closest = temp.hit_value;
 			hit_anything = true;
@@ -101,11 +113,11 @@ bool trace(inout Ray ray, float minimum, float maximum, inout Hit hit) {
 	return hit_anything;
 }
 
-bool hitSphere(const Ray ray, float minimum, float maximum, inout Hit hit, const Sphere sphere) {
+bool hitSphere(in Ray ray, float minimum, float maximum, inout Hit hit, const Sphere sphere) {
 	vec3 origin_to_center = ray.origin - sphere.origin;
-	float a = length(ray.direction) * length(ray.direction);
+	float a = dot(ray.direction, ray.direction);
 	float bias = dot(origin_to_center, ray.direction);
-	float c = length(origin_to_center) * length(origin_to_center) - sphere.radius * sphere.radius;
+	float c = dot(origin_to_center, origin_to_center) - sphere.radius * sphere.radius;
 
 	float discriminant = bias * bias - a * c;
 	if (discriminant < 0.0) {
@@ -123,7 +135,7 @@ bool hitSphere(const Ray ray, float minimum, float maximum, inout Hit hit, const
 
 	hit.hit_value = hit_value;
 	hit.point = ray.origin + ray.direction * hit_value;
-	hit.normal = (hit.point - sphere.origin) / sphere.radius;
+	hit.normal = (hit.point - sphere.origin ) / sphere.radius;
 	//hit.SetFaceNormal(ray, outward_normal);
 	hit.color = sphere.color;
 	return true;
