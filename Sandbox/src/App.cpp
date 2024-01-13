@@ -26,26 +26,12 @@ public:
 		renderer::Scene::Create(camera_controller->GetCamera());
 		scene = renderer::Scene::Get();
 
-		/*auto mesh = make_shared<renderer::Plane>(glm::vec3(-2.5f, 0.0f, 0.0f));
-		scene->AddMesh(mesh);*/
-
 		auto sphere = make_shared<renderer::Sphere>(glm::vec3(0.0f, 0.0f, 0.0f));
 		scene->AddMesh(sphere); 
 		auto ground = make_shared<renderer::Sphere>(glm::vec3(0.0f, -22.0f, 0.0f), 20.0f);
 		ground->GetMaterial()->SetColor({0.1f, 0.8f, 0.0f, 1.0f});
 		scene->AddMesh(ground);
 
-		/*auto cube = make_shared<renderer::Cube>();
-		scene->AddMesh(cube);*/
-		/*for (int a = 0; a < 100; a++) {
-			glm::vec3 center(Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f), Random::RandomFloat(-5.0f, 5.0f));
-
-			auto color = glm::vec4(Random::RandomVector(0.0f, 1.0f), 1.0f);
-			shared_ptr<renderer::Material>sphere_material = std::make_shared<renderer::Material>(color);
-			auto mesh = make_shared<renderer::Sphere>(center, Random::RandomFloat(0.1f, 1.0f));
-			mesh->SetMaterial(sphere_material);
-			scene->AddMesh(mesh);
-		}*/
 
 	}
 
