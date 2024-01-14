@@ -86,4 +86,25 @@ namespace raytracy {
 		void SetMat4(const std::string& name, const glm::mat4& value) const;
 
 	};
+
+	class OpenGLStorageBuffer {
+	private:
+		uint32_t renderer_id{};
+		std::string name;
+
+	public:
+		OpenGLStorageBuffer(std::string const& name, size_t size);
+		~OpenGLStorageBuffer();
+
+		static shared_ptr<OpenGLStorageBuffer> Create(std::string const& name, size_t size) {
+			return make_shared<OpenGLStorageBuffer>(name, size);
+		}
+
+		void Bind() const; 
+		void BindSlot(uint32_t slot) const;
+		void Unbind() const;
+
+		void SetData(size_t size, void* data) const;
+
+	};
 }

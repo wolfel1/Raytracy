@@ -9,7 +9,7 @@ namespace raytracy {
 	protected:
 		std::string name = "";
 		uint32_t renderer_id{};
-		static uint32_t index;
+		static uint32_t uniform_buffer_index;
 
 	public:
 		OpenGLShader(const std::string& name);
@@ -24,7 +24,7 @@ namespace raytracy {
 		static shared_ptr<OpenGLShader> CreateFromDirectory(const std::string& directory_name);
 		BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const;
 
-		void AddUniformBuffer(std::string const& name, shared_ptr<OpenGLUniformBuffer> const uniform_buffer);
+		void AddUniformBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer);
 
 		void SetInt(std::string const& name, uint32_t value);
 	private:
@@ -33,7 +33,7 @@ namespace raytracy {
 		void PreProcess(const std::string& path, std::unordered_map<GLenum, std::string>& shaderSources);
 		void Compile(std::unordered_map<GLenum, std::string> shaderSources);
 
-		void BindBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer);
+		void BindBuffer(std::string const& name);
 		void CreateCameraUniformBuffer();
 		void CreateLightUniformBuffer();
 	};

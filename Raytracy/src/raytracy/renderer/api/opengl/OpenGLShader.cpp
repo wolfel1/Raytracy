@@ -12,7 +12,7 @@
 
 namespace raytracy {
 
-	uint32_t OpenGLShader::index = 0;
+	uint32_t OpenGLShader::uniform_buffer_index = 0;
 
 	static VertexDataType ConvertOpenGLBaseTypeInVertexDataType(int32_t type) {
 		switch (type) {
@@ -62,12 +62,12 @@ namespace raytracy {
 
 	}
 
-	void OpenGLShader::AddUniformBuffer(std::string const& name, shared_ptr<OpenGLUniformBuffer> const uniform_buffer) {
+	void OpenGLShader::AddUniformBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer) {
 		Bind();
-		BindBuffer(uniform_buffer);
-		uniform_buffer->Link(index);
+		BindBuffer(uniform_buffer->GetName());
+		uniform_buffer->Link(uniform_buffer_index);
 		Unbind();
-		index++;
+		uniform_buffer_index++;
 	}
 
 	void OpenGLShader::SetInt(std::string const& name, uint32_t value) {
@@ -213,10 +213,9 @@ namespace raytracy {
 		renderer_id = program;
 	}
 
-	void OpenGLShader::BindBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer) {
-		auto& name = uniform_buffer->GetName();
+	void OpenGLShader::BindBuffer(std::string const& name) {
 		auto uniform_block_index = glGetUniformBlockIndex(renderer_id, name.c_str());
-		GLCall(glUniformBlockBinding(renderer_id, uniform_block_index, index));
+		GLCall(glUniformBlockBinding(renderer_id, uniform_block_index, uniform_buffer_index));
 	}
 
 	void OpenGLShader::Bind() const {
@@ -274,7 +273,7 @@ namespace raytracy {
 			auto layout = GetUniformBufferLayout(block);
 
 			camera_uniform_buffer = OpenGLUniformBuffer::Create("Camera", layout);
-			AddUniformBuffer("Camera", camera_uniform_buffer);
+			AddUniformBuffer(camera_uniform_buffer);
 			camera->SetCameraUniformBuffer(camera_uniform_buffer);
 		} else {
 			Bind();
@@ -282,7 +281,7 @@ namespace raytracy {
 			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Camera'!");
 
 			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, camera_uniform_buffer->GetID());
-			AddUniformBuffer("Camera", camera_uniform_buffer);
+			AddUniformBuffer(camera_uniform_buffer);
 			Unbind();
 		}
 	}
@@ -308,14 +307,14 @@ namespace raytracy {
 			scene_light->light_uniform_buffer->SetVec3("light_color", scene_light->color);
 			scene_light->light_uniform_buffer->SetVec3("light_direction", scene_light->direction);
 			scene_light->light_uniform_buffer->SetFloat("light_strength", scene_light->strength);
-			AddUniformBuffer("Light", scene_light->light_uniform_buffer);
+			AddUniformBuffer(scene_light->light_uniform_buffer);
 		} else {
 			Bind();
 			uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "Light");
 			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Light'!");
 
 			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, scene_light->light_uniform_buffer->GetID());
-			AddUniformBuffer("Light", scene_light->light_uniform_buffer);
+			AddUniformBuffer(scene_light->light_uniform_buffer);
 			Unbind();
 		}
 	}

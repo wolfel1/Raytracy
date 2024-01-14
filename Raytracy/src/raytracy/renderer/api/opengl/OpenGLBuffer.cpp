@@ -63,7 +63,7 @@ namespace raytracy {
 	}
 
 	void OpenGLUniformBuffer::Link(uint32_t const index) const {
-		GLCall(glBindBufferRange(GL_UNIFORM_BUFFER, index, renderer_id, 0, layout.GetStride()));
+		GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, index, renderer_id));
 	}
 
 	void OpenGLUniformBuffer::SetFloat(const std::string& name, const float value) const {
@@ -132,4 +132,30 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 	}
 
+	OpenGLStorageBuffer::OpenGLStorageBuffer(std::string const& name, size_t size) : name(name) {
+		glCreateBuffers(1, &renderer_id);
+		glNamedBufferData(renderer_id, size, NULL, GL_DYNAMIC_COPY);
+	}
+
+	OpenGLStorageBuffer::~OpenGLStorageBuffer() {
+		GLCall(glDeleteBuffers(1, &renderer_id));
+	}
+
+	void OpenGLStorageBuffer::BindSlot(uint32_t slot) const {
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, renderer_id);
+	}
+
+	void OpenGLStorageBuffer::Bind() const {
+		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, renderer_id));
+	}
+
+	void OpenGLStorageBuffer::Unbind() const {
+		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
+	}
+
+	void OpenGLStorageBuffer::SetData(size_t size, void* data) const {
+		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, renderer_id));
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, data);
+		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
+	}
 }

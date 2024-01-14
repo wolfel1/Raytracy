@@ -17,7 +17,7 @@ namespace raytracy {
 		float roughness = 0.5f;
 	};
 
-	struct Sphere {
+	struct Sphere{
 		glm::vec4 color;
 		glm::vec3 origin;
 		float radius;
@@ -34,6 +34,7 @@ namespace raytracy {
 		shared_ptr<OpenGLShader> raytracing_output;
 
 		shared_ptr<OpenGLUniformBuffer> scene_data_uniform_buffer;
+		shared_ptr<OpenGLStorageBuffer> scene_storage_buffer;
 
 	public:
 		Raytracer(const Raytracer&) = delete;

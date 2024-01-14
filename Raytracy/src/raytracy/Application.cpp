@@ -1,7 +1,6 @@
 #include "raytracypch.h"
 
 #include "Application.h"
-#include "raytracer/Raytracer.h"
 #include "event/Event.h"
 #include "renderer/Renderer.h"
 #include "core/Timestep.h"

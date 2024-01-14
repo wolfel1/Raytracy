@@ -20,11 +20,10 @@ namespace raytracy {
 		raytracing_kernel = ShaderLibrary::Get().Load("raytrace_kernel");
 		raytracing_output = ShaderLibrary::Get().Load("raytrace_output");
 
+		scene_storage_buffer = OpenGLStorageBuffer::Create("Scene", 8192);
+		scene_storage_buffer->Bind();
+		scene_storage_buffer->BindSlot(0);
 		glCreateBuffers(1, &scene_buffer);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, scene_buffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, 8192, NULL, GL_DYNAMIC_COPY);
-
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, scene_buffer);
 
 		UniformBlock block("SceneData", {
 			"inverse_view",
@@ -38,7 +37,7 @@ namespace raytracy {
 		auto layout = raytracing_kernel->GetUniformBufferLayout(block);
 
 		scene_data_uniform_buffer = OpenGLUniformBuffer::Create("SceneData", layout);
-		raytracing_kernel->AddUniformBuffer("SceneData", scene_data_uniform_buffer);
+		raytracing_kernel->AddUniformBuffer(scene_data_uniform_buffer);
 
 		scene_data_uniform_buffer->SetInt("samples", 10);
 		scene_data_uniform_buffer->SetInt("max_depth", 50);
@@ -68,7 +67,7 @@ namespace raytracy {
 		for (auto mesh : scene->GetMeshes()) {
 			spheres.push_back({mesh->GetMaterial()->GetColor(), mesh->GetOrigin(), mesh->GetScale()});
 		}
-		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Sphere) * spheres.size(), spheres.data());
+		scene_storage_buffer->SetData(sizeof(Sphere) * spheres.size(), spheres.data());
 
 		auto camera = scene->GetCamera();
 		scene_data_uniform_buffer->SetMat4("inverse_view", glm::inverse(camera->GetViewMatrix()));

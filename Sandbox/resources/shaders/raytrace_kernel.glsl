@@ -38,6 +38,7 @@ layout(std140, binding = 0) uniform SceneData {
 	vec3 camera_direction;
 	int max_depth;
 };
+
 layout(std430, binding = 0) buffer Scene {
     Sphere spheres[];
 };
@@ -57,16 +58,17 @@ void main() {
     }
 
     vec3 direction = normalize(camera_direction);
+    vec2 coord = vec2(float(texelCoord.x) / float(image_size.x), float(texelCoord.y) / float(image_size.y));
+    coord = coord * 2.0 - 1.0; // -1 -> 1
+    vec4 target = inverse_projection * vec4(coord.x, coord.y, 1, 1);
+    vec3 ray_direction = vec3(inverse_view * vec4(normalize(vec3(target) / target.w), 0));
 
     vec4 accumulated_color = vec4(0.0);
     for (int test = 0; test < samples; ++test) {
         Ray ray;
         ray.origin = camera_position;
-        vec2 coord = vec2(float(texelCoord.x) / float(image_size.x), float(texelCoord.y) / float(image_size.y));
-        coord = coord * 2.0 - 1.0; // -1 -> 1
 
-        vec4 target = inverse_projection * vec4(coord.x, coord.y, 1, 1);
-        ray.direction = vec3(inverse_view * vec4(normalize(vec3(target) / target.w), 0));
+        ray.direction = ray_direction;
         accumulated_color += computePixelColor(ray);
     }
     accumulated_color /= float(samples);
