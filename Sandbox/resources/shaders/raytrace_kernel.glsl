@@ -74,7 +74,6 @@ void main() {
         accumulated_color += computePixelColor(ray);
     }
     accumulated_color /= float(samples);
-    accumulated_color = sqrt(accumulated_color);
     accumulated_color = clamp(accumulated_color, vec4(0.0), vec4(1.0));
         
     imageStore(imgOutput, texelCoord, accumulated_color);
@@ -93,7 +92,8 @@ vec4 computePixelColor(Ray ray) {
             current_attenuation = current_attenuation * hit.color;
         } else {
             vec3 unit_direction = normalize(current_ray.direction);
-			vec4 color = texture(skybox, unit_direction);
+			float ambient = 0.5 * (unit_direction.y + 1.0);
+            vec4 color = texture(skybox, unit_direction);
             return current_attenuation * color;
         }
     }
