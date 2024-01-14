@@ -82,6 +82,6 @@ namespace raytracy {
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {
 		renderer_api->SetViewport(0, 0, width, height);
-		return true;
+		return Raytracer::Get().OnWindowResize(width, height);
 	}
 }

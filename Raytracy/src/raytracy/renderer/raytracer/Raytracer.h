@@ -46,6 +46,7 @@ namespace raytracy {
 		}
 		void Init(shared_ptr<OpenGLRendererAPI> const renderer_api);
 		void Raytrace(shared_ptr<renderer::Scene> const scene);
+		bool OnWindowResize(uint32_t width, uint32_t height);
 
 		void Shutdown();
 

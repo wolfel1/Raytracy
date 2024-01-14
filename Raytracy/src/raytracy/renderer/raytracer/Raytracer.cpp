@@ -61,7 +61,6 @@ namespace raytracy {
 		renderer_api->Draw(4);
 	}
 
-
 	void Raytracer::Preprocess(shared_ptr<renderer::Scene> const scene) {
 		std::vector<Sphere> spheres;
 		for (auto mesh : scene->GetMeshes()) {
@@ -79,6 +78,12 @@ namespace raytracy {
 	void Raytracer::Shutdown() {
 		renderer_api = nullptr;
 		scene_data_uniform_buffer = nullptr;
+		scene_storage_buffer = nullptr;
+	}
+
+	bool Raytracer::OnWindowResize(uint32_t width, uint32_t height) {
+		raytracing_canvas = OpenGLTexture2D::Create(width, height, GL_RGBA32F);
+		return true;
 	}
 
 }  // namespace raytracy
