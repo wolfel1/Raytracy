@@ -95,14 +95,14 @@ namespace raytracy {
 		GLCall(glViewport(x, y, width, height));
 	}
 
-	void OpenGLRendererAPI::SetFrontFace(std::string const& side) {
-		if (side == "ccw") {
+	void OpenGLRendererAPI::SetFrontFace(FrontFace side) {
+		if (side == FrontFace::OUTSIDE) {
 			GLCall(glFrontFace(GL_CCW));
 
-		} else if (side == "cw") {
+		} else if (side == FrontFace::INSIDE) {
 			GLCall(glFrontFace(GL_CW));
 		} else {
-			RTY_RENDERER_ERROR("Undefined side '{}'", side);
+			RTY_RENDERER_ERROR("Undefined side!");
 		}
 	}
 }

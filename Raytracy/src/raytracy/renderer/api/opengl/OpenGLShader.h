@@ -27,6 +27,7 @@ namespace raytracy {
 		void AddUniformBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer);
 
 		void SetInt(std::string const& name, uint32_t value);
+		void SetVec3(std::string const& name, glm::vec3 const& value);
 	private:
 
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
@@ -35,6 +36,5 @@ namespace raytracy {
 
 		void BindBuffer(std::string const& name);
 		void CreateCameraUniformBuffer();
-		void CreateLightUniformBuffer();
 	};
 }

@@ -6,23 +6,12 @@ namespace raytracy {
 	class OpenGLTexture {
 
 	protected:
-		std::string path;
-		uint32_t width{}, height{};
 		uint32_t renderer_id{};
-		GLenum internal_format{}, data_format{};
 
 	public:
-		OpenGLTexture(uint32_t width, uint32_t height, GLenum internal_format) : width(width), height(height), internal_format(internal_format) {}
-		OpenGLTexture(const std::string& path) : path(path) {}
 		virtual ~OpenGLTexture() = default;
 
-		uint32_t GetWidth() const {
-			return width;
-		}
-
-		virtual uint32_t GetHeight() const {
-			return height;
-		}
+		
 
 
 		bool operator==(const OpenGLTexture& other) const {
@@ -32,6 +21,11 @@ namespace raytracy {
 	};
 
 	class OpenGLTexture2D : public OpenGLTexture {
+	private:
+
+		std::string path;
+		uint32_t width{}, height{};
+		GLenum internal_format{}, data_format{};
 
 	public:
 		OpenGLTexture2D(uint32_t width, uint32_t height, GLenum internal_format);
@@ -41,11 +35,33 @@ namespace raytracy {
 		void BindImage(uint32_t slot = 0) const;
 		void SetData(void* data, uint32_t size);
 		void Bind(uint32_t slot = 0) const;
+		
+		uint32_t GetWidth() const {
+			return width;
+		}
+
+		uint32_t GetHeight() const {
+			return height;
+		}
 
 		static shared_ptr<OpenGLTexture2D> Create(uint32_t width, uint32_t height, GLenum internal_format);
 
 		static shared_ptr<OpenGLTexture2D> Create(const std::string& path) {
 			return make_shared<OpenGLTexture2D>(path);
+		}
+	};
+
+	class OpenGLTextureCubemap : public OpenGLTexture {
+	private:
+
+	public:
+		OpenGLTextureCubemap(const std::vector<std::string>& paths);
+		virtual ~OpenGLTextureCubemap();
+
+		void Bind(uint32_t slot = 0) const;
+
+		static shared_ptr<OpenGLTextureCubemap> Create(const std::vector<std::string>& paths) {
+			return make_shared<OpenGLTextureCubemap>(paths);
 		}
 	};
 }

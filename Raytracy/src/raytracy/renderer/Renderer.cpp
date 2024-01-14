@@ -66,11 +66,10 @@ namespace raytracy {
 		for (auto& mesh : scene_data.meshes) {
 
 			auto& model_matrix = mesh->GetModelMatrix();
-			glm::mat4 model_view_matrix(scene_data.view_matrix * model_matrix);
-			glm::mat4 model_view_projection_matrix(scene_data.projection_matrix * model_view_matrix);
+			glm::mat4 model_view_projection_matrix(scene_data.projection_matrix * scene_data.view_matrix * model_matrix);
 			auto normal_matrix = transpose(inverse(model_matrix));
 			scene_data.camera_uniform_buffer->SetMat4("model_view_projection_matrix", model_view_projection_matrix);
-			scene_data.camera_uniform_buffer->SetMat4("model_view_matrix", model_view_matrix);
+			scene_data.camera_uniform_buffer->SetMat4("model_matrix", model_matrix);
 			scene_data.camera_uniform_buffer->SetMat4("normal_matrix", normal_matrix);
 
 			mesh->Draw(renderer_api);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../api/opengl/OpenGLShader.h"
+#include "../api/opengl/OpenGLTexture.h"
 namespace raytracy::renderer {
 
 	class Material {
@@ -43,6 +44,7 @@ namespace raytracy::renderer {
 
 	class WorldMaterial : public Material {
 	private:
+		shared_ptr<OpenGLTextureCubemap> cube_map;
 
 	public:
 		WorldMaterial();

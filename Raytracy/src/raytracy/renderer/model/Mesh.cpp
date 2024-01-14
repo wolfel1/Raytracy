@@ -96,10 +96,10 @@ namespace raytracy::renderer {
 		material->Draw();
 		vertex_array->Bind(); 
 
-		api->SetFrontFace("cw");
+		api->SetFrontFace(FrontFace::INSIDE);
 
 		api->DrawIndexed(vertex_array);
 
-		api->SetFrontFace("ccw");
+		api->SetFrontFace(FrontFace::OUTSIDE);
 	}
 }

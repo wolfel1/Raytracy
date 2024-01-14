@@ -9,6 +9,7 @@
 #include "../Shader.h"
 
 #include "glad/gl.h"
+#include "glm/gtc/type_ptr.hpp"
 
 namespace raytracy {
 
@@ -74,6 +75,11 @@ namespace raytracy {
 		int texLoc = glGetUniformLocation(renderer_id, name.c_str());
 		GLCall(glUniform1i(texLoc, value));
 	}
+	
+	void OpenGLShader::SetVec3(std::string const& name, glm::vec3 const& value) {
+		int texLoc = glGetUniformLocation(renderer_id, name.c_str());
+		GLCall(glUniform3fv(texLoc, 1, glm::value_ptr(value)));
+	}
 
 	OpenGLShader::OpenGLShader(const std::string& name) : name(name) {
 		RTY_PROFILE_FUNCTION();
@@ -84,7 +90,6 @@ namespace raytracy {
 		Compile(shaderSources);
 
 		CreateCameraUniformBuffer();
-		CreateLightUniformBuffer();
 	}
 
 	OpenGLShader::OpenGLShader(const std::vector<std::string>& paths) {
@@ -97,7 +102,6 @@ namespace raytracy {
 		Compile(shader_sources);
 
 		CreateCameraUniformBuffer();
-		CreateLightUniformBuffer();
 	}
 
 	OpenGLShader::~OpenGLShader() {
@@ -265,7 +269,7 @@ namespace raytracy {
 		auto camera_uniform_buffer = camera->GetCameraUniformBuffer();
 		if (!camera_uniform_buffer) {
 			UniformBlock block("Camera", {
-				"model_view_matrix",
+				"model_matrix",
 				"view_projection_matrix",
 				"model_view_projection_matrix",
 				"normal_matrix"
@@ -286,35 +290,4 @@ namespace raytracy {
 		}
 	}
 
-	void OpenGLShader::CreateLightUniformBuffer() {
-		auto ubo_index = glGetUniformBlockIndex(renderer_id, "Light");
-		if (ubo_index == GL_INVALID_INDEX) {
-			return;
-		}
-
-		auto scene_light = renderer::Scene::Get()->GetSceneLight();
-		
-		if (!scene_light->light_uniform_buffer) {
-			UniformBlock block("Light", {
-				"light_color",
-				"light_direction",
-				"light_strength"
-			});
-
-			auto layout = GetUniformBufferLayout(block);
-
-			scene_light->light_uniform_buffer = OpenGLUniformBuffer::Create("Light", layout);
-			scene_light->light_uniform_buffer->SetVec3("light_color", scene_light->color);
-			scene_light->light_uniform_buffer->SetVec3("light_direction", scene_light->direction);
-			scene_light->light_uniform_buffer->SetFloat("light_strength", scene_light->strength);
-			AddUniformBuffer(scene_light->light_uniform_buffer);
-		} else {
-			Bind();
-			uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "Light");
-			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Light'!");
-
-			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, scene_light->light_uniform_buffer->GetID());
-			Unbind();
-		}
-	}
 }

@@ -8,7 +8,6 @@ using namespace raytracy;
 class SandboxLayer : public Layer {
 private:
 	std::shared_ptr<renderer::Scene> scene;
-	std::shared_ptr<renderer::MeshMaterial> ground_material;
 
 	unique_ptr<PerspectiveCameraController> camera_controller;
 
@@ -28,11 +27,7 @@ public:
 		scene = renderer::Scene::Get();
 
 		auto sphere = make_shared<renderer::Sphere>(glm::vec3(0.0f, 0.0f, 0.0f));
-		scene->AddMesh(sphere); 
-		auto ground = make_shared<renderer::Sphere>(glm::vec3(0.0f, -22.0f, 0.0f), 20.0f);
-		ground_material = make_shared<renderer::MeshMaterial>(glm::vec4(0.1f, 0.8f, 0.0f, 1.0f));
-		ground->SetMaterial(ground_material);
-		scene->AddMesh(ground);
+		scene->AddMesh(sphere);
 
 		scene->AddSkybox();
 	}

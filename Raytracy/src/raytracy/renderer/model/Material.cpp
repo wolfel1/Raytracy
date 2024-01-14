@@ -2,6 +2,7 @@
 #include "Material.h"
 
 #include "../api/Shader.h"
+#include "../ViewportScene.h"
 
 namespace raytracy::renderer {
 	shared_ptr<OpenGLUniformBuffer> MeshMaterial::material_uniform_buffer = nullptr;
@@ -28,13 +29,27 @@ namespace raytracy::renderer {
 	void MeshMaterial::Draw() const {
 		material_uniform_buffer->SetVec4("color", color);
 		shader->Bind();
+		shader->SetInt("skybox", 1);
+		shader->SetVec3("camera_pos", Scene::Get()->GetCamera()->GetPosition());
 	}
 
 	WorldMaterial::WorldMaterial() {
 		shader = ShaderLibrary::Get().Load("world");
+
+		cube_map = OpenGLTextureCubemap::Create({{
+			"skybox/right.jpg",
+			"skybox/left.jpg",
+			"skybox/top.jpg",
+			"skybox/bottom.jpg",
+			"skybox/front.jpg",
+			"skybox/back.jpg"
+		} });
 	}
 
 	void WorldMaterial::Draw() const {
+
 		shader->Bind();
+		cube_map->Bind(1);
+		shader->SetInt("skybox", 1);
 	}
 }

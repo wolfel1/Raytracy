@@ -13,6 +13,9 @@ namespace raytracy {
 #define GLCall(x) x
 #endif
 
+	enum class FrontFace {
+		INSIDE, OUTSIDE
+	};
 
 	class OpenGLRendererAPI {
 
@@ -36,7 +39,7 @@ namespace raytracy {
 
 		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-		void SetFrontFace(std::string const& side);
+		void SetFrontFace(FrontFace side);
 
 		void Shutdown() {}
 

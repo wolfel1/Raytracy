@@ -19,7 +19,6 @@ namespace raytracy::renderer {
 		std::deque<std::shared_ptr<Mesh>> meshes;
 		shared_ptr<Skybox> skybox;
 
-		shared_ptr<DirectionalLight> scene_light;
 
 		static std::shared_ptr<Scene> instance;
 	public:
@@ -38,10 +37,6 @@ namespace raytracy::renderer {
 
 		std::shared_ptr<PerspectiveCamera> GetCamera() const {
 			return camera;
-		}
-
-		shared_ptr<DirectionalLight> GetSceneLight() const {
-			return scene_light;
 		}
 
 		void AddMesh(std::shared_ptr<Mesh> const mesh) {
