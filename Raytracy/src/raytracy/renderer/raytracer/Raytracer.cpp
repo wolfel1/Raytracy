@@ -50,6 +50,7 @@ namespace raytracy {
 		renderer_api->ClearViewport();
 
 		raytracing_kernel->Bind();
+		raytracing_kernel->SetInt("skybox", 1);
 		raytracing_canvas->BindImage();
 		scene_data_uniform_buffer->Bind();
 		renderer_api->LaunchComputeShader(raytracing_canvas->GetWidth(), raytracing_canvas->GetHeight(), 1);

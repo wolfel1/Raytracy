@@ -43,6 +43,8 @@ layout(std430, binding = 0) buffer Scene {
     Sphere spheres[];
 };
 
+uniform samplerCube skybox;
+
 vec4 computePixelColor(Ray ray);
 bool trace(in Ray ray, float minimum, float maximum, inout Hit hit);
 bool hitSphere(in Ray ray, float minimum, float maximum, inout Hit hit, const Sphere sphere);
@@ -91,8 +93,7 @@ vec4 computePixelColor(Ray ray) {
             current_attenuation = current_attenuation * hit.color;
         } else {
             vec3 unit_direction = normalize(current_ray.direction);
-            float ambient = 0.5 * (unit_direction.y + 1.0);
-            vec4 color = (1.0 - ambient) * vec4(1.0) + ambient * vec4(0.4275, 0.8078, 0.8078, 1.0);
+			vec4 color = texture(skybox, unit_direction);
             return current_attenuation * color;
         }
     }

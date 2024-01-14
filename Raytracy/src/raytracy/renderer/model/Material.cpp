@@ -44,12 +44,12 @@ namespace raytracy::renderer {
 			"skybox/front.jpg",
 			"skybox/back.jpg"
 		} });
+		cube_map->Bind(1);
 	}
 
 	void WorldMaterial::Draw() const {
 
 		shader->Bind();
-		cube_map->Bind(1);
 		shader->SetInt("skybox", 1);
 	}
 }
