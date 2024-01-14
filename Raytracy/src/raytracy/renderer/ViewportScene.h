@@ -10,12 +10,14 @@ namespace raytracy::renderer {
 		float strength;
 
 		shared_ptr<OpenGLUniformBuffer> light_uniform_buffer;
+
 	};
 
 	class Scene {
 	private:
 		std::shared_ptr<PerspectiveCamera> camera;
-		std::vector<std::shared_ptr<Mesh>> meshes;
+		std::deque<std::shared_ptr<Mesh>> meshes;
+		shared_ptr<Skybox> skybox;
 
 		shared_ptr<DirectionalLight> scene_light;
 
@@ -46,7 +48,13 @@ namespace raytracy::renderer {
 			meshes.push_back(mesh);
 		}
 
-		std::vector<std::shared_ptr<Mesh>> const& GetMeshes() const {
+		void AddSkybox();
+
+		shared_ptr<Skybox> GetSkybox() const{
+			return skybox;
+		}
+
+		std::deque<std::shared_ptr<Mesh>> const& GetMeshes() const {
 			return meshes;
 		}
 

@@ -52,7 +52,7 @@ namespace raytracy {
 		glEnable(GL_FRAMEBUFFER_SRGB);
 
 		GLCall(glEnable(GL_DEPTH_TEST));
-		GLCall(glDepthFunc(GL_LESS));
+		GLCall(glDepthFunc(GL_LEQUAL));
 
 		GLCall(glEnable(GL_CULL_FACE));
 		GLCall(glCullFace(GL_BACK));
@@ -93,5 +93,16 @@ namespace raytracy {
 
 	void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
 		GLCall(glViewport(x, y, width, height));
+	}
+
+	void OpenGLRendererAPI::SetFrontFace(std::string const& side) {
+		if (side == "ccw") {
+			GLCall(glFrontFace(GL_CCW));
+
+		} else if (side == "cw") {
+			GLCall(glFrontFace(GL_CW));
+		} else {
+			RTY_RENDERER_ERROR("Undefined side '{}'", side);
+		}
 	}
 }

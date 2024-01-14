@@ -5,6 +5,8 @@
 #include "../ViewportScene.h"
 #include "../api/Shader.h"
 
+#include <glad/gl.h>
+
 namespace raytracy::renderer {
 
 	Mesh::Mesh(glm::vec3 const& position, float const scale_factor) {
@@ -31,7 +33,7 @@ namespace raytracy::renderer {
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 
-		material = make_shared<Material>();
+		material = make_shared<MeshMaterial>();
 
 		if (mesh_data->is_indexed) {
 			auto index_buffer = OpenGLIndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
@@ -46,7 +48,6 @@ namespace raytracy::renderer {
 		material->Draw();
 
 		vertex_array->Bind();
-		material->GetShader()->Bind();
 
 		if (is_indexed) {
 			api->DrawIndexed(vertex_array);
@@ -76,7 +77,7 @@ namespace raytracy::renderer {
 		Rotate({ 1.0f, 0.0f, 0.0f }, glm::radians(-90.0f));
 	}
 
-	FlatCubeData Cube::data;
+	CubeData Cube::data;
 	Cube::Cube(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
 		Init(make_shared<MeshData>(data));
 	}
@@ -86,6 +87,19 @@ namespace raytracy::renderer {
 		Init(make_shared<MeshData>(data));
 	}
 
+	CubeData Skybox::data;
+	Skybox::Skybox(glm::vec3 const position, float const scale_factor) {
+		Init(make_shared<MeshData>(data));
+	}
 
-	
+	void Skybox::Draw(shared_ptr<OpenGLRendererAPI> api) {
+		material->Draw();
+		vertex_array->Bind(); 
+
+		api->SetFrontFace("cw");
+
+		api->DrawIndexed(vertex_array);
+
+		api->SetFrontFace("ccw");
+	}
 }

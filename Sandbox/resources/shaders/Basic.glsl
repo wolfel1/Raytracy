@@ -8,6 +8,7 @@ layout(location = 3) in vec2 in_vertex_tex_coords;
 
 layout(std140, binding = 0) uniform Camera {
   mat4 model_view_matrix;
+  mat4 view_projection_matrix;
   mat4 model_view_projection_matrix;
   mat4 normal_matrix;
 };

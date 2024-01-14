@@ -266,6 +266,7 @@ namespace raytracy {
 		if (!camera_uniform_buffer) {
 			UniformBlock block("Camera", {
 				"model_view_matrix",
+				"view_projection_matrix",
 				"model_view_projection_matrix",
 				"normal_matrix"
 			});
@@ -280,7 +281,6 @@ namespace raytracy {
 			uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "Camera");
 			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Camera'!");
 
-			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, camera_uniform_buffer->GetID());
 			AddUniformBuffer(camera_uniform_buffer);
 			Unbind();
 		}
@@ -314,7 +314,6 @@ namespace raytracy {
 			RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'Light'!");
 
 			glBindBufferBase(GL_UNIFORM_BUFFER, ubo_index, scene_light->light_uniform_buffer->GetID());
-			AddUniformBuffer(scene_light->light_uniform_buffer);
 			Unbind();
 		}
 	}

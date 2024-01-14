@@ -39,10 +39,15 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 		if (raytrace) {
 			Raytracer::Get().Raytrace(scene);
-			
+
 		} else {
 			BeginScene(scene->GetCamera());
+
 			scene_data.meshes = scene->GetMeshes();
+
+			if (auto skybox = scene->GetSkybox()) {
+				scene_data.meshes.push_back(skybox);
+			}
 			EndScene();
 		}
 	}
@@ -54,12 +59,15 @@ namespace raytracy {
 	void Renderer::Render() {
 		RTY_PROFILE_FUNCTION();
 		renderer_api->ClearViewport();
+		glm::mat4 view_projection_matrix(scene_data.projection_matrix * glm::mat4(glm::mat3(scene_data.view_matrix)));
+		scene_data.camera_uniform_buffer->SetMat4("view_projection_matrix", view_projection_matrix);
+
 
 		for (auto& mesh : scene_data.meshes) {
 
 			auto& model_matrix = mesh->GetModelMatrix();
 			glm::mat4 model_view_matrix(scene_data.view_matrix * model_matrix);
-			glm::mat4 model_view_projection_matrix(scene_data.projection_matrix * scene_data.view_matrix * model_matrix);
+			glm::mat4 model_view_projection_matrix(scene_data.projection_matrix * model_view_matrix);
 			auto normal_matrix = transpose(inverse(model_matrix));
 			scene_data.camera_uniform_buffer->SetMat4("model_view_projection_matrix", model_view_projection_matrix);
 			scene_data.camera_uniform_buffer->SetMat4("model_view_matrix", model_view_matrix);

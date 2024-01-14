@@ -18,7 +18,7 @@ namespace raytracy {
 		static API graphics_api;
 
 		struct SceneData {
-			std::vector<shared_ptr<renderer::Mesh>> meshes;
+			std::deque<shared_ptr<renderer::Mesh>> meshes;
 
 			glm::mat4 view_matrix;
 			glm::mat4 projection_matrix;

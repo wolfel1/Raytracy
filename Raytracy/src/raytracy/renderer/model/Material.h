@@ -4,19 +4,27 @@
 namespace raytracy::renderer {
 
 	class Material {
+	protected:
+		shared_ptr<OpenGLShader> shader;
+
+		public:
+		~Material() = default;
+		
+		virtual void Draw() const = 0;
+
+		virtual void Destroy() = 0;
+	};
+
+	class MeshMaterial : public Material {
 	private:
 		glm::vec4 color;
-
-		shared_ptr<OpenGLShader> shader;
 		static shared_ptr<OpenGLUniformBuffer> material_uniform_buffer;
 
 	public:
-		Material(glm::vec4 color = { 0.5f, 0.5f, 0.5f, 1.0f });
-		~Material() = default;
+		MeshMaterial(glm::vec4 color = { 0.5f, 0.5f, 0.5f, 1.0f });
+		~MeshMaterial() = default;
 
-		shared_ptr<OpenGLShader> GetShader() const {
-			return shader;
-		}
+		
 
 		glm::vec4 GetColor() const {
 			return color;
@@ -26,10 +34,23 @@ namespace raytracy::renderer {
 			this->color = color;
 		}
 
-		void Draw() const;
+		virtual void Draw() const override;
 
-		void Destroy() {
+		virtual void Destroy() override {
 			material_uniform_buffer = nullptr;
 		}
+	};
+
+	class WorldMaterial : public Material {
+	private:
+
+	public:
+		WorldMaterial();
+		~WorldMaterial() = default;
+
+
+		virtual void Draw() const override;
+
+		virtual void Destroy() override {}
 	};
 }

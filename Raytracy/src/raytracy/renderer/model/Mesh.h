@@ -11,7 +11,7 @@ namespace raytracy::renderer {
 	
 
 	class Mesh {
-	private:
+	protected:
 		shared_ptr<OpenGLVertexArray> vertex_array;
 		shared_ptr<Material> material;
 
@@ -46,7 +46,7 @@ namespace raytracy::renderer {
 			return scale;
 		}
 
-		void Draw(shared_ptr<OpenGLRendererAPI> api);
+		virtual void Draw(shared_ptr<OpenGLRendererAPI> api);
 
 		void Translate(glm::vec3 const& direction);
 
@@ -69,7 +69,7 @@ namespace raytracy::renderer {
 
 	class Cube : public Mesh {
 	private:
-		static FlatCubeData data;
+		static CubeData data;
 
 	public:
 		Cube(glm::vec3 const position = {}, float const scale_factor = 1.0f);
@@ -83,5 +83,16 @@ namespace raytracy::renderer {
 	public:
 		Sphere(glm::vec3 const position = {}, float const scale_factor = 1.0f);
 		~Sphere() = default;
+	};
+
+	class Skybox : public Mesh {
+	private:
+		static CubeData data;
+
+	public:
+		Skybox(glm::vec3 const position = {}, float const scale_factor = 1.0f);
+		~Skybox() = default;
+
+		virtual void Draw(shared_ptr<OpenGLRendererAPI> api) override;
 	};
 }

@@ -4,9 +4,9 @@
 #include "../api/Shader.h"
 
 namespace raytracy::renderer {
-	shared_ptr<OpenGLUniformBuffer> Material::material_uniform_buffer = nullptr;
+	shared_ptr<OpenGLUniformBuffer> MeshMaterial::material_uniform_buffer = nullptr;
 
-	Material::Material(glm::vec4 color) : color(color) {
+	MeshMaterial::MeshMaterial(glm::vec4 color) : color(color) {
 		shader = ShaderLibrary::Get().Load("Basic");
 		RTY_ASSERT(shader, "Could not create a shader program!");
 
@@ -25,7 +25,16 @@ namespace raytracy::renderer {
 		material_uniform_buffer->SetVec4("color", color);
 	}
 
-	void Material::Draw() const {
+	void MeshMaterial::Draw() const {
 		material_uniform_buffer->SetVec4("color", color);
+		shader->Bind();
+	}
+
+	WorldMaterial::WorldMaterial() {
+		shader = ShaderLibrary::Get().Load("world");
+	}
+
+	void WorldMaterial::Draw() const {
+		shader->Bind();
 	}
 }

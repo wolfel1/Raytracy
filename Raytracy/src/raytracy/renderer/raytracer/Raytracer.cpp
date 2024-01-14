@@ -4,6 +4,7 @@
 #include <execution>
 
 #include "../../Application.h"
+#include "../model/Material.h"
 
 #include <glad/gl.h>
 
@@ -23,7 +24,6 @@ namespace raytracy {
 		scene_storage_buffer = OpenGLStorageBuffer::Create("Scene", 8192);
 		scene_storage_buffer->Bind();
 		scene_storage_buffer->BindSlot(0);
-		glCreateBuffers(1, &scene_buffer);
 
 		UniformBlock block("SceneData", {
 			"inverse_view",
@@ -51,6 +51,7 @@ namespace raytracy {
 
 		raytracing_kernel->Bind();
 		raytracing_canvas->BindImage();
+		scene_data_uniform_buffer->Bind();
 		renderer_api->LaunchComputeShader(raytracing_canvas->GetWidth(), raytracing_canvas->GetHeight(), 1);
 
 		renderer_api->SetMemoryBarrier();
@@ -64,7 +65,8 @@ namespace raytracy {
 	void Raytracer::Preprocess(shared_ptr<renderer::Scene> const scene) {
 		std::vector<Sphere> spheres;
 		for (auto mesh : scene->GetMeshes()) {
-			spheres.push_back({mesh->GetMaterial()->GetColor(), mesh->GetOrigin(), mesh->GetScale()});
+			auto color = dynamic_pointer_cast<renderer::MeshMaterial>(mesh->GetMaterial())->GetColor();
+			spheres.push_back({color, mesh->GetOrigin(), mesh->GetScale()});
 		}
 		scene_storage_buffer->SetData(sizeof(Sphere) * spheres.size(), spheres.data());
 

@@ -36,6 +36,8 @@ namespace raytracy {
 
 		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
+		void SetFrontFace(std::string const& side);
+
 		void Shutdown() {}
 
 		static shared_ptr<OpenGLRendererAPI> Create() {
