@@ -15,6 +15,7 @@ Once you've cloned, run `Win-GenerateProjectVS.bat` to generate Visual Studio 20
 - [spdlog](https://github.com/gabime/spdlog)
 - [GLFW](https://github.com/glfw/glfw)
 - [glad](https://github.com/Dav1dde/glad/tree/glad2)
+- [stb](https://github.com/nothings/stb)
 
 ### Credits
 - [Raytracing On One Weekend](https://raytracing.github.io/) series for teaching the principle of raytracing
