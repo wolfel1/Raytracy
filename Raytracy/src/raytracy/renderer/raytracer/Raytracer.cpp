@@ -10,8 +10,6 @@
 
 namespace raytracy {
 
-	GLuint scene_buffer;
-
 
 	void Raytracer::Init(shared_ptr<OpenGLRendererAPI> const api) {
 		renderer_api = api;
