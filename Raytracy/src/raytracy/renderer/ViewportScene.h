@@ -1,6 +1,7 @@
 #pragma once
 #include "./camera/PerspectiveCamera.h"
 #include "./model/Mesh.h"
+#include "raytracer/BoundingBoxNode.h"
 
 namespace raytracy::renderer {
 
@@ -17,6 +18,7 @@ namespace raytracy::renderer {
 	private:
 		std::shared_ptr<PerspectiveCamera> camera;
 		std::deque<std::shared_ptr<Mesh>> meshes;
+		std::vector<BoundingBoxNode> bounding_volume_hierarchie;
 		shared_ptr<Skybox> skybox;
 
 
@@ -39,9 +41,7 @@ namespace raytracy::renderer {
 			return camera;
 		}
 
-		void AddMesh(std::shared_ptr<Mesh> const mesh) {
-			meshes.push_back(mesh);
-		}
+		void AddMesh(std::shared_ptr<Mesh> const mesh);
 
 		void AddSkybox();
 
@@ -55,5 +55,9 @@ namespace raytracy::renderer {
 
 	private:
 		Scene(std::shared_ptr<PerspectiveCamera> camera);
+
+		void BuildBoundingVolumeHierarchie();
+		void UpdateBounds(uint32_t node_index);
+		void Subdivide(uint32_t node_index);
 	};
 }

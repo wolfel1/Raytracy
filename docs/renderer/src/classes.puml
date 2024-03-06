@@ -5,10 +5,10 @@ Scene : -Scene()
 Scene : +Get()
 Scene : +AddCamera(camera: PerspectiveCamera)
 Scene : +AddMesh()
+Scene : -BuildBoundingVolumeHierarchie()
 
 Scene --> "1" PerspectiveCamera
 Scene --> "0..*" Mesh
-Scene --> "1..*" BoundingBoxNode
 
 class PerspectiveCamera
 
@@ -17,6 +17,8 @@ BoundingBoxNode : +min_corner: vec3
 BoundingBoxNode : +max_corner: vec3
 BoundingBoxNode : +left_child_index: int
 BoundingBoxNode : +object_count: int
+
+Scene --> "1..*" BoundingBoxNode
 
 abstract Mesh
 Mesh : -model_matrix: mat4
