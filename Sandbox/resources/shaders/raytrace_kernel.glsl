@@ -100,7 +100,7 @@ vec4 computePixelColor(Ray ray) {
     vec4 current_attenuation = vec4(1.0);
     for (int i = 0; i < max_depth; i++) {
         Hit hit;
-        if (trace(current_ray, 0.001, 3.40282e+038, hit)) {
+        if (trace(current_ray, 0.001, infinity, hit)) {
             vec3 scatter_direction = reflect(current_ray.direction, hit.normal);
 
             current_ray.origin = hit.point;
@@ -123,40 +123,52 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 
 	BoundingBoxNode node = nodes[0];
 
+	int stack_index = 0;
+	BoundingBoxNode stack[16]; 
+
 	if(hitBoundingBox(ray, node) == infinity) {
 		return false;
 	}
-	for (int i = 0; i < spheres.length(); ++i) {
-		if (hitSphere(ray, minimum, closest, temp, spheres[i])) {
-			closest = temp.hit_value;
-			hit_anything = true;
-			hit = temp;
+
+	if (false) {
+
+		while(!hit_anything) {
+			if(!node.has_object) {
+				BoundingBoxNode left_child = nodes[node.left_child_index];
+				BoundingBoxNode right_child = nodes[node.right_child_index];
+
+				float distance_left = hitBoundingBox(ray, left_child);
+				float distance_right = hitBoundingBox(ray, right_child);
+				if (distance_left < distance_right) {
+					node = left_child;
+					stack[stack_index] = right_child;
+					stack_index++;
+				} else {
+					node = right_child;
+					stack[stack_index] = left_child;
+					stack_index++;
+				}
+			} else {
+				hit_anything = hitSphere(ray, minimum, closest, temp, spheres[node.object_index]);
+
+				if (!hit_anything) {
+					if (stack_index == 0) {
+						return false;
+					}
+					node = stack[stack_index];
+					stack_index--;
+				}
+			}
+		}
+	} else {
+		for (int i = 0; i < spheres.length(); ++i) {
+			if (hitSphere(ray, minimum, closest, temp, spheres[i])) {
+				closest = temp.hit_value;
+				hit_anything = true;
+				hit = temp;
+			}
 		}
 	}
-	// while(!hit_anything) {
-	// 	if(node.object_indices.length() == 0) {
-	// 		BoundingBoxNode left_child = nodes[node.left_child_index];
-	// 		BoundingBoxNode right_child = nodes[node.right_child_index];
-
-	// 		float distance_left = hitBoundingBox(ray, left_child);
-	// 		float distance_right = hitBoundingBox(ray, right_child);
-	// 		if (distance_left < distance_right) {
-	// 			node = left_child;
-	// 		} else {
-	// 			node = right_child;
-	// 		}
-	// 	} else {
-	// 		for (int i = 0; i < node.object_indices.length(); ++i) {
-	// 			if (hitSphere(ray, minimum, closest, temp, spheres[node.object_indices[i]])) {
-	// 				closest = temp.hit_value;
-	// 				hit_anything = true;
-	// 				hit = temp;
-	// 			}
-	// 		}
-	// 	}
-		
-	// }
-	
 
 	return hit_anything;
 }
