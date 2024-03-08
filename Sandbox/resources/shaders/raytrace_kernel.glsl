@@ -26,6 +26,17 @@ struct Camera {
 	vec3 right;
 };
 
+struct BoundingBoxNode {
+	vec3 min_corner;
+	uint left_child_index;
+	vec3 max_corner;
+	uint right_child_index;
+	uint object_index;
+	bool has_object;
+};
+
+const float infinity = 1.0 / 0.0;
+
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 layout(rgba32f, binding = 0) uniform image2D imgOutput;
@@ -43,11 +54,16 @@ layout(std430, binding = 0) buffer Scene {
     Sphere spheres[];
 };
 
+layout(std430, binding = 1) buffer BoundingVolumeHierarchie {
+    BoundingBoxNode nodes[];
+};
+
 uniform samplerCube skybox;
 
 vec4 computePixelColor(Ray ray);
 bool trace(in Ray ray, float minimum, float maximum, inout Hit hit);
 bool hitSphere(in Ray ray, float minimum, float maximum, inout Hit hit, const Sphere sphere);
+float hitBoundingBox(in Ray ray, in BoundingBoxNode node);
 
 
 void main() {
@@ -105,6 +121,11 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 	bool hit_anything = false;
 	float closest = maximum;
 
+	BoundingBoxNode node = nodes[0];
+
+	if(hitBoundingBox(ray, node) == infinity) {
+		return false;
+	}
 	for (int i = 0; i < spheres.length(); ++i) {
 		if (hitSphere(ray, minimum, closest, temp, spheres[i])) {
 			closest = temp.hit_value;
@@ -112,6 +133,30 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 			hit = temp;
 		}
 	}
+	// while(!hit_anything) {
+	// 	if(node.object_indices.length() == 0) {
+	// 		BoundingBoxNode left_child = nodes[node.left_child_index];
+	// 		BoundingBoxNode right_child = nodes[node.right_child_index];
+
+	// 		float distance_left = hitBoundingBox(ray, left_child);
+	// 		float distance_right = hitBoundingBox(ray, right_child);
+	// 		if (distance_left < distance_right) {
+	// 			node = left_child;
+	// 		} else {
+	// 			node = right_child;
+	// 		}
+	// 	} else {
+	// 		for (int i = 0; i < node.object_indices.length(); ++i) {
+	// 			if (hitSphere(ray, minimum, closest, temp, spheres[node.object_indices[i]])) {
+	// 				closest = temp.hit_value;
+	// 				hit_anything = true;
+	// 				hit = temp;
+	// 			}
+	// 		}
+	// 	}
+		
+	// }
+	
 
 	return hit_anything;
 }
@@ -142,4 +187,21 @@ bool hitSphere(in Ray ray, float minimum, float maximum, inout Hit hit, const Sp
 	//hit.SetFaceNormal(ray, outward_normal);
 	hit.color = sphere.color;
 	return true;
+}
+
+float hitBoundingBox(in Ray ray, in BoundingBoxNode node) {
+	vec3 inverse_direction = vec3(1.0) / ray.direction;
+	vec3 t1 = (node.min_corner - ray.origin) * inverse_direction;
+	vec3 t2 = (node.max_corner - ray.origin) * inverse_direction;
+	vec3 t_min = min(t1, t2);
+	vec3 t_max = max(t1, t2);
+
+	float min_component = max(max(t_min.x, t_min.y), t_min.z);
+	float max_component = min(min(t_max.x, t_max.y), t_max.z);
+
+	if(min_component > max_component || max_component < 0) {
+		return infinity;
+	} else {
+		return min_component;
+	}
 }

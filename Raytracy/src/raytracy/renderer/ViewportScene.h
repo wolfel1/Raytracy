@@ -52,6 +52,10 @@ namespace raytracy::renderer {
 		std::deque<std::shared_ptr<Mesh>> const& GetMeshes() const {
 			return meshes;
 		}
+		
+		std::vector<BoundingBoxNode> const& GetBoundingVolumeHierarchie() const {
+			return bounding_volume_hierarchie;
+		}
 
 	private:
 		Scene(std::shared_ptr<PerspectiveCamera> camera);

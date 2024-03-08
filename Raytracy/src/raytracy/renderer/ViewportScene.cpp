@@ -62,7 +62,7 @@ namespace raytracy::renderer {
 
 	void Scene::Subdivide(uint32_t node_index) {
 		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
-		if (node.object_indices.size() <= 2) {
+		if (node.object_indices.size() <= 1) {
 			return;
 		}
 
