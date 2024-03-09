@@ -78,7 +78,7 @@ namespace raytracy {
 	}
 
 	void OpenGLRendererAPI::LaunchComputeShader(uint32_t num_groups_x, uint32_t num_groups_y, uint32_t num_groups_z) {
-		glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
+		GLCall(glDispatchCompute(num_groups_x, num_groups_y, num_groups_z));
 	}
 
 	void OpenGLRendererAPI::SetMemoryBarrier() {

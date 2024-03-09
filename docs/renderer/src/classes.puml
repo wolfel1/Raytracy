@@ -1,15 +1,24 @@
 @startuml renderer_classes
 class Scene
+Scene : object_indices: int[]
 Scene : -Scene()
 Scene : +Get()
 Scene : +AddCamera(camera: PerspectiveCamera)
 Scene : +AddMesh()
+Scene : -BuildBoundingVolumeHierarchie()
 
 Scene --> "1" PerspectiveCamera
 Scene --> "0..*" Mesh
 
 class PerspectiveCamera
-PerspectiveCamera --> "1" DirectionalLight
+
+struct BoundingBoxNode
+BoundingBoxNode : +min_corner: vec3
+BoundingBoxNode : +max_corner: vec3
+BoundingBoxNode : +left_child_index: int
+BoundingBoxNode : +object_count: int
+
+Scene --> "1..*" BoundingBoxNode
 
 abstract Mesh
 Mesh : -model_matrix: mat4
@@ -66,8 +75,6 @@ DirectionalLight : -light_strength: float = 1.0
 DirectionalLight : +DirectionalLight()
 DirectionalLight : +DirectionalLight(color: vec3, direction: vec3)
 DirectionalLight : +SetStrength(value: float) 0.0 < value < 1.0
-
-DirectionalLight "-light_uniform_buffer" --> "1" UniformBuffer
 
 class Material
 Material : color

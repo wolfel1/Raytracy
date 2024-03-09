@@ -26,6 +26,17 @@ struct Camera {
 	vec3 right;
 };
 
+struct BoundingBoxNode {
+	vec3 min_corner;
+	uint left_child_index;
+	vec3 max_corner;
+	uint right_child_index;
+	uint object_index;
+	bool has_object;
+};
+
+const float infinity = 1.0 / 0.0;
+
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 layout(rgba32f, binding = 0) uniform image2D imgOutput;
@@ -43,11 +54,16 @@ layout(std430, binding = 0) buffer Scene {
     Sphere spheres[];
 };
 
+layout(std430, binding = 1) buffer BoundingVolumeHierarchie {
+    BoundingBoxNode nodes[];
+};
+
 uniform samplerCube skybox;
 
 vec4 computePixelColor(Ray ray);
 bool trace(in Ray ray, float minimum, float maximum, inout Hit hit);
 bool hitSphere(in Ray ray, float minimum, float maximum, inout Hit hit, const Sphere sphere);
+float hitBoundingBox(in Ray ray, in BoundingBoxNode node);
 
 
 void main() {
@@ -84,7 +100,7 @@ vec4 computePixelColor(Ray ray) {
     vec4 current_attenuation = vec4(1.0);
     for (int i = 0; i < max_depth; i++) {
         Hit hit;
-        if (trace(current_ray, 0.001, 3.40282e+038, hit)) {
+        if (trace(current_ray, 0.001, infinity, hit)) {
             vec3 scatter_direction = reflect(current_ray.direction, hit.normal);
 
             current_ray.origin = hit.point;
@@ -105,11 +121,69 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 	bool hit_anything = false;
 	float closest = maximum;
 
-	for (int i = 0; i < spheres.length(); ++i) {
-		if (hitSphere(ray, minimum, closest, temp, spheres[i])) {
-			closest = temp.hit_value;
-			hit_anything = true;
-			hit = temp;
+	BoundingBoxNode node = nodes[0];
+
+	int stack_index = 0;
+	BoundingBoxNode stack[16]; 
+
+	if(hitBoundingBox(ray, node) == infinity) {
+		return false;
+	}
+
+	if (true) {
+		while(true) {
+			if(!node.has_object) {
+				BoundingBoxNode left_child = nodes[node.left_child_index];
+				BoundingBoxNode right_child = nodes[node.right_child_index];
+
+				float distance_left = hitBoundingBox(ray, left_child);
+				float distance_right = hitBoundingBox(ray, right_child);
+				if (distance_left > distance_right) {
+					float temp_distance = distance_left;
+					distance_left = distance_right;
+					distance_right = temp_distance;
+				
+					BoundingBoxNode temp_node = left_child;
+					left_child = right_child;
+					right_child = temp_node;
+				}
+
+				if(distance_left > closest) {
+					if (stack_index == 0) {
+						return hit_anything;
+					} else {
+						stack_index--;
+						node = stack[stack_index];
+					}
+				} else {
+					node = left_child;
+					if (distance_right < closest) {
+						stack[stack_index] = right_child;
+						stack_index++;
+					}
+				}
+			} else {
+				if (hitSphere(ray, minimum, closest, temp, spheres[node.object_index])) {
+					closest = temp.hit_value;
+					hit_anything = true;
+					hit = temp;
+				}
+
+				if (stack_index == 0) {
+					return hit_anything;
+				} else {
+					stack_index--;
+					node = stack[stack_index];
+				}
+			}
+		}
+	} else {
+		for (int i = 0; i < spheres.length(); ++i) {
+			if (hitSphere(ray, minimum, closest, temp, spheres[i])) {
+				closest = temp.hit_value;
+				hit_anything = true;
+				hit = temp;
+			}
 		}
 	}
 
@@ -142,4 +216,21 @@ bool hitSphere(in Ray ray, float minimum, float maximum, inout Hit hit, const Sp
 	//hit.SetFaceNormal(ray, outward_normal);
 	hit.color = sphere.color;
 	return true;
+}
+
+float hitBoundingBox(in Ray ray, in BoundingBoxNode node) {
+	vec3 inverse_direction = vec3(1.0) / ray.direction;
+	vec3 t1 = (node.min_corner - ray.origin) * inverse_direction;
+	vec3 t2 = (node.max_corner - ray.origin) * inverse_direction;
+	vec3 t_min = min(t1, t2);
+	vec3 t_max = max(t1, t2);
+
+	float min_component = max(max(t_min.x, t_min.y), t_min.z);
+	float max_component = min(min(t_max.x, t_max.y), t_max.z);
+
+	if(min_component > max_component || max_component < 0) {
+		return infinity;
+	} else {
+		return min_component;
+	}
 }
