@@ -129,63 +129,59 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 	if(hitBoundingBox(ray, node) == infinity) {
 		return false;
 	}
+	
+	while(true) {
+		if(!node.has_object) {
+			BoundingBoxNode left_child = nodes[node.left_child_index];
+			BoundingBoxNode right_child = nodes[node.right_child_index];
 
-	if (true) {
-		while(true) {
-			if(!node.has_object) {
-				BoundingBoxNode left_child = nodes[node.left_child_index];
-				BoundingBoxNode right_child = nodes[node.right_child_index];
+			float distance_left = hitBoundingBox(ray, left_child);
+			float distance_right = hitBoundingBox(ray, right_child);
 
-				float distance_left = hitBoundingBox(ray, left_child);
-				float distance_right = hitBoundingBox(ray, right_child);
-				if (distance_left > distance_right) {
-					float temp_distance = distance_left;
-					distance_left = distance_right;
-					distance_right = temp_distance;
-				
-					BoundingBoxNode temp_node = left_child;
-					left_child = right_child;
-					right_child = temp_node;
-				}
-
-				if(distance_left > closest) {
-					if (stack_index == 0) {
-						return hit_anything;
-					} else {
-						stack_index--;
-						node = stack[stack_index];
-					}
-				} else {
-					node = left_child;
-					if (distance_right < closest) {
-						stack[stack_index] = right_child;
-						stack_index++;
-					}
-				}
+			float closer_distance, remote_distance;
+			BoundingBoxNode closer_node, remote_node;
+			if (distance_left > distance_right) {
+				closer_distance = distance_right;
+				remote_distance = distance_left;
+				closer_node = right_child;
+				remote_node = left_child;
 			} else {
-				if (hitSphere(ray, minimum, closest, temp, spheres[node.object_index])) {
-					closest = temp.hit_value;
-					hit_anything = true;
-					hit = temp;
-				}
+				closer_distance = distance_left;
+				remote_distance = distance_right;
+				closer_node = left_child;
+				remote_node = right_child;
+			}
 
+			if(closer_distance > closest) {
 				if (stack_index == 0) {
 					return hit_anything;
 				} else {
 					stack_index--;
 					node = stack[stack_index];
 				}
+			} else {
+				node = closer_node;
+				if (remote_distance < closest) {
+					stack[stack_index] = remote_node;
+					stack_index++;
+				}
 			}
-		}
-	} else {
-		for (int i = 0; i < spheres.length(); ++i) {
-			if (hitSphere(ray, minimum, closest, temp, spheres[i])) {
+		} else {
+			if (hitSphere(ray, minimum, closest, temp, spheres[node.object_index])) {
 				closest = temp.hit_value;
 				hit_anything = true;
 				hit = temp;
 			}
+
+			if (stack_index == 0) {
+				return hit_anything;
+			} else {
+				stack_index--;
+				node = stack[stack_index];
+			}
 		}
 	}
+	
 
 	return hit_anything;
 }
