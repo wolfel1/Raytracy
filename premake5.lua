@@ -4,8 +4,7 @@ workspace "Raytracy"
 
 	configurations {
 		"Debug",
-		"Release",
-		"Dist"
+		"Release"
 	}
 
 	flags {
@@ -95,11 +94,6 @@ project "Raytracy"
 		runtime "Release"
 		optimize "on"
 
-	filter "configurations:Dist"
-		defines "RTY_DIST"
-		runtime "Release"
-		optimize "on"
-
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
@@ -144,10 +138,3 @@ project "Sandbox"
 		defines "RTY_RELEASE"
 		runtime "Release"
 		optimize "on"
-
-	filter "configurations:Dist"
-		defines "RTY_DIST"
-		runtime "Release"
-		optimize "on"
-
-
