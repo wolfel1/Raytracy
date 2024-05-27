@@ -151,13 +151,24 @@ project "Test"
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	files {
-		"%{prj.name}/**.h",
-		"%{prj.name}/**.cpp"
+		"%{prj.name}/test/**.h",
+		"%{prj.name}/test/**.cpp",
+        "%{prj.name}/vendor/googletest/googletest/**.h",
+        "%{prj.name}/vendor/googletest/googletest/**.hpp",
+        "%{prj.name}/vendor/googletest/googletest/src/gtest-all.cc",
+        "%{prj.name}/vendor/googletest/googlemock/**.h",
+        "%{prj.name}/vendor/googletest/googlemock/**.hpp",
+        "%{prj.name}/vendor/googletest/googlemock/src/gmock-all.cc"
 	}
 
 	includedirs {
 		"Raytracy/src",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.spdlog}",
+		"%{prj.name}/vendor/googletest/googletest/include",
+		"%{prj.name}/vendor/googletest/googletest",
+		"%{prj.name}/vendor/googletest/googlemock/include",
+		"%{prj.name}/vendor/googletest/googlemock",
 	}
 
 	defines {

@@ -8,3 +8,6 @@
 [submodule "Raytracy/vendor/glfw"]
 	path = Raytracy/vendor/glfw
 	url = https://github.com/glfw/glfw
+[submodule "Test/vendor/googletest"]
+	path = Test/vendor/googletest
+	url = https://github.com/google/googletest
