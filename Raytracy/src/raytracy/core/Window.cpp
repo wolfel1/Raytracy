@@ -136,6 +136,4 @@ namespace raytracy {
 	void Window::Shutdown() {
 		graphics_context.reset();
 	}
-
-
 }

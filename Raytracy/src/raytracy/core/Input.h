@@ -3,19 +3,39 @@
 #include "KeyCodes.h"
 #include "MouseCodes.h"
 #include <glm/glm.hpp>
+#include "GLFWWrapper.h"
+#include "raytracy/Application.h"
 
 namespace raytracy {
 
 	class Input {
+	private:
 
 	public:
 		Input(const Input&) = delete;
 
-		bool IsKeyPressed(KeyCode key) const;
+		template<typename T = GLFWWrapper>
+		bool IsKeyPressed(KeyCode key) const {
+			auto window = static_cast<GLFWwindow*>(IApplication::Get()->GetWindow()->GetNativeWindow());
+			auto state = T::GetKey(window, static_cast<int32_t>(key));
+			return state == GLFW_PRESS || state == GLFW_REPEAT;
+		}
 
-		bool IsMouseButtonPressed(MouseCode button) const;
+		template<typename T = GLFWWrapper>
+		bool IsMouseButtonPressed(MouseCode button) const {
+			auto window = static_cast<GLFWwindow*>(IApplication::Get()->GetWindow()->GetNativeWindow());
+			auto state = T::GetMouseButton(window, static_cast<int32_t>(button));
+			return state == GLFW_PRESS || state == GLFW_REPEAT;
+		}
 
-		glm::vec2 GetMousePosition() const;
+		template<typename T = GLFWWrapper>
+		glm::vec2 GetMousePosition() const {
+			auto window = static_cast<GLFWwindow*>(IApplication::Get()->GetWindow()->GetNativeWindow());
+			double x, y;
+			T::GetCursorPos(window, &x, &y);
+
+			return { static_cast<float>(x), static_cast<float>(y) };
+		}
 
 		static Input& Get() {
 			static Input instance;

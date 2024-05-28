@@ -18,15 +18,15 @@ namespace raytracy {
 	void PerspectiveCameraController::OnUpdate(Timestep timestep) {
 		auto& input = Input::Get();
 
-		if (input.IsMouseButtonPressed(MouseCode::ButtonMiddle)) {
+		if (input.IsMouseButtonPressed<>(MouseCode::ButtonMiddle)) {
 			if (is_not_rotating) {
-				last_mouse_position = input.GetMousePosition();
+				last_mouse_position = input.GetMousePosition<>();
 				is_not_rotating = false;
 			}
-			auto mouse_position = input.GetMousePosition();
+			auto mouse_position = input.GetMousePosition<>();
 			float x_offset = (mouse_position.x - last_mouse_position.x);
 			float y_offset = (last_mouse_position.y - mouse_position.y);
-			if (input.IsKeyPressed(KeyCode::LeftShift)) {
+			if (input.IsKeyPressed<>(KeyCode::LeftShift)) {
 				glm::vec3 translate_direction{};
 				auto& up = camera->GetUp();
 				auto& direction = camera->GetDirection();

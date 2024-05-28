@@ -14,7 +14,7 @@ namespace raytracy {
 	void Raytracer::Init(shared_ptr<OpenGLRendererAPI> const api) {
 		renderer_api = api;
 
-		auto& app_spec = Application::Get().GetSpecification();
+		auto app_spec = IApplication::Get()->GetSpecification();
 		raytracing_canvas = OpenGLTexture2D::Create(app_spec.width, app_spec.height, GL_RGBA32F);
 		raytracing_kernel = ShaderLibrary::Get().Load("raytrace_kernel");
 		raytracing_output = ShaderLibrary::Get().Load("raytrace_output");

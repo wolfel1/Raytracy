@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "raytracy/ApplicationTest.h"
+#include "raytracy/core/InputTest.h"
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

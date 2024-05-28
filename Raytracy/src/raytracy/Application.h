@@ -16,7 +16,30 @@ namespace raytracy {
 		uint32_t height = 900;
 	};
 
-	class Application {
+	class IApplication {
+
+	protected:
+		static IApplication* instance;
+
+	public:
+		IApplication() {
+			RTY_ASSERT(!instance, "App already exists!");
+			instance = this;
+		}
+		virtual ~IApplication() {
+			instance = nullptr;
+		}
+	
+		static IApplication* Get() {
+			return instance;
+		}
+
+		virtual shared_ptr<IWindow> GetWindow() const = 0;
+		virtual ApplicationSpecification const& GetSpecification() const = 0;
+		
+	};
+
+	class Application : public IApplication {
 	private:
 		ApplicationSpecification application_specification;
 		shared_ptr<Window> window;
@@ -26,11 +49,10 @@ namespace raytracy {
 
 		std::vector<shared_ptr<Layer>> layer_stack;
 
-		static Application* instance;
 	public:
 		Application(const ApplicationSpecification& application_specification = ApplicationSpecification());
 		Application(const Application&) = delete;
-		~Application();
+		virtual ~Application();
 
 		void Run();
 
@@ -38,16 +60,12 @@ namespace raytracy {
 
 		void Shutdown();
 
-		shared_ptr<Window> GetWindow() const {
+		virtual shared_ptr<IWindow> GetWindow() const override {
 			return window;
 		}
 		
-		ApplicationSpecification const& GetSpecification() const {
+		virtual ApplicationSpecification const& GetSpecification() const override {
 			return application_specification;
-		}
-
-		static Application& Get() {
-			return *instance;
 		}
 
 		private:

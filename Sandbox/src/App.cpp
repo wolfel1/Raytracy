@@ -18,7 +18,7 @@ public:
 
 	void OnAttach() override {
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
-		auto spec = Application::Get().GetSpecification();
+		auto& spec = IApplication::Get()->GetSpecification();
 		camera_controller = make_unique<PerspectiveCameraController>(static_cast<float>(spec.width) / static_cast<float>(spec.height));
 		camera_controller->Translate({ 0.0f, 5.0f, 10.0f });
 		camera_controller->RotateX(-25.0f);

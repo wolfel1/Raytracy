@@ -164,6 +164,7 @@ project "Test"
 	includedirs {
 		"Raytracy/src",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.glfw}",
 		"%{IncludeDir.spdlog}",
 		"%{prj.name}/vendor/googletest/googletest/include",
 		"%{prj.name}/vendor/googletest/googletest",

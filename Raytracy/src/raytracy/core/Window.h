@@ -9,14 +9,26 @@ struct GLFWwindow;
 
 namespace raytracy {
 
-	class Window {
+	struct WindowData {
+		std::string name;
+		uint32_t width;
+		uint32_t height;
+		bool v_sync;
+	};
+
+	struct WindowProps {
+		std::string name;
+		uint32_t width;
+		uint32_t height;
+	};
+
+	class IWindow {
+		public:
+			virtual void* GetNativeWindow() const = 0;
+	};
+
+	class Window : public IWindow {
 	private:
-		struct WindowData {
-			std::string name;
-			uint32_t width;
-			uint32_t height;
-			bool v_sync;
-		};
 		GLFWwindow* window_handle = nullptr;
 
 		WindowData window_data;
@@ -27,11 +39,6 @@ namespace raytracy {
 
 		static bool is_glfw_initialized;
 
-		struct WindowProps {
-			std::string name;
-			uint32_t width;
-			uint32_t height;
-		};
 		Window(const WindowProps& props);
 		~Window();
 
@@ -47,7 +54,7 @@ namespace raytracy {
 		void SetVSync(bool enabled);
 		bool IsVSync() const { return window_data.v_sync; }
 
-		void* GetNativeWindow() const {
+		virtual void* GetNativeWindow() const override {
 			return window_handle;
 		}
 

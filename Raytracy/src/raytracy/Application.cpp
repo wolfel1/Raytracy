@@ -9,14 +9,11 @@
 
 
 namespace raytracy {
-	Application* Application::instance = nullptr;
+	IApplication* IApplication::instance = nullptr;
 
 	Application::Application(const ApplicationSpecification& application_specification) : application_specification(application_specification) {
 		RTY_PROFILE_FUNCTION();
 
-		RTY_ASSERT(!instance, "App already exists!");
-
-		instance = this;
 
 		window = Window::Create({ application_specification.name, application_specification.width, application_specification.height });
 		Renderer::Get().Init();
@@ -34,8 +31,6 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 
 		Shutdown();
-
-		instance = nullptr;
 	}
 
 	void Application::Run() {
