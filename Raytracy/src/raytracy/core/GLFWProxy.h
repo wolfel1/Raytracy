@@ -4,14 +4,8 @@
 
 namespace raytracy {
 
-	/*class IGLFWWrapper {
-	public:
-		virtual int GetKey(GLFWwindow* window, int key) = 0;
-		virtual int GetMouseButton(GLFWwindow* window, int button) = 0;
-		virtual void GetCursorPos(GLFWwindow* window, double* x, double* y) = 0;
-	};*/
 
-	class GLFWWrapper {
+	class GLFWProxy {
 	public:
 		static int GetKey(GLFWwindow* window, int key) {
 			return glfwGetKey(window, key);
