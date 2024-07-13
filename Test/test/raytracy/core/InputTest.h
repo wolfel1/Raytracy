@@ -95,5 +95,4 @@ TEST_F(InputTest, GetMousePosition) {
 	glm::vec2 result = instance.GetMousePosition<GLFWProxyMock>();
 	EXPECT_FLOAT_EQ(result.x, 1.0f) << "Actual: " << result.x;
 	EXPECT_FLOAT_EQ(result.y, 1.0f) << "Actual: " << result.y;
-
 }
