@@ -32,11 +32,11 @@ Mesh : +Scale(value float)
 Mesh : #Init(): void
 
 class Triangle
-Triangle : -vertex0: vec3
-Triangle : -vertex1: vec3
-Triangle : -vertex2: vec3
+Triangle : -vertex0: Vertex
+Triangle : -vertex1: Vertex
+Triangle : -vertex2: Vertex
 Triangle : -normal: vec3
-Triangle : +Triangle(vertex0: vec3, vertex1: vec3, vertex2: vec3)
+Triangle : +Triangle(vertex0: Vertex, vertex1: Vertex, vertex2: Vertex)
 
 Mesh --> "*" Triangle
 
