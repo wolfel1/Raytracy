@@ -31,6 +31,15 @@ Mesh : +Translate(direction: vec3)
 Mesh : +Scale(value float)
 Mesh : #Init(): void
 
+class Triangle
+Triangle : -vertex0: vec3
+Triangle : -vertex1: vec3
+Triangle : -vertex2: vec3
+Triangle : -normal: vec3
+Triangle : +Triangle(vertex0: vec3, vertex1: vec3, vertex2: vec3)
+
+Mesh --> "*" Triangle
+
 class Plane
 Plane : +Plane()
 Plane : +Plane(position: vec3, scale_factor: float)
