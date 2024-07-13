@@ -19,4 +19,4 @@ compile.bat
 
 out/
 TestCoverage.bat
-CoverageReport**
+Coverage
