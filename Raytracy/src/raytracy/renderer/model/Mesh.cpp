@@ -81,18 +81,26 @@ namespace raytracy::renderer {
 			auto& indices = mesh_data->indices;
 			auto& vertices = mesh_data->vertices;
 			for (auto i = 0; i < indices.size(); i += 3) {
-				Triangle triangle = { {vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]]} };
+				auto triangle = make_shared<Triangle>(
+					make_shared<Vertex>(vertices[indices[i]]),
+					make_shared<Vertex>(vertices[indices[i + 1]]),
+					make_shared<Vertex>(vertices[indices[i + 2]])
+				);
 
-				triangles.push_back(shared_ptr<Triangle>(&triangle));
+				triangles.push_back(triangle);
 			}
 
 		} else {
 			RTY_ASSERT(mesh_data->vertices.size() % 3 == 0, "Can not build triangles!");
 
 			for (auto i = 0; i < mesh_data->vertices.size(); i += 3) {
-				Triangle triangle = { {mesh_data->vertices[i], mesh_data->vertices[i + 1], mesh_data->vertices[i + 2]} };
+				auto triangle = make_shared<Triangle>(
+					make_shared<Vertex>(mesh_data->vertices[i]),
+					make_shared<Vertex>(mesh_data->vertices[i + 1]),
+					make_shared<Vertex>(mesh_data->vertices[i + 2])
+				);
 
-				triangles.push_back(shared_ptr<Triangle>(&triangle));
+				triangles.push_back(triangle);
 			}
 		}
 	}

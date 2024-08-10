@@ -56,9 +56,9 @@ namespace raytracy::renderer {
 
 		for (size_t i = 0; i < node.object_indices.size(); i++) {
 			auto triangle = triangles[node.object_indices[i]];
-			for (auto& vertex : triangle->vertices) {
-				node.min_corner = glm::min(node.min_corner, vertex.position);
-				node.max_corner = glm::max(node.max_corner, vertex.position);
+			for (auto vertex : triangle->vertices) {
+				node.min_corner = glm::min(node.min_corner, vertex->position);
+				node.max_corner = glm::max(node.max_corner, vertex->position);
 			}
 
 		}
@@ -66,7 +66,7 @@ namespace raytracy::renderer {
 
 	void Scene::Subdivide(uint32_t node_index) {
 		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
-		if (node.object_indices.size() <= 1) {
+		if (node.object_indices.size() <= 2) {
 			return;
 		}
 
@@ -87,7 +87,7 @@ namespace raytracy::renderer {
 
 		BoundingBoxNode& left_child = bounding_volume_hierarchie[left_child_index];
 		for (size_t object_index : node.object_indices) {
-			if (meshes[object_index]->GetOrigin()[split_axis] < split_position) {
+			if (triangles[object_index]->center[split_axis] < split_position) {
 				left_child.object_indices.push_back(object_index);
 			} else {
 				right_child.object_indices.push_back(object_index);

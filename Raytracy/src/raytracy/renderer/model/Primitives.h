@@ -12,14 +12,28 @@ namespace raytracy {
 	};
 
 	struct Triangle {
-		std::array<Vertex, 3> vertices;
+		std::array<shared_ptr<Vertex>, 3> vertices;
+		glm::vec3 center;
 
-		//Triangle( std::array<Vertex, 3> const& vertices) : vertices(vertices) {}
+		Triangle(shared_ptr<Vertex> vertex1, shared_ptr<Vertex> vertex2, shared_ptr<Vertex> vertex3) {
+			vertices[0] = vertex1;
+			vertices[1] = vertex2;
+			vertices[2] = vertex3;
+
+			auto& vertex1_positon = vertex1->position,
+				& vertex2_positon = vertex2->position,
+				& vertex3_positon = vertex3->position;
+			center = {
+				(vertex1_positon.x + vertex2_positon.x + vertex3_positon.x) / 3,
+				(vertex1_positon.y + vertex2_positon.y + vertex3_positon.y) / 3,
+				(vertex1_positon.z + vertex2_positon.z + vertex3_positon.z) / 3
+			};
+		}
 	};
 
 	static const glm::vec4 DEFAULT_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	 struct MeshData {
+	struct MeshData {
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 
@@ -44,7 +58,7 @@ namespace raytracy {
 		}
 	};
 
-	 struct FlatCubeData : public MeshData {
+	struct FlatCubeData : public MeshData {
 		FlatCubeData() {
 
 			vertices = {
@@ -103,7 +117,7 @@ namespace raytracy {
 		}
 	};
 
-	 struct CubeData : public MeshData {
+	struct CubeData : public MeshData {
 		CubeData() {
 
 			indices = {
@@ -151,7 +165,7 @@ namespace raytracy {
 		}
 	};
 
-	 struct SphereData : public MeshData {
+	struct SphereData : public MeshData {
 		SphereData() {
 			//vertices
 			const float PI = std::numbers::pi_v<float>;
@@ -183,7 +197,7 @@ namespace raytracy {
 
 					s = (float)j / segment_count;
 					t = (float)i / ring_count;
-					vertices.push_back({ {x, y, z}, {nx, ny, nz}, DEFAULT_COLOR, { s, t }});
+					vertices.push_back({ {x, y, z}, {nx, ny, nz}, DEFAULT_COLOR, { s, t } });
 				}
 			}
 
