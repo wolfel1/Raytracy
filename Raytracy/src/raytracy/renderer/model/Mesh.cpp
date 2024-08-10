@@ -21,7 +21,7 @@ namespace raytracy::renderer {
 	void Mesh::Init(shared_ptr<MeshData> const mesh_data) {
 		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
-		vertex_array = OpenGLVertexArray::Create();
+			vertex_array = OpenGLVertexArray::Create();
 
 		auto vertex_buffer = OpenGLVertexBuffer::Create(mesh_data->vertices);
 		vertex_buffer->SetLayout({
@@ -41,8 +41,12 @@ namespace raytracy::renderer {
 			is_indexed = true;
 		}
 
+		BuildTriangles(mesh_data);
+
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
 	}
+
+
 
 	void Mesh::Draw(shared_ptr<OpenGLRendererAPI> api) {
 		material->Draw();
@@ -70,8 +74,30 @@ namespace raytracy::renderer {
 		model_matrix = model_matrix * glm::scale(glm::mat4(1.0f), glm::vec3(value));
 	}
 
-	QuadData Plane::data;
+	void Mesh::BuildTriangles(shared_ptr<MeshData> const mesh_data) {
+		if (mesh_data->is_indexed) {
+			RTY_ASSERT(mesh_data->indices.size() % 3 == 0, "Can not build triangles!");
 
+			auto& indices = mesh_data->indices;
+			auto& vertices = mesh_data->vertices;
+			for (auto i = 0; i < indices.size(); i += 3) {
+				Triangle triangle = { {vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]]} };
+
+				triangles.push_back(shared_ptr<Triangle>(&triangle));
+			}
+
+		} else {
+			RTY_ASSERT(mesh_data->vertices.size() % 3 == 0, "Can not build triangles!");
+
+			for (auto i = 0; i < mesh_data->vertices.size(); i += 3) {
+				Triangle triangle = { {mesh_data->vertices[i], mesh_data->vertices[i + 1], mesh_data->vertices[i + 2]} };
+
+				triangles.push_back(shared_ptr<Triangle>(&triangle));
+			}
+		}
+	}
+
+	QuadData Plane::data;
 	Plane::Plane(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
 		Init(make_shared<MeshData>(data));
 		Rotate({ 1.0f, 0.0f, 0.0f }, glm::radians(-90.0f));
@@ -94,7 +120,7 @@ namespace raytracy::renderer {
 
 	void Skybox::Draw(shared_ptr<OpenGLRendererAPI> api) {
 		material->Draw();
-		vertex_array->Bind(); 
+		vertex_array->Bind();
 
 		api->SetFrontFace(FrontFace::INSIDE);
 

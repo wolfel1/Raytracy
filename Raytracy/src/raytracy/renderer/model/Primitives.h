@@ -11,6 +11,12 @@ namespace raytracy {
 		glm::vec2 tex_coords;
 	};
 
+	struct Triangle {
+		std::array<Vertex, 3> vertices;
+
+		//Triangle( std::array<Vertex, 3> const& vertices) : vertices(vertices) {}
+	};
+
 	static const glm::vec4 DEFAULT_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	 struct MeshData {

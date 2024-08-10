@@ -18,6 +18,7 @@ namespace raytracy::renderer {
 	private:
 		std::shared_ptr<PerspectiveCamera> camera;
 		std::deque<std::shared_ptr<Mesh>> meshes;
+		std::vector<shared_ptr<Triangle>> triangles;
 		std::vector<BoundingBoxNode> bounding_volume_hierarchie;
 		shared_ptr<Skybox> skybox;
 

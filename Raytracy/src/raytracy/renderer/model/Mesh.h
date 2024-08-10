@@ -8,7 +8,7 @@
 
 namespace raytracy::renderer {
 
-	
+
 
 	class Mesh {
 	protected:
@@ -20,6 +20,8 @@ namespace raytracy::renderer {
 		glm::mat4 model_matrix = glm::mat4(1.0f);
 		glm::vec3 origin{};
 		float scale = 1.0f;
+
+		std::vector<shared_ptr<Triangle>> triangles;
 
 	public:
 		Mesh() {}
@@ -46,6 +48,10 @@ namespace raytracy::renderer {
 			return scale;
 		}
 
+		std::vector<shared_ptr<Triangle>> const& GetTriangles() const {
+			return triangles;
+		}
+
 		virtual void Draw(shared_ptr<OpenGLRendererAPI> api);
 
 		void Translate(glm::vec3 const& direction);
@@ -54,8 +60,11 @@ namespace raytracy::renderer {
 
 		void Scale(float const value);
 
-		protected:
-			void Init(shared_ptr<MeshData> const mesh_data);
+	protected:
+		void Init(shared_ptr<MeshData> const mesh_data);
+
+	private:
+		void BuildTriangles(shared_ptr<MeshData> const mesh_data);
 	};
 
 	class Plane : public Mesh {

@@ -19,6 +19,7 @@ namespace raytracy::renderer {
 
 	void Scene::AddMesh(std::shared_ptr<Mesh> const mesh) {
 		meshes.push_back(mesh);
+
 		BuildBoundingVolumeHierarchie();
 	}
 
@@ -28,16 +29,22 @@ namespace raytracy::renderer {
 		skybox->SetMaterial(skybox_material);
 	}
 
+
 	void Scene::BuildBoundingVolumeHierarchie() {
 		bounding_volume_hierarchie.clear();
+		triangles.clear();
 
 		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
+		for (auto mesh : meshes) {
+			auto& mesh_triangles = mesh->GetTriangles();
+			triangles.insert(std::end(triangles), std::begin(mesh_triangles), std::end(mesh_triangles));
+		}
 
-		root.object_indices.resize(meshes.size());
-		for (size_t i = 0; i < meshes.size(); i++) {
+		root.object_indices.resize(triangles.size());
+		for (size_t i = 0; i < triangles.size(); i++) {
 			root.object_indices[i] = i;
 		}
-		
+
 		UpdateBounds(0);
 		Subdivide(0);
 	}
@@ -48,15 +55,12 @@ namespace raytracy::renderer {
 		node.max_corner = glm::vec3(-infinity);
 
 		for (size_t i = 0; i < node.object_indices.size(); i++) {
-			auto mesh = meshes[node.object_indices[i]];
-			glm::vec3 axis(mesh->GetScale());
-			auto origin = mesh->GetOrigin();
+			auto triangle = triangles[node.object_indices[i]];
+			for (auto& vertex : triangle->vertices) {
+				node.min_corner = glm::min(node.min_corner, vertex.position);
+				node.max_corner = glm::max(node.max_corner, vertex.position);
+			}
 
-			glm::vec3 temp = mesh->GetOrigin() - axis;
-			node.min_corner = glm::min(node.min_corner, temp);
-
-			temp = mesh->GetOrigin() + axis;
-			node.max_corner = glm::max(node.max_corner, temp);
 		}
 	}
 
