@@ -55,6 +55,7 @@ namespace raytracy::renderer {
 		for (size_t i = 0; i < node.object_indices.size(); i++) {
 			auto mesh = meshes[node.object_indices[i]];
 			auto& bounding_box = mesh->GetBoundingBox();
+			auto& model_matrix = mesh->GetModelMatrix();
 			node.min_corner = glm::min(node.min_corner, bounding_box.min_corner);
 			node.max_corner = glm::max(node.max_corner, bounding_box.max_corner);
 		}
@@ -81,6 +82,8 @@ namespace raytracy::renderer {
 					leaf.max_corner = bounding_box.max_corner;
 					leaf.object_indices.push_back(node.object_indices[i]);
 				}
+				node.object_indices.clear();
+				bounding_volume_hierarchie[node_index] = node;
 			}
 			return;
 		}

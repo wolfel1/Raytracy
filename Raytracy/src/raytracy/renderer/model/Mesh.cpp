@@ -108,8 +108,8 @@ namespace raytracy::renderer {
 
 	void Mesh::BuildBoundingBox(shared_ptr<MeshData> const mesh_data) {
 		for (auto& vertex : mesh_data->vertices) {
-			bounding_box.min_corner = glm::min(bounding_box.min_corner, vertex.position);
-			bounding_box.max_corner = glm::max(bounding_box.max_corner, vertex.position);
+			bounding_box.min_corner = glm::min(bounding_box.min_corner, glm::vec3(model_matrix * glm::vec4(vertex.position, 1.0f)));
+			bounding_box.max_corner = glm::max(bounding_box.max_corner, glm::vec3(model_matrix * glm::vec4(vertex.position, 1.0f)));
 		}
 	}
 
