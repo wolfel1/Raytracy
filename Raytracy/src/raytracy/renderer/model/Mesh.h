@@ -30,7 +30,7 @@ namespace raytracy::renderer {
 
 	public:
 		Mesh() {}
-		Mesh(glm::vec3 const& position, float const scale_factor);
+		Mesh(shared_ptr<MeshData> const mesh_data, glm::vec3 const& position, float const scale_factor);
 		virtual ~Mesh();
 
 		shared_ptr<Material> GetMaterial() const {
@@ -75,6 +75,7 @@ namespace raytracy::renderer {
 	private:
 		void BuildTriangles(shared_ptr<MeshData> const mesh_data);
 		void BuildBoundingBox(shared_ptr<MeshData> const mesh_data);
+		void UpdateBoundingBox(glm::mat4 const& transformation_matrix);
 	};
 
 	class Plane : public Mesh {
@@ -109,7 +110,7 @@ namespace raytracy::renderer {
 		static CubeData data;
 
 	public:
-		Skybox(glm::vec3 const position = {}, float const scale_factor = 1.0f);
+		Skybox();
 		~Skybox() = default;
 
 		virtual void Draw(shared_ptr<OpenGLRendererAPI> api) override;

@@ -9,7 +9,8 @@
 
 namespace raytracy::renderer {
 
-	Mesh::Mesh(glm::vec3 const& position, float const scale_factor) {
+	Mesh::Mesh(shared_ptr<MeshData> const mesh_data, glm::vec3 const& position, float const scale_factor) {
+		Init(mesh_data);
 		Translate(position);
 		Scale(scale_factor);
 	}
@@ -62,17 +63,26 @@ namespace raytracy::renderer {
 	}
 
 	void Mesh::Translate(glm::vec3 const& direction) {
+		auto translation_matrix = glm::translate(glm::mat4(1.0f), direction);
+		UpdateBoundingBox(translation_matrix);
+
 		origin += direction;
-		model_matrix = glm::translate(glm::mat4(1.0f), direction) * model_matrix;
+		model_matrix = translation_matrix * model_matrix;
 	}
 
 	void Mesh::Rotate(glm::vec3 const& axis, float const value) {
-		model_matrix = model_matrix * glm::rotate(glm::mat4(1.0f), value, axis);
+		auto rotation_matrix = glm::rotate(glm::mat4(1.0f), value, axis);
+		UpdateBoundingBox(rotation_matrix);
+
+		model_matrix = model_matrix * rotation_matrix;
 	}
 
 	void Mesh::Scale(float const value) {
+		auto scale_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(value));
+		UpdateBoundingBox(scale_matrix);
+
 		scale *= value;
-		model_matrix = model_matrix * glm::scale(glm::mat4(1.0f), glm::vec3(value));
+		model_matrix = model_matrix * scale;
 	}
 
 	void Mesh::BuildTriangles(shared_ptr<MeshData> const mesh_data) {
@@ -113,24 +123,26 @@ namespace raytracy::renderer {
 		}
 	}
 
+	void Mesh::UpdateBoundingBox(glm::mat4 const& transformation_matrix) {
+		bounding_box.min_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.min_corner, 1.0f));
+		bounding_box.max_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.max_corner, 1.0f));
+	}
+
 	QuadData Plane::data;
-	Plane::Plane(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
-		Init(make_shared<MeshData>(data));
+	Plane::Plane(glm::vec3 const position, float const scale_factor) : Mesh(make_shared<MeshData>(data), position, scale_factor) {
 		Rotate({ 1.0f, 0.0f, 0.0f }, glm::radians(-90.0f));
 	}
 
 	CubeData Cube::data;
-	Cube::Cube(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
-		Init(make_shared<MeshData>(data));
+	Cube::Cube(glm::vec3 const position, float const scale_factor) : Mesh(make_shared<MeshData>(data), position, scale_factor) {
 	}
 
 	SphereData Sphere::data;
-	Sphere::Sphere(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
-		Init(make_shared<MeshData>(data));
+	Sphere::Sphere(glm::vec3 const position, float const scale_factor) : Mesh(make_shared<MeshData>(data), position, scale_factor) {
 	}
 
 	CubeData Skybox::data;
-	Skybox::Skybox(glm::vec3 const position, float const scale_factor) {
+	Skybox::Skybox() {
 		Init(make_shared<MeshData>(data));
 	}
 
