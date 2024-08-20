@@ -20,6 +20,9 @@ namespace raytracy::renderer {
 	void Scene::AddMesh(std::shared_ptr<Mesh> const mesh) {
 		meshes.push_back(mesh);
 
+		auto& mesh_triangles = mesh->GetTriangles();
+		triangles.insert(std::end(triangles), std::begin(mesh_triangles), std::end(mesh_triangles));
+
 		BuildBoundingVolumeHierarchie();
 	}
 
@@ -32,16 +35,11 @@ namespace raytracy::renderer {
 
 	void Scene::BuildBoundingVolumeHierarchie() {
 		bounding_volume_hierarchie.clear();
-		triangles.clear();
 
 		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
-		for (auto mesh : meshes) {
-			auto& mesh_triangles = mesh->GetTriangles();
-			triangles.insert(std::end(triangles), std::begin(mesh_triangles), std::end(mesh_triangles));
-		}
 
-		root.object_indices.resize(triangles.size());
-		for (size_t i = 0; i < triangles.size(); i++) {
+		root.object_indices.resize(meshes.size());
+		for (size_t i = 0; i < meshes.size(); i++) {
 			root.object_indices[i] = i;
 		}
 
@@ -55,18 +53,35 @@ namespace raytracy::renderer {
 		node.max_corner = glm::vec3(-infinity);
 
 		for (size_t i = 0; i < node.object_indices.size(); i++) {
-			auto triangle = triangles[node.object_indices[i]];
-			for (auto vertex : triangle->vertices) {
-				node.min_corner = glm::min(node.min_corner, vertex->position);
-				node.max_corner = glm::max(node.max_corner, vertex->position);
-			}
-
+			auto mesh = meshes[node.object_indices[i]];
+			auto& bounding_box = mesh->GetBoundingBox();
+			node.min_corner = glm::min(node.min_corner, bounding_box.min_corner);
+			node.max_corner = glm::max(node.max_corner, bounding_box.max_corner);
 		}
 	}
 
 	void Scene::Subdivide(uint32_t node_index) {
 		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
 		if (node.object_indices.size() <= 2) {
+			if (node.object_indices.size() == 2) {
+				for (size_t i = 0; i < node.object_indices.size(); i++) {
+					bounding_volume_hierarchie.emplace_back();
+					auto index = bounding_volume_hierarchie.size() - 1;
+
+					BoundingBoxNode& leaf = bounding_volume_hierarchie[index];
+					if (i == 0) {
+						node.left_child_index = index;
+					} else {
+						node.right_child_index = index;
+					}
+
+					auto mesh = meshes[node.object_indices[i]];
+					auto& bounding_box = mesh->GetBoundingBox();
+					leaf.min_corner = bounding_box.min_corner;
+					leaf.max_corner = bounding_box.max_corner;
+					leaf.object_indices.push_back(node.object_indices[i]);
+				}
+			}
 			return;
 		}
 
@@ -87,7 +102,7 @@ namespace raytracy::renderer {
 
 		BoundingBoxNode& left_child = bounding_volume_hierarchie[left_child_index];
 		for (size_t object_index : node.object_indices) {
-			if (triangles[object_index]->center[split_axis] < split_position) {
+			if (meshes[object_index]->GetOrigin()[split_axis] < split_position) {
 				left_child.object_indices.push_back(object_index);
 			} else {
 				right_child.object_indices.push_back(object_index);

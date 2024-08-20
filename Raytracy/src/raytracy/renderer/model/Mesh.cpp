@@ -42,6 +42,7 @@ namespace raytracy::renderer {
 		}
 
 		BuildTriangles(mesh_data);
+		BuildBoundingBox(mesh_data);
 
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
 	}
@@ -102,6 +103,13 @@ namespace raytracy::renderer {
 
 				triangles.push_back(triangle);
 			}
+		}
+	}
+
+	void Mesh::BuildBoundingBox(shared_ptr<MeshData> const mesh_data) {
+		for (auto& vertex : mesh_data->vertices) {
+			bounding_box.min_corner = glm::min(bounding_box.min_corner, vertex.position);
+			bounding_box.max_corner = glm::max(bounding_box.max_corner, vertex.position);
 		}
 	}
 

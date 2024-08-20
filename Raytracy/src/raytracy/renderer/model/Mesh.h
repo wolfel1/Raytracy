@@ -8,7 +8,10 @@
 
 namespace raytracy::renderer {
 
-
+	struct BoundingBox {
+		glm::vec3 min_corner{ infinity };
+		glm::vec3 max_corner{ -infinity };
+	};
 
 	class Mesh {
 	protected:
@@ -22,6 +25,8 @@ namespace raytracy::renderer {
 		float scale = 1.0f;
 
 		std::vector<shared_ptr<Triangle>> triangles;
+
+		BoundingBox bounding_box;
 
 	public:
 		Mesh() {}
@@ -40,8 +45,12 @@ namespace raytracy::renderer {
 			return model_matrix;
 		}
 
-		glm::vec3 GetOrigin() const {
+		glm::vec3 const& GetOrigin() const {
 			return origin;
+		}
+
+		BoundingBox const& GetBoundingBox() const {
+			return bounding_box;
 		}
 
 		float GetScale() const {
@@ -65,6 +74,7 @@ namespace raytracy::renderer {
 
 	private:
 		void BuildTriangles(shared_ptr<MeshData> const mesh_data);
+		void BuildBoundingBox(shared_ptr<MeshData> const mesh_data);
 	};
 
 	class Plane : public Mesh {
