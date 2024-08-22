@@ -20,8 +20,6 @@ namespace raytracy::renderer {
 	void Scene::AddMesh(std::shared_ptr<Mesh> const mesh) {
 		meshes.push_back(mesh);
 
-		auto& mesh_triangles = mesh->GetTriangles();
-		triangles.insert(std::end(triangles), std::begin(mesh_triangles), std::end(mesh_triangles));
 
 		BuildBoundingVolumeHierarchie();
 	}
@@ -35,6 +33,7 @@ namespace raytracy::renderer {
 
 	void Scene::BuildBoundingVolumeHierarchie() {
 		bounding_volume_hierarchie.clear();
+		triangles.clear();
 
 		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
 
@@ -64,27 +63,7 @@ namespace raytracy::renderer {
 	void Scene::Subdivide(uint32_t node_index) {
 		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
 		if (node.object_indices.size() <= 2) {
-			if (node.object_indices.size() == 2) {
-				for (size_t i = 0; i < node.object_indices.size(); i++) {
-					bounding_volume_hierarchie.emplace_back();
-					auto index = bounding_volume_hierarchie.size() - 1;
-
-					BoundingBoxNode& leaf = bounding_volume_hierarchie[index];
-					if (i == 0) {
-						node.left_child_index = index;
-					} else {
-						node.right_child_index = index;
-					}
-
-					auto mesh = meshes[node.object_indices[i]];
-					auto& bounding_box = mesh->GetBoundingBox();
-					leaf.min_corner = bounding_box.min_corner;
-					leaf.max_corner = bounding_box.max_corner;
-					leaf.object_indices.push_back(node.object_indices[i]);
-				}
-				node.object_indices.clear();
-				bounding_volume_hierarchie[node_index] = node;
-			}
+			BuildLeafs(node_index);
 			return;
 		}
 
@@ -122,5 +101,50 @@ namespace raytracy::renderer {
 		UpdateBounds(right_child_index);
 		Subdivide(left_child_index);
 		Subdivide(right_child_index);
+	}
+
+	void Scene::BuildLeafs(uint32_t node_index) {
+		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
+		if (node.object_indices.size() == 2) {
+			for (size_t i = 0; i < node.object_indices.size(); i++) {
+				bounding_volume_hierarchie.emplace_back();
+				auto index = bounding_volume_hierarchie.size() - 1;
+
+				BoundingBoxNode& leaf = bounding_volume_hierarchie[index];
+				if (i == 0) {
+					node.left_child_index = index;
+				} else {
+					node.right_child_index = index;
+				}
+
+				auto mesh = meshes[node.object_indices[i]];
+				auto& bounding_box = mesh->GetBoundingBox();
+				leaf.min_corner = bounding_box.min_corner;
+				leaf.max_corner = bounding_box.max_corner;
+				leaf.object_indices.push_back(node.object_indices[i]);
+				AddTriangles(index);
+			}
+			node.object_indices.clear();
+			bounding_volume_hierarchie[node_index] = node;
+		} else if (node.object_indices.size() == 1) {
+			AddTriangles(node_index);
+		}
+	}
+
+	void Scene::AddTriangles(uint32_t node_index) {
+		BoundingBoxNode& node = bounding_volume_hierarchie[node_index];
+		RTY_ASSERT(node.object_indices.size() == 1, "Bounding Box has more than one mesh!");
+
+
+		auto mesh = meshes[node.object_indices[0]];
+		node.model_matrix = mesh->GetModelMatrix();
+		auto& mesh_triangles = mesh->GetTriangles();
+		size_t top = triangles.size();
+		for (size_t i = 0; i < mesh_triangles.size(); i++) {
+			triangles.push_back(mesh_triangles[i]);
+			node.triangle_indices.push_back(top + i);
+		}
+
+
 	}
 }
