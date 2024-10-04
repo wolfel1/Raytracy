@@ -19,13 +19,17 @@ namespace raytracy {
 		raytracing_kernel = ShaderLibrary::Get().Load("raytrace_kernel");
 		raytracing_output = ShaderLibrary::Get().Load("raytrace_output");
 
-		scene_storage_buffer = OpenGLStorageBuffer::Create("Scene", 8192);
-		scene_storage_buffer->Bind();
-		scene_storage_buffer->BindSlot(0);
+		triangles_storage_buffer = OpenGLStorageBuffer::Create("Triangles", 8192);
+		triangles_storage_buffer->Bind();
+		triangles_storage_buffer->BindSlot(0);
+		
+		vertices_storage_buffer = OpenGLStorageBuffer::Create("Vertices", 8192);
+		vertices_storage_buffer->Bind();
+		vertices_storage_buffer->BindSlot(1);
 
 		bvh_storage_buffer = OpenGLStorageBuffer::Create("BoundingVolumeHierarchie", 8192);
 		bvh_storage_buffer->Bind();
-		bvh_storage_buffer->BindSlot(1);
+		bvh_storage_buffer->BindSlot(2);
 
 		UniformBlock block("SceneData", {
 			"inverse_view",
@@ -66,6 +70,24 @@ namespace raytracy {
 	}
 
 	void Raytracer::Preprocess(shared_ptr<renderer::Scene> const scene) {
+#if !TRIANGLES
+		std::vector<RTriangle> triangles;
+		std::vector<RVertex> vertices;
+
+		for (auto triangle_ptr : scene->GetTriangles()) {
+			RTriangle triangle{};
+			triangle.center = triangle_ptr->center;
+
+			auto& corners = triangle_ptr->vertices;
+			for (uint32_t i = 0; i < 3; i++) {
+				triangle.vertex_indices[i] = vertices.size();
+				vertices.push_back({ corners[i]->position,corners[i]->normal, corners[i]->color, corners[i]->tex_coords });
+			}
+			triangles.push_back(triangle);
+		}
+		triangles_storage_buffer->SetData(sizeof(RTriangle) * triangles.size(), triangles.data());
+		vertices_storage_buffer->SetData(sizeof(RVertex) * vertices.size(), vertices.data());
+#else
 		std::vector<Sphere> spheres;
 		for (auto mesh : scene->GetMeshes()) {
 			auto color = dynamic_pointer_cast<renderer::MeshMaterial>(mesh->GetMaterial())->GetColor();
@@ -85,7 +107,7 @@ namespace raytracy {
 			}
 			bounding_volume_hierarchie.push_back(node);
 		}
-		
+
 		bvh_storage_buffer->SetData(sizeof(Node) * bounding_volume_hierarchie.size(), bounding_volume_hierarchie.data());
 
 		auto camera = scene->GetCamera();
@@ -93,7 +115,8 @@ namespace raytracy {
 		scene_data_uniform_buffer->SetMat4("inverse_projection", glm::inverse(camera->GetProjectionMatrix()));
 		scene_data_uniform_buffer->SetVec3("camera_position", camera->GetPosition());
 		scene_data_uniform_buffer->SetVec3("camera_direction", camera->GetDirection());
-	}
+#endif
+		}
 
 	void Raytracer::Shutdown() {
 		renderer_api = nullptr;
@@ -107,4 +130,4 @@ namespace raytracy {
 		return true;
 	}
 
-}  // namespace raytracy
+	}  // namespace raytracy

@@ -53,6 +53,10 @@ namespace raytracy::renderer {
 		std::deque<std::shared_ptr<Mesh>> const& GetMeshes() const {
 			return meshes;
 		}
+
+		std::vector<std::shared_ptr<Triangle>> const& GetTriangles() const {
+			return triangles;
+		}
 		
 		std::vector<BoundingBoxNode> const& GetBoundingVolumeHierarchie() const {
 			return bounding_volume_hierarchie;

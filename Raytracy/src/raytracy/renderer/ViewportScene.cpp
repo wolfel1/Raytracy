@@ -134,7 +134,6 @@ namespace raytracy::renderer {
 		BoundingBoxNode& node = bounding_volume_hierarchie[node_index];
 		RTY_ASSERT(node.object_indices.size() == 1, "Bounding Box has more than one mesh!");
 
-
 		auto mesh = meshes[node.object_indices[0]];
 		node.model_matrix = mesh->GetModelMatrix();
 		auto& mesh_triangles = mesh->GetTriangles();
@@ -143,7 +142,5 @@ namespace raytracy::renderer {
 			triangles.push_back(mesh_triangles[i]);
 			node.triangle_indices.push_back(top + i);
 		}
-
-
 	}
 }

@@ -11,12 +11,6 @@
 
 namespace raytracy {
 
-	struct Material {
-		glm::vec4 color{ 1.0f };
-		float metallic = 0.0f;
-		float roughness = 0.5f;
-	};
-
 	struct Sphere{
 		glm::vec4 color;
 		glm::vec3 origin;
@@ -32,6 +26,28 @@ namespace raytracy {
 		bool has_object;
 	};
 
+	struct TriangleNode {
+		glm::vec3 min_corner;
+		uint32_t left_child_index;
+		glm::vec3 max_corner;
+		uint32_t right_child_index;
+		glm::mat4 model_matrix;
+		bool has_object;
+		std::vector<uint32_t> triangle_indices;
+	};
+
+	struct RTriangle {
+		glm::vec3 center;
+		std::array<uint32_t, 3> vertex_indices;
+	};
+
+	struct RVertex {
+		glm::vec3 position;
+		glm::vec3 normal;
+		glm::vec4 color;
+		glm::vec2 tex_coords;
+	};
+
 	class Raytracer {
 	private:
 
@@ -44,6 +60,8 @@ namespace raytracy {
 
 		shared_ptr<OpenGLUniformBuffer> scene_data_uniform_buffer;
 		shared_ptr<OpenGLStorageBuffer> scene_storage_buffer;
+		shared_ptr<OpenGLStorageBuffer> triangles_storage_buffer;
+		shared_ptr<OpenGLStorageBuffer> vertices_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> bvh_storage_buffer;
 
 	public:
