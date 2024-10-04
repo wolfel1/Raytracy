@@ -12,8 +12,6 @@ namespace raytracy {
 		virtual ~OpenGLTexture() = default;
 
 		
-
-
 		bool operator==(const OpenGLTexture& other) const {
 			return renderer_id == ((OpenGLTexture&)other).renderer_id;
 		}
