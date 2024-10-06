@@ -92,12 +92,14 @@ namespace raytracy {
 		uint32_t renderer_id{};
 		std::string name;
 
+		uint32_t size;
+
 	public:
-		OpenGLStorageBuffer(std::string const& name, size_t size);
+		OpenGLStorageBuffer(std::string const& name, size_t size = 8192);
 		~OpenGLStorageBuffer();
 
-		static shared_ptr<OpenGLStorageBuffer> Create(std::string const& name, size_t size) {
-			return make_shared<OpenGLStorageBuffer>(name, size);
+		static shared_ptr<OpenGLStorageBuffer> Create(std::string const& name) {
+			return make_shared<OpenGLStorageBuffer>(name);
 		}
 
 		void Bind() const; 
@@ -105,6 +107,5 @@ namespace raytracy {
 		void Unbind() const;
 
 		void SetData(size_t size, void* data) const;
-
 	};
 }

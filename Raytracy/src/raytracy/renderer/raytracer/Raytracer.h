@@ -33,7 +33,8 @@ namespace raytracy {
 		uint32_t right_child_index;
 		glm::mat4 model_matrix;
 		bool has_object;
-		std::vector<uint32_t> triangle_indices;
+		uint32_t lookup_index;
+		uint32_t triangle_count;
 	};
 
 	struct RTriangle {
@@ -61,6 +62,7 @@ namespace raytracy {
 		shared_ptr<OpenGLUniformBuffer> scene_data_uniform_buffer;
 		shared_ptr<OpenGLStorageBuffer> scene_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> triangles_storage_buffer;
+		shared_ptr<OpenGLStorageBuffer> triangle_indices_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> vertices_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> bvh_storage_buffer;
 

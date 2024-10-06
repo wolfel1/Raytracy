@@ -19,17 +19,21 @@ namespace raytracy {
 		raytracing_kernel = ShaderLibrary::Get().Load("raytrace_kernel");
 		raytracing_output = ShaderLibrary::Get().Load("raytrace_output");
 
-		triangles_storage_buffer = OpenGLStorageBuffer::Create("Triangles", 8192);
+		triangles_storage_buffer = OpenGLStorageBuffer::Create("Triangles");
 		triangles_storage_buffer->Bind();
 		triangles_storage_buffer->BindSlot(0);
-		
-		vertices_storage_buffer = OpenGLStorageBuffer::Create("Vertices", 8192);
+
+		vertices_storage_buffer = OpenGLStorageBuffer::Create("Vertices");
 		vertices_storage_buffer->Bind();
 		vertices_storage_buffer->BindSlot(1);
 
-		bvh_storage_buffer = OpenGLStorageBuffer::Create("BoundingVolumeHierarchie", 8192);
+		bvh_storage_buffer = OpenGLStorageBuffer::Create("BoundingVolumeHierarchie");
 		bvh_storage_buffer->Bind();
 		bvh_storage_buffer->BindSlot(2);
+
+		triangle_indices_storage_buffer = OpenGLStorageBuffer::Create("TriangleIndices");
+		triangle_indices_storage_buffer->Bind();
+		triangle_indices_storage_buffer->BindSlot(3);
 
 		UniformBlock block("SceneData", {
 			"inverse_view",
@@ -80,13 +84,34 @@ namespace raytracy {
 
 			auto& corners = triangle_ptr->vertices;
 			for (uint32_t i = 0; i < 3; i++) {
-				triangle.vertex_indices[i] = vertices.size();
-				vertices.push_back({ corners[i]->position,corners[i]->normal, corners[i]->color, corners[i]->tex_coords });
+				triangle.vertex_indices[i] = vertices.size() + i;
+				vertices.push_back({ corners[i]->position, corners[i]->normal, corners[i]->color, corners[i]->tex_coords });
 			}
 			triangles.push_back(triangle);
 		}
 		triangles_storage_buffer->SetData(sizeof(RTriangle) * triangles.size(), triangles.data());
 		vertices_storage_buffer->SetData(sizeof(RVertex) * vertices.size(), vertices.data());
+
+		std::vector<TriangleNode> bounding_volume_hierarchie;
+		std::vector<uint32_t> triangle_indices;
+		uint32_t lookup_index = 0;
+		for (auto& bvh_node : scene->GetBoundingVolumeHierarchie()) {
+			TriangleNode node{};
+			node.left_child_index = bvh_node.left_child_index;
+			node.right_child_index = bvh_node.right_child_index;
+			node.min_corner = bvh_node.min_corner;
+			node.max_corner = bvh_node.max_corner;
+			if (node.has_object = !bvh_node.object_indices.empty()) {
+				node.model_matrix = bvh_node.model_matrix;
+				node.triangle_count = bvh_node.triangle_indices.size();
+				triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
+				node.lookup_index = lookup_index;
+				lookup_index = triangle_indices.size();
+			}
+			bounding_volume_hierarchie.push_back(node);
+		}
+
+		triangle_indices_storage_buffer->SetData(sizeof(uint32_t) * triangle_indices.size(), triangle_indices.data());
 #else
 		std::vector<Sphere> spheres;
 		for (auto mesh : scene->GetMeshes()) {
@@ -108,6 +133,8 @@ namespace raytracy {
 			bounding_volume_hierarchie.push_back(node);
 		}
 
+
+#endif
 		bvh_storage_buffer->SetData(sizeof(Node) * bounding_volume_hierarchie.size(), bounding_volume_hierarchie.data());
 
 		auto camera = scene->GetCamera();
@@ -115,8 +142,7 @@ namespace raytracy {
 		scene_data_uniform_buffer->SetMat4("inverse_projection", glm::inverse(camera->GetProjectionMatrix()));
 		scene_data_uniform_buffer->SetVec3("camera_position", camera->GetPosition());
 		scene_data_uniform_buffer->SetVec3("camera_direction", camera->GetDirection());
-#endif
-		}
+	}
 
 	void Raytracer::Shutdown() {
 		renderer_api = nullptr;
@@ -130,4 +156,4 @@ namespace raytracy {
 		return true;
 	}
 
-	}  // namespace raytracy
+}  // namespace raytracy
