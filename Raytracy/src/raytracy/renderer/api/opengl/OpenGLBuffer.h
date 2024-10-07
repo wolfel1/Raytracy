@@ -106,6 +106,6 @@ namespace raytracy {
 		void BindSlot(uint32_t slot) const;
 		void Unbind() const;
 
-		void SetData(size_t size, void* data) const;
+		void SetData(size_t size, void* data);
 	};
 }

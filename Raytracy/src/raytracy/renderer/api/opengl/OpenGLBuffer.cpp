@@ -153,9 +153,10 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
 	}
 
-	void OpenGLStorageBuffer::SetData(size_t size, void* data) const {
+	void OpenGLStorageBuffer::SetData(size_t size, void* data) {
 		if (size > this->size) {
 			GLCall(glNamedBufferData(renderer_id, size, data, GL_DYNAMIC_COPY));
+			this->size = size;
 		} else {
 			GLCall(glNamedBufferSubData(renderer_id, 0, size, data));
 		}
