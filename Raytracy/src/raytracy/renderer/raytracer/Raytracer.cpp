@@ -49,8 +49,8 @@ namespace raytracy {
 		scene_data_uniform_buffer = OpenGLUniformBuffer::Create("SceneData", layout);
 		raytracing_kernel->AddUniformBuffer(scene_data_uniform_buffer);
 
-		scene_data_uniform_buffer->SetInt("samples", 5);
-		scene_data_uniform_buffer->SetInt("max_depth", 50);
+		scene_data_uniform_buffer->SetInt("samples", 1);
+		scene_data_uniform_buffer->SetInt("max_depth", 4);
 
 	}
 
@@ -80,7 +80,6 @@ namespace raytracy {
 
 		for (auto triangle_ptr : scene->GetTriangles()) {
 			RTriangle triangle{};
-			triangle.center = triangle_ptr->center;
 
 			auto& corners = triangle_ptr->vertices;
 			for (uint32_t i = 0; i < 3; i++) {
@@ -135,7 +134,7 @@ namespace raytracy {
 
 
 #endif
-		bvh_storage_buffer->SetData(sizeof(Node) * bounding_volume_hierarchie.size(), bounding_volume_hierarchie.data());
+		bvh_storage_buffer->SetData(sizeof(TriangleNode) * bounding_volume_hierarchie.size(), bounding_volume_hierarchie.data());
 
 		auto camera = scene->GetCamera();
 		scene_data_uniform_buffer->SetMat4("inverse_view", glm::inverse(camera->GetViewMatrix()));
@@ -149,6 +148,9 @@ namespace raytracy {
 		scene_data_uniform_buffer = nullptr;
 		scene_storage_buffer = nullptr;
 		bvh_storage_buffer = nullptr;
+		triangles_storage_buffer = nullptr;
+		vertices_storage_buffer = nullptr;
+		triangle_indices_storage_buffer = nullptr;
 	}
 
 	bool Raytracer::OnWindowResize(uint32_t width, uint32_t height) {

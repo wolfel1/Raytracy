@@ -1,20 +1,20 @@
 #type compute
 #version 450 core
 
-struct Sphere {
-	vec4 color;
-	vec3 origin;
-	float radius;
-};
+// struct Sphere {
+// 	vec4 color;
+// 	vec3 origin;
+// 	float radius;
+// };
 
-struct BoundingBoxNode {
-	vec3 min_corner;
-	uint left_child_index;
-	vec3 max_corner;
-	uint right_child_index;
-	uint object_index;
-	bool has_object;
-};
+// struct BoundingBoxNode {
+// 	vec3 min_corner;
+// 	uint left_child_index;
+// 	vec3 max_corner;
+// 	uint right_child_index;
+// 	uint object_index;
+// 	bool has_object;
+// };
 
 struct TriangleNode {
 	vec3 min_corner;
@@ -28,7 +28,6 @@ struct TriangleNode {
 };
 
 struct RTriangle {
-	vec3 center;
 	uint vertex_indices[3];
 };
 
@@ -53,12 +52,13 @@ struct Ray {
 
 struct Hit {
 	vec4 color;
-	float hit_value;
+	float distance;
 	vec3 point;
 	vec3 normal;
 };
 
 const float infinity = 1.0 / 0.0;
+const float epsilon = 0.0001;
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
@@ -93,8 +93,8 @@ uniform samplerCube skybox;
 
 vec4 computePixelColor(Ray ray);
 bool trace(in Ray ray, float minimum, float maximum, inout Hit hit);
-bool hitSphere(in Ray ray, float minimum, float maximum, inout Hit hit, const Sphere sphere);
-float hitBoundingBox(in Ray ray, in BoundingBoxNode node);
+bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const RTriangle triangle, mat4 model_matrix);
+float hitBoundingBox(in Ray ray, in TriangleNode node);
 
 
 void main() {
@@ -106,158 +106,180 @@ void main() {
         return;
     }
 
-    // vec3 direction = normalize(camera_direction);
-    // vec2 coord = vec2(float(texelCoord.x) / float(image_size.x), float(texelCoord.y) / float(image_size.y));
-    // coord = coord * 2.0 - 1.0; // -1 -> 1
-    // vec4 target = inverse_projection * vec4(coord.x, coord.y, 1, 1);
-    // vec3 ray_direction = vec3(inverse_view * vec4(normalize(vec3(target) / target.w), 0));
+    vec3 direction = normalize(camera_direction);
+    vec2 coord = vec2(float(texelCoord.x) / float(image_size.x), float(texelCoord.y) / float(image_size.y));
+    coord = coord * 2.0 - 1.0; // -1 -> 1
+    vec4 target = inverse_projection * vec4(coord.x, coord.y, 1, 1);
+    vec3 ray_direction = vec3(inverse_view * vec4(normalize(vec3(target) / target.w), 0));
 
     vec4 accumulated_color = vec4(0.0);
-    // for (int test = 0; test < samples; ++test) {
-    //     Ray ray;
-    //     ray.origin = camera_position;
+    for (int test = 0; test < samples; ++test) {
+        Ray ray;
+        ray.origin = camera_position;
 
-    //     ray.direction = ray_direction;
-    //     accumulated_color += computePixelColor(ray);
-    // }
-    // accumulated_color /= float(samples);
-    // accumulated_color = clamp(accumulated_color, vec4(0.0), vec4(1.0));
+        ray.direction = ray_direction;
+        accumulated_color += computePixelColor(ray);
+    }
+    accumulated_color /= float(samples);
+    accumulated_color = clamp(accumulated_color, vec4(0.0), vec4(1.0));
         
     imageStore(imgOutput, texelCoord, accumulated_color);
 }
 
-// vec4 computePixelColor(Ray ray) {
-//     Ray current_ray = ray;
-//     vec4 current_attenuation = vec4(1.0);
-//     for (int i = 0; i < max_depth; i++) {
-//         Hit hit;
-//         if (trace(current_ray, 0.001, infinity, hit)) {
-//             vec3 scatter_direction = reflect(current_ray.direction, hit.normal);
+vec4 computePixelColor(Ray ray) {
+    Ray current_ray = ray;
+    vec4 current_attenuation = vec4(1.0);
+    for (int i = 0; i < max_depth; i++) {
+        Hit hit;
+        if (trace(current_ray, 0.001, infinity, hit)) {
+            vec3 scatter_direction = reflect(current_ray.direction, hit.normal);
 
-//             current_ray.origin = hit.point;
-//             current_ray.direction = scatter_direction;
-//             current_attenuation = current_attenuation * hit.color;
-//         } else {
-//             vec3 unit_direction = normalize(current_ray.direction);
-// 			float ambient = 0.5 * (unit_direction.y + 1.0);
-//             vec4 color = texture(skybox, unit_direction);
-//             return current_attenuation * color;
-//         }
-//     }
-//     return vec4(0);
-// }
+            current_ray.origin = hit.point;
+            current_ray.direction = scatter_direction;
+            current_attenuation = current_attenuation * hit.color;
+        } else {
+            vec3 unit_direction = normalize(current_ray.direction);
+			float ambient = 0.5 * (unit_direction.y + 1.0);
+            vec4 color = texture(skybox, unit_direction);
+            return current_attenuation * color;
+        }
+    }
+    return vec4(0);
+}
 
-// bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
-// 	Hit temp;
-// 	bool hit_anything = false;
-// 	float closest = maximum;
+bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
+	Hit temp;
+	bool hit_anything = false;
+	float closest = maximum;
 
-// 	BoundingBoxNode node = nodes[0];
+	TriangleNode node = nodes[0];
 
-// 	int stack_index = 0;
-// 	BoundingBoxNode stack[16]; 
+	int stack_index = 0;
+	TriangleNode stack[16]; 
 
-// 	if(hitBoundingBox(ray, node) == infinity) {
-// 		return false;
-// 	}
+	if(hitBoundingBox(ray, node) == infinity) {
+		return false;
+	}
 	
-// 	while(true) {
-// 		if(!node.has_object) {
-// 			BoundingBoxNode left_child = nodes[node.left_child_index];
-// 			BoundingBoxNode right_child = nodes[node.right_child_index];
+	while(true) {
+		if(!node.has_object) {
+			TriangleNode left_child = nodes[node.left_child_index];
+			TriangleNode right_child = nodes[node.right_child_index];
 
-// 			float distance_left = hitBoundingBox(ray, left_child);
-// 			float distance_right = hitBoundingBox(ray, right_child);
+			float distance_left = hitBoundingBox(ray, left_child);
+			float distance_right = hitBoundingBox(ray, right_child);
 
-// 			float closer_distance, remote_distance;
-// 			BoundingBoxNode closer_node, remote_node;
-// 			if (distance_left > distance_right) {
-// 				closer_distance = distance_right;
-// 				remote_distance = distance_left;
-// 				closer_node = right_child;
-// 				remote_node = left_child;
-// 			} else {
-// 				closer_distance = distance_left;
-// 				remote_distance = distance_right;
-// 				closer_node = left_child;
-// 				remote_node = right_child;
-// 			}
+			float closer_distance, remote_distance;
+			TriangleNode closer_node, remote_node;
+			if (distance_left > distance_right) {
+				closer_distance = distance_right;
+				remote_distance = distance_left;
+				closer_node = right_child;
+				remote_node = left_child;
+			} else {
+				closer_distance = distance_left;
+				remote_distance = distance_right;
+				closer_node = left_child;
+				remote_node = right_child;
+			}
 
-// 			if(closer_distance > closest) {
-// 				if (stack_index == 0) {
-// 					return hit_anything;
-// 				} else {
-// 					stack_index--;
-// 					node = stack[stack_index];
-// 				}
-// 			} else {
-// 				node = closer_node;
-// 				if (remote_distance < closest) {
-// 					stack[stack_index] = remote_node;
-// 					stack_index++;
-// 				}
-// 			}
-// 		} else {
-// 			if (hitSphere(ray, minimum, closest, temp, spheres[node.object_index])) {
-// 				closest = temp.hit_value;
-// 				hit_anything = true;
-// 				hit = temp;
-// 			}
+			if(closer_distance > closest) {
+				if (stack_index == 0) {
+					return hit_anything;
+				} else {
+					stack_index--;
+					node = stack[stack_index];
+				}
+			} else {
+				node = closer_node;
+				if (remote_distance < closest) {
+					stack[stack_index] = remote_node;
+					stack_index++;
+				}
+			}
+		} else {
+			for (int i = 0; i < node.triangle_count; i++) {
+				RTriangle triangle = triangles[node.lookup_index + i];
+				if (hitTriangle(ray, minimum, closest, temp, triangle, node.model_matrix)) {
+					closest = temp.distance;
+					hit_anything = true;
+					hit = temp;
+				}
+			}
 
-// 			if (stack_index == 0) {
-// 				return hit_anything;
-// 			} else {
-// 				stack_index--;
-// 				node = stack[stack_index];
-// 			}
-// 		}
-// 	}
+			if (stack_index == 0) {
+				return hit_anything;
+			} else {
+				stack_index--;
+				node = stack[stack_index];
+			}
+		}
+	}
 	
 
-// 	return hit_anything;
-// }
+	return hit_anything;
+}
 
-// bool hitSphere(in Ray ray, float minimum, float maximum, inout Hit hit, const Sphere sphere) {
-// 	vec3 origin_to_center = ray.origin - sphere.origin;
-// 	float a = dot(ray.direction, ray.direction);
-// 	float bias = dot(origin_to_center, ray.direction);
-// 	float c = dot(origin_to_center, origin_to_center) - sphere.radius * sphere.radius;
+float hitBoundingBox(in Ray ray, in TriangleNode node) {
+	vec3 inverse_direction = vec3(1.0) / ray.direction;
+	vec3 t1 = (node.min_corner - ray.origin) * inverse_direction;
+	vec3 t2 = (node.max_corner - ray.origin) * inverse_direction;
+	vec3 t_min = min(t1, t2);
+	vec3 t_max = max(t1, t2);
 
-// 	float discriminant = bias * bias - a * c;
-// 	if (discriminant < 0.0) {
-// 		return false;
-// 	}
+	float min_component = max(max(t_min.x, t_min.y), t_min.z);
+	float max_component = min(min(t_max.x, t_max.y), t_max.z);
 
-// 	float sqrt_discriminant = sqrt(discriminant);
-// 	float hit_value = (-bias - sqrt_discriminant) / a;
-// 	if (hit_value < minimum || hit_value > maximum) {
-// 		hit_value = (-bias + sqrt_discriminant) / a;
-// 		if (hit_value < minimum || hit_value > maximum) {
-// 			return false;
-// 		}
-// 	}
+	if(min_component > max_component || max_component < 0) {
+		return infinity;
+	} else {
+		return min_component;
+	}
+}
 
-// 	hit.hit_value = hit_value;
-// 	hit.point = ray.origin + ray.direction * hit_value;
-// 	hit.normal = (hit.point - sphere.origin ) / sphere.radius;
-// 	//hit.SetFaceNormal(ray, outward_normal);
-// 	hit.color = sphere.color;
-// 	return true;
-// }
+bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const RTriangle triangle, mat4 model_matrix) {
+	RVertex v0 = vertices[triangle.vertex_indices[0]];
+	RVertex v1 = vertices[triangle.vertex_indices[1]];
+	RVertex v2 = vertices[triangle.vertex_indices[2]];
+	vec3 v0_position = vec3(model_matrix * vec4(v0.position, 1.0));
+	vec3 v1_position = vec3(model_matrix * vec4(v1.position, 1.0));
+	vec3 v2_position = vec3(model_matrix * vec4(v2.position, 1.0));
 
-// float hitBoundingBox(in Ray ray, in BoundingBoxNode node) {
-// 	vec3 inverse_direction = vec3(1.0) / ray.direction;
-// 	vec3 t1 = (node.min_corner - ray.origin) * inverse_direction;
-// 	vec3 t2 = (node.max_corner - ray.origin) * inverse_direction;
-// 	vec3 t_min = min(t1, t2);
-// 	vec3 t_max = max(t1, t2);
+	vec3 edge1 = v1_position - v0_position;
+	vec3 edge2 = v2_position - v0_position;
 
-// 	float min_component = max(max(t_min.x, t_min.y), t_min.z);
-// 	float max_component = min(min(t_max.x, t_max.y), t_max.z);
+	vec3 normal = cross(ray.direction, edge2);
+    float angle = dot(edge1, normal);
 
-// 	if(min_component > max_component || max_component < 0) {
-// 		return infinity;
-// 	} else {
-// 		return min_component;
-// 	}
-// }
+    if (angle < epsilon) {
+        return false; // Ray is parallel to the triangle.
+    }
+
+    float inv_det = 1.0 / angle;
+    vec3 distance_vec = ray.origin - v0_position;
+    float u = inv_det * dot(distance_vec, normal);
+
+    if (u < 0.0 || u > 1.0) {
+        return false; // Intersection point is outside the triangle.
+    }
+
+    vec3 q = cross(distance_vec, edge1);
+    float v = inv_det * dot(ray.direction, q);
+
+    if (v < 0.0 || u + v > 1.0) {
+        return false; // Intersection point is outside the triangle.
+    }
+
+    float t = inv_det * dot(edge2, q);
+
+    if (t > minimum && t < maximum) {
+		hit.color = v0.color;
+        hit.distance = t;
+        hit.point = ray.origin + ray.direction * t;
+        hit.normal = normalize(cross(edge2, edge1));
+        return true;
+    }
+        
+	return false; // Intersection point is outside the ray segment.
+    
+}

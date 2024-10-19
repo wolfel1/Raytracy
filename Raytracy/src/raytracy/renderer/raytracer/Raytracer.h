@@ -32,19 +32,18 @@ namespace raytracy {
 		glm::vec3 max_corner;
 		uint32_t right_child_index;
 		glm::mat4 model_matrix;
-		bool has_object;
+		alignas(16) bool has_object;
 		uint32_t lookup_index;
 		uint32_t triangle_count;
 	};
 
 	struct RTriangle {
-		glm::vec3 center;
 		std::array<uint32_t, 3> vertex_indices;
 	};
 
 	struct RVertex {
-		glm::vec3 position;
-		glm::vec3 normal;
+		alignas(16) glm::vec3 position;
+		alignas(16) glm::vec3 normal;
 		glm::vec4 color;
 		glm::vec2 tex_coords;
 	};
