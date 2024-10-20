@@ -11,22 +11,7 @@
 
 namespace raytracy {
 
-	struct Sphere{
-		glm::vec4 color;
-		glm::vec3 origin;
-		float radius;
-	};
-
 	struct Node {
-		glm::vec3 min_corner;
-		uint32_t left_child_index;
-		glm::vec3 max_corner;
-		uint32_t right_child_index;
-		alignas(16) uint32_t object_index;
-		bool has_object;
-	};
-
-	struct TriangleNode {
 		glm::vec3 min_corner;
 		uint32_t left_child_index;
 		glm::vec3 max_corner;
@@ -59,7 +44,6 @@ namespace raytracy {
 		shared_ptr<OpenGLShader> raytracing_output;
 
 		shared_ptr<OpenGLUniformBuffer> scene_data_uniform_buffer;
-		shared_ptr<OpenGLStorageBuffer> scene_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> triangles_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> triangle_indices_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> vertices_storage_buffer;

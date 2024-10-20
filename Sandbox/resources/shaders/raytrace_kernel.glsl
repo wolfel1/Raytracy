@@ -1,22 +1,7 @@
 #type compute
 #version 450 core
 
-// struct Sphere {
-// 	vec4 color;
-// 	vec3 origin;
-// 	float radius;
-// };
-
-// struct BoundingBoxNode {
-// 	vec3 min_corner;
-// 	uint left_child_index;
-// 	vec3 max_corner;
-// 	uint right_child_index;
-// 	uint object_index;
-// 	bool has_object;
-// };
-
-struct TriangleNode {
+struct Node {
 	vec3 min_corner;
 	uint left_child_index;
 	vec3 max_corner;
@@ -82,7 +67,7 @@ layout(std430, binding = 1) buffer Vertices {
 };
 
 layout(std430, binding = 2) buffer BoundingVolumeHierarchie {
-    TriangleNode nodes[];
+    Node nodes[];
 };
 
 layout(std430, binding = 3) buffer TriangleIndices {
@@ -94,7 +79,7 @@ uniform samplerCube skybox;
 vec4 computePixelColor(Ray ray);
 bool trace(in Ray ray, float minimum, float maximum, inout Hit hit);
 bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const RTriangle triangle, mat4 model_matrix);
-float hitBoundingBox(in Ray ray, in TriangleNode node);
+float hitBoundingBox(in Ray ray, in Node node);
 
 
 void main() {
@@ -152,10 +137,10 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 	bool hit_anything = false;
 	float closest = maximum;
 
-	TriangleNode node = nodes[0];
+	Node node = nodes[0];
 
 	int stack_index = 0;
-	TriangleNode stack[16]; 
+	Node stack[16]; 
 
 	if(hitBoundingBox(ray, node) == infinity) {
 		return false;
@@ -163,14 +148,14 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 	
 	while(true) {
 		if(!node.has_object) {
-			TriangleNode left_child = nodes[node.left_child_index];
-			TriangleNode right_child = nodes[node.right_child_index];
+			Node left_child = nodes[node.left_child_index];
+			Node right_child = nodes[node.right_child_index];
 
 			float distance_left = hitBoundingBox(ray, left_child);
 			float distance_right = hitBoundingBox(ray, right_child);
 
 			float closer_distance, remote_distance;
-			TriangleNode closer_node, remote_node;
+			Node closer_node, remote_node;
 			if (distance_left > distance_right) {
 				closer_distance = distance_right;
 				remote_distance = distance_left;
@@ -220,7 +205,7 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 	return hit_anything;
 }
 
-float hitBoundingBox(in Ray ray, in TriangleNode node) {
+float hitBoundingBox(in Ray ray, in Node node) {
 	vec3 inverse_direction = vec3(1.0) / ray.direction;
 	vec3 t1 = (node.min_corner - ray.origin) * inverse_direction;
 	vec3 t2 = (node.max_corner - ray.origin) * inverse_direction;

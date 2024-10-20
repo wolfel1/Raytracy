@@ -61,7 +61,7 @@ namespace raytracy {
 										 ConvertVertexDataTypeInOpenGLBaseType(elements[i].type),
 										 elements[i].normalized ? GL_TRUE : GL_FALSE,
 										 layout.GetStride(),
-										 (const void*)elements[i].offset
+										 (const void*) static_cast<uintptr_t>(elements[i].offset)
 			));
 		}
 		this->vertex_buffer = vertex_buffer;

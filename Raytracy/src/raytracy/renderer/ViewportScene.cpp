@@ -20,7 +20,6 @@ namespace raytracy::renderer {
 	void Scene::AddMesh(std::shared_ptr<Mesh> const mesh) {
 		meshes.push_back(mesh);
 
-
 		BuildBoundingVolumeHierarchie();
 	}
 
@@ -39,7 +38,7 @@ namespace raytracy::renderer {
 
 		root.object_indices.resize(meshes.size());
 		for (size_t i = 0; i < meshes.size(); i++) {
-			root.object_indices[i] = i;
+			root.object_indices[i] = static_cast<uint32_t>(i);
 		}
 
 		UpdateBounds(0);
@@ -77,12 +76,12 @@ namespace raytracy::renderer {
 		auto split_position = node.min_corner[split_axis] + volume_extent[split_axis] / 2;
 
 		bounding_volume_hierarchie.emplace_back();
-		auto left_child_index = bounding_volume_hierarchie.size() - 1;
+		auto left_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size() - 1);
 		BoundingBoxNode& right_child = bounding_volume_hierarchie.emplace_back();
-		auto right_child_index = bounding_volume_hierarchie.size() - 1;
+		auto right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size() - 1);
 
 		BoundingBoxNode& left_child = bounding_volume_hierarchie[left_child_index];
-		for (size_t object_index : node.object_indices) {
+		for (auto object_index : node.object_indices) {
 			if (meshes[object_index]->GetOrigin()[split_axis] < split_position) {
 				left_child.object_indices.push_back(object_index);
 			} else {
@@ -90,9 +89,9 @@ namespace raytracy::renderer {
 			}
 		}
 
-		node.object_indices.clear();
-		node.left_child_index = left_child_index;
-		node.right_child_index = right_child_index;
+		node.object_indices.clear(); 
+		node.left_child_index = static_cast<uint32_t>(left_child_index);
+		node.right_child_index = static_cast<uint32_t>(right_child_index);
 
 		bounding_volume_hierarchie[node_index] = node;
 
@@ -107,7 +106,7 @@ namespace raytracy::renderer {
 		if (node.object_indices.size() == 2) {
 			for (size_t i = 0; i < node.object_indices.size(); i++) {
 				bounding_volume_hierarchie.emplace_back();
-				auto index = bounding_volume_hierarchie.size() - 1;
+				auto index = static_cast<uint32_t>(bounding_volume_hierarchie.size() - 1);
 
 				BoundingBoxNode& leaf = bounding_volume_hierarchie[index];
 				if (i == 0) {
@@ -137,8 +136,8 @@ namespace raytracy::renderer {
 		auto mesh = meshes[node.object_indices[0]];
 		node.model_matrix = mesh->GetModelMatrix();
 		auto& mesh_triangles = mesh->GetTriangles();
-		size_t top = triangles.size();
-		for (size_t i = 0; i < mesh_triangles.size(); i++) {
+		uint32_t top = static_cast<uint32_t>(triangles.size());
+		for (uint32_t i = 0; i < mesh_triangles.size(); i++) {
 			triangles.push_back(mesh_triangles[i]);
 			node.triangle_indices.push_back(top + i);
 		}
