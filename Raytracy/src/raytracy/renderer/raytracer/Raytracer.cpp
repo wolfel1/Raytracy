@@ -78,23 +78,32 @@ namespace raytracy {
 		std::vector<RTriangle> triangles;
 		std::vector<RVertex> vertices;
 
-		for (auto triangle_ptr : scene->GetTriangles()) {
+		auto triangles_data = scene->GetTriangles();
+		triangles.reserve(triangles_data.size());
+		vertices.reserve(triangles_data.size() * 3);
+
+		std::for_each(triangles_data.begin(), triangles_data.end(), [&](auto triangle_ptr) {
 			RTriangle triangle{};
 
 			auto& corners = triangle_ptr->vertices;
 			for (uint32_t i = 0; i < 3; i++) {
-				triangle.vertex_indices[i] = vertices.size() + i;
+				triangle.vertex_indices[i] = vertices.size();
 				vertices.push_back({ corners[i]->position, corners[i]->normal, corners[i]->color, corners[i]->tex_coords });
 			}
 			triangles.push_back(triangle);
-		}
+		});
 		triangles_storage_buffer->SetData(sizeof(RTriangle) * triangles.size(), triangles.data());
 		vertices_storage_buffer->SetData(sizeof(RVertex) * vertices.size(), vertices.data());
 
 		std::vector<TriangleNode> bounding_volume_hierarchie;
 		std::vector<uint32_t> triangle_indices;
+
+		auto& scene_bvh = scene->GetBoundingVolumeHierarchie();
+		bounding_volume_hierarchie.reserve(scene_bvh.size());
+		triangle_indices.reserve(triangles.size());
+
 		uint32_t lookup_index = 0;
-		for (auto& bvh_node : scene->GetBoundingVolumeHierarchie()) {
+		std::for_each(scene_bvh.begin(), scene_bvh.end(), [&](auto& bvh_node) {
 			TriangleNode node{};
 			node.left_child_index = bvh_node.left_child_index;
 			node.right_child_index = bvh_node.right_child_index;
@@ -108,7 +117,8 @@ namespace raytracy {
 				lookup_index = triangle_indices.size();
 			}
 			bounding_volume_hierarchie.push_back(node);
-		}
+		});
+
 
 		triangle_indices_storage_buffer->SetData(sizeof(uint32_t) * triangle_indices.size(), triangle_indices.data());
 #else
