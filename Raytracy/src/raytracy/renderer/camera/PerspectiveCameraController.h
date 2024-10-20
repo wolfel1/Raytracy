@@ -3,8 +3,7 @@
 #include "PerspectiveCamera.h"
 #include "raytracy/core/Timestep.h"
 
-#include "raytracy/event/ApplicationEvent.h"
-#include "raytracy/event/MouseEvent.h"
+#include "raytracy/event/Event.h"
 
 namespace raytracy {
 
@@ -22,6 +21,9 @@ namespace raytracy {
 
 		glm::vec2 last_mouse_position{};
 		bool is_not_rotating = true;
+
+		glm::vec3 target_point = { 0.0f, 0.0f, 0.0f };
+		bool has_orbit_control = true;
 
 	public:
 		PerspectiveCameraController(float aspect_ratio);
@@ -50,7 +52,10 @@ namespace raytracy {
 		void RotateY(float const degree);
 
 	private:
+		void UpdateOrbitPosition();
+
 		bool OnWindowResized(Event& e);
 		bool OnMouseScrolled(Event& e);
+		bool OnToggleOrbitControl(Event& e);
 	};
 }

@@ -9,8 +9,8 @@ namespace raytracy {
 
 	class PerspectiveCamera {
 	private:
-		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 direction = { 0.0f, 0.0f, -1.0f };
+		glm::vec3 position = { 0.0f, 0.0f, -5.0f };
+		glm::vec3 direction = { 0.0f, 0.0f, 1.0f };
 		glm::mat4 view_matrix{};
 		glm::mat4 projection_matrix{};
 		glm::vec3 up = { 0.0f, 1.0f, 0.0f };
@@ -49,6 +49,14 @@ namespace raytracy {
 
 		void SetYaw(float yaw) {
 			this->yaw += yaw; RecalculateDirection();
+		}
+
+		float GetYaw() const {
+			return yaw;
+		}
+
+		float GetPitch() const {
+			return pitch;
 		}
 
 		glm::mat4 const& GetProjectionMatrix() const {

@@ -5,6 +5,10 @@
 #include "raytracy/core/Input.h"
 #include "glm/gtx/rotate_vector.hpp"
 
+#include "raytracy/event/KeyEvent.h"
+#include "raytracy/event/ApplicationEvent.h"
+#include "raytracy/event/MouseEvent.h"
+
 namespace raytracy {
 
 	PerspectiveCameraController::PerspectiveCameraController(float aspect_ratio) : aspect_ratio(aspect_ratio) {
@@ -12,13 +16,15 @@ namespace raytracy {
 
 		auto& event_bus = EventBus::Get();
 		event_bus.Register<WindowResizeEvent>(RTY_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
-		event_bus.Register<MouseScrolledEvent>(RTY_BIND_EVENT_FN(PerspectiveCameraController::OnMouseScrolled));
+		event_bus.Register<MouseScrolledEvent>(RTY_BIND_EVENT_FN(PerspectiveCameraController::OnMouseScrolled)); 
+		event_bus.Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(PerspectiveCameraController::OnToggleOrbitControl));
 	}
 
 	void PerspectiveCameraController::OnUpdate(Timestep timestep) {
 		auto& input = Input::Get();
 
 		if (input.IsMouseButtonPressed<>(MouseCode::ButtonMiddle)) {
+				
 			if (is_not_rotating) {
 				last_mouse_position = input.GetMousePosition<>();
 				is_not_rotating = false;
@@ -44,7 +50,11 @@ namespace raytracy {
 				Translate(translate_direction * translation_speed);
 			} else {
 				camera->SetYaw(x_offset * rotation_speed);
-				camera->SetPitch(y_offset * rotation_speed);
+				camera->SetPitch(y_offset * rotation_speed); 
+				
+				if(has_orbit_control) {
+					UpdateOrbitPosition();
+				}
 			} 
 			last_mouse_position = mouse_position;
 		} else {
@@ -68,22 +78,43 @@ namespace raytracy {
 	void PerspectiveCameraController::TranslateY(float const amount) {
 		auto& camera_position = camera->GetPosition();
 		glm::vec3 new_position = camera_position + glm::vec3(0.0f, amount, 0.0f);
-		camera->SetPosition(new_position);
+		camera->SetPosition(new_position); 
 	}
 	void PerspectiveCameraController::TranslateZ(float const amount) {
 		auto& camera_position = camera->GetPosition();
 		glm::vec3 new_position = camera_position + glm::vec3(0.0f, 0.0f, amount);
-		camera->SetPosition(new_position);
+		camera->SetPosition(new_position); 
 	}
 
 	void PerspectiveCameraController::RotateX(float const degree) {
 		camera->SetPitch(degree);
+
+		if(has_orbit_control) {
+			UpdateOrbitPosition();
+		}
 	}
 
 	void PerspectiveCameraController::RotateY(float const degree) {
 		camera->SetYaw(degree);
+
+		if(has_orbit_control) {
+			UpdateOrbitPosition();
+		}
 	}
 
+	void PerspectiveCameraController::UpdateOrbitPosition() {
+		float radius = glm::length(camera->GetPosition() - target_point);
+		float yaw_radians = glm::radians(camera->GetYaw());
+		float pitch_radians = glm::radians(camera->GetPitch());
+
+		glm::vec3 new_position;
+		new_position.x = target_point.x + radius * cos(pitch_radians) * cos(yaw_radians);
+		new_position.y = target_point.y + radius * sin(pitch_radians);
+		new_position.z = target_point.z + radius * cos(pitch_radians) * sin(yaw_radians);
+
+		camera->SetPosition(new_position);
+		camera->SetDirection(glm::normalize(target_point - new_position));
+	}
 
 	bool PerspectiveCameraController::OnWindowResized(Event& e) {
 		auto& evt = static_cast<WindowResizeEvent&>(e);
@@ -105,6 +136,15 @@ namespace raytracy {
 		}
 		Translate(translate_direction * scroll_speed);
 		
+		return true;
+	}
+
+	bool PerspectiveCameraController::OnToggleOrbitControl(Event& e) {
+		KeyReleasedEvent evt = static_cast<KeyReleasedEvent&>(e);
+		if (evt.GetKeyCode() == KeyCode::O) {
+			has_orbit_control = !has_orbit_control;
+		}
+
 		return true;
 	}
 }

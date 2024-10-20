@@ -20,8 +20,8 @@ public:
 		EventBus::Get().Register<KeyReleasedEvent>(RTY_BIND_EVENT_FN(SandboxLayer::OnKeyReleased));
 		auto& spec = IApplication::Get()->GetSpecification();
 		camera_controller = make_unique<PerspectiveCameraController>(static_cast<float>(spec.width) / static_cast<float>(spec.height));
-		camera_controller->Translate({ 1.0f, 5.0f, 10.0f });
-		camera_controller->RotateX(-25.0f);
+		//camera_controller->Translate({ 0.0f, 5.0f, 0.0f });
+		//camera_controller->RotateX(-25.0f);
 
 		renderer::Scene::Create(camera_controller->GetCamera());
 		scene = renderer::Scene::Get();
