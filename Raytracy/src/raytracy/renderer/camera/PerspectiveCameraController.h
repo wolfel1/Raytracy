@@ -15,7 +15,7 @@ namespace raytracy {
 		std::shared_ptr<PerspectiveCamera> camera;
 
 		float translation_speed = 0.08f;
-		float scroll_speed = 0.5f;
+		float scroll_speed = 5.f;
 		float rotation_speed = .2f;
 		float orbit_speed = 180.0f;
 
@@ -23,7 +23,6 @@ namespace raytracy {
 		bool is_not_rotating = true;
 
 		glm::vec3 target_point = { 0.0f, 0.0f, 0.0f };
-		bool has_orbit_control = true;
 
 	public:
 		PerspectiveCameraController(float aspect_ratio);
@@ -50,6 +49,8 @@ namespace raytracy {
 
 		void RotateX(float const degree);
 		void RotateY(float const degree);
+
+		void SetFieldOfView(float new_field_of_view);
 
 	private:
 		void UpdateOrbitPosition();

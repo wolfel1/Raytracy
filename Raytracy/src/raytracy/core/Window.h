@@ -25,6 +25,9 @@ namespace raytracy {
 	class IWindow {
 		public:
 			virtual void* GetNativeWindow() const = 0;
+
+			virtual uint32_t GetWidth() const = 0;
+			virtual uint32_t GetHeight() const = 0;
 	};
 
 	class Window : public IWindow {
@@ -44,8 +47,8 @@ namespace raytracy {
 
 		void OnUpdate();
 
-		uint32_t GetWidth() const { return window_data.width; }
-		uint32_t GetHeight() const { return window_data.height; }
+		virtual uint32_t GetWidth() const override { return window_data.width; }
+		virtual uint32_t GetHeight() const override { return window_data.height; }
 
 		void SetTitle(const std::string& name);
 		std::string GetName() const { return window_data.name; }
