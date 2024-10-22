@@ -48,8 +48,6 @@ namespace raytracy::renderer {
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
 	}
 
-
-
 	void Mesh::Draw(shared_ptr<OpenGLRendererAPI> api) {
 		material->Draw();
 

@@ -95,8 +95,6 @@ namespace raytracy {
 });
 
 		}
-
-		SetVSync(false);
 	}
 
 	Window::~Window() {
@@ -115,6 +113,7 @@ namespace raytracy {
 	}
 
 	void Window::SwapBuffers() {
+		RTY_PROFILE_FUNCTION();
 		glfwSwapBuffers(window_handle);
 	}
 

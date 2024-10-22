@@ -12,6 +12,7 @@ namespace raytracy {
 
 
 	void Raytracer::Init(shared_ptr<OpenGLRendererAPI> const api) {
+		RTY_PROFILE_FUNCTION();
 		renderer_api = api;
 
 		auto& app_spec = IApplication::Get()->GetSpecification();
@@ -55,6 +56,7 @@ namespace raytracy {
 	}
 
 	void Raytracer::Raytrace(shared_ptr<renderer::Scene> const scene) {
+		RTY_PROFILE_FUNCTION();
 		Preprocess(scene);
 
 		renderer_api->ClearViewport();
@@ -74,6 +76,7 @@ namespace raytracy {
 	}
 
 	void Raytracer::Preprocess(shared_ptr<renderer::Scene> const scene) {
+		RTY_PROFILE_FUNCTION();
 		std::vector<RTriangle> triangles;
 		std::vector<RVertex> vertices;
 
@@ -81,16 +84,19 @@ namespace raytracy {
 		triangles.reserve(triangles_data.size());
 		vertices.reserve(triangles_data.size() * 3);
 
-		std::for_each(triangles_data.begin(), triangles_data.end(), [&](auto triangle_ptr) {
-			RTriangle triangle{};
+		{
+			RTY_PROFILE_SCOPE("Triangles")
+			std::for_each(triangles_data.begin(), triangles_data.end(), [&](auto triangle_ptr) {
+				RTriangle triangle{};
 
-			auto& corners = triangle_ptr->vertices;
-			for (uint32_t i = 0; i < 3; i++) {
-				triangle.vertex_indices[i] = static_cast<uint32_t>(vertices.size());
-				vertices.push_back({ corners[i]->position, corners[i]->normal, corners[i]->color, corners[i]->tex_coords });
-			}
-			triangles.push_back(triangle);
-		});
+				auto& corners = triangle_ptr->vertices;
+				for (uint32_t i = 0; i < 3; i++) {
+					triangle.vertex_indices[i] = static_cast<uint32_t>(vertices.size());
+					vertices.push_back({ corners[i]->position, corners[i]->normal, corners[i]->color, corners[i]->tex_coords });
+				}
+				triangles.push_back(triangle);
+			});
+		}
 		triangles_storage_buffer->SetData(sizeof(RTriangle) * triangles.size(), triangles.data());
 		vertices_storage_buffer->SetData(sizeof(RVertex) * vertices.size(), vertices.data());
 
@@ -102,21 +108,24 @@ namespace raytracy {
 		triangle_indices.reserve(triangles.size());
 
 		uint32_t lookup_index = 0;
-		std::for_each(scene_bvh.begin(), scene_bvh.end(), [&](auto& bvh_node) {
-			Node node{};
-			node.left_child_index = bvh_node.left_child_index;
-			node.right_child_index = bvh_node.right_child_index;
-			node.min_corner = bvh_node.min_corner;
-			node.max_corner = bvh_node.max_corner;
-			if (node.has_object = !bvh_node.object_indices.empty()) {
-				node.model_matrix = bvh_node.model_matrix;
-				node.triangle_count = static_cast<uint32_t>(bvh_node.triangle_indices.size());
-				triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
-				node.lookup_index = lookup_index;
-				lookup_index = static_cast<uint32_t>(triangle_indices.size());
-			}
-			bounding_volume_hierarchie.push_back(node);
-		});
+		{
+			RTY_PROFILE_SCOPE("BVH")
+			std::for_each(scene_bvh.begin(), scene_bvh.end(), [&](auto& bvh_node) {
+				Node node{};
+				node.left_child_index = bvh_node.left_child_index;
+				node.right_child_index = bvh_node.right_child_index;
+				node.min_corner = bvh_node.min_corner;
+				node.max_corner = bvh_node.max_corner;
+				if (node.has_object = !bvh_node.object_indices.empty()) {
+					node.model_matrix = bvh_node.model_matrix;
+					node.triangle_count = static_cast<uint32_t>(bvh_node.triangle_indices.size());
+					triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
+					node.lookup_index = lookup_index;
+					lookup_index = static_cast<uint32_t>(triangle_indices.size());
+				}
+				bounding_volume_hierarchie.push_back(node);
+			});
+		}
 
 		triangle_indices_storage_buffer->SetData(sizeof(uint32_t) * triangle_indices.size(), triangle_indices.data());
 
@@ -130,6 +139,7 @@ namespace raytracy {
 	}
 
 	void Raytracer::Shutdown() {
+		RTY_PROFILE_FUNCTION();
 		renderer_api = nullptr;
 		scene_data_uniform_buffer = nullptr;
 		bvh_storage_buffer = nullptr;
@@ -139,6 +149,7 @@ namespace raytracy {
 	}
 
 	bool Raytracer::OnWindowResize(uint32_t width, uint32_t height) {
+		RTY_PROFILE_FUNCTION();
 		raytracing_canvas = OpenGLTexture2D::Create(width, height, GL_RGBA32F);
 		return true;
 	}
