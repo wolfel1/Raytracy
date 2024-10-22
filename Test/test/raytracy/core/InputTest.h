@@ -18,6 +18,8 @@ public:
 class WindowMock : public IWindow {
 public:
 	MOCK_METHOD(void*, GetNativeWindow, (), (const override));
+	MOCK_METHOD(uint32_t, GetWidth, (), (const override));
+	MOCK_METHOD(uint32_t, GetHeight, (), (const override));
 };
 
 class GLFWProxyMock {
