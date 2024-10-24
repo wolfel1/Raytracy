@@ -41,12 +41,13 @@ namespace raytracy {
 			return GL_VERTEX_SHADER;
 		if (type == "fragment" || type == "pixel" || type == ".frag")
 			return GL_FRAGMENT_SHADER;
-		if (type == "compute")
+		if (type == "compute" || type == ".comp")
 			return GL_COMPUTE_SHADER;
 
 		RTY_ASSERT(false, "Unknown shader type!");
 		return 0;
 	}
+
 	shared_ptr<OpenGLShader> OpenGLShader::CreateFromFile(const std::string& name) {
 			return make_shared<OpenGLShader>(name);
 	}
@@ -58,8 +59,7 @@ namespace raytracy {
 			filepaths.push_back(file.path().string());
 		}
 
-
-			return make_shared<OpenGLShader>(filepaths);
+		return make_shared<OpenGLShader>(filepaths);
 
 	}
 

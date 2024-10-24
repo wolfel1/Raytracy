@@ -104,9 +104,9 @@ namespace raytracy {
 		float pitch_radians = glm::radians(camera->GetPitch());
 
 		glm::vec3 new_position;
-		new_position.x = target_point.x + radius * cos(pitch_radians) * cos(yaw_radians);
-		new_position.y = target_point.y + radius * sin(pitch_radians);
-		new_position.z = target_point.z + radius * cos(pitch_radians) * sin(yaw_radians);
+		new_position.x = target_point.x - radius * cos(pitch_radians) * cos(yaw_radians);
+		new_position.y = target_point.y - radius * sin(pitch_radians);
+		new_position.z = target_point.z - radius * cos(pitch_radians) * sin(yaw_radians);
 
 		camera->SetPosition(new_position);
 		camera->SetDirection(glm::normalize(target_point - new_position));

@@ -17,8 +17,8 @@ namespace raytracy {
 
 		auto& app_spec = IApplication::Get()->GetSpecification();
 		raytracing_canvas = OpenGLTexture2D::Create(app_spec.width, app_spec.height, GL_RGBA32F);
-		raytracing_kernel = ShaderLibrary::Get().Load("raytrace_kernel");
-		raytracing_output = ShaderLibrary::Get().Load("raytrace_output");
+		raytracing_kernel = ShaderLibrary::Get().Load("raytracing");
+		canvas_shader = ShaderLibrary::Get().Load("canvas");
 
 		triangles_storage_buffer = OpenGLStorageBuffer::Create("Triangles");
 		triangles_storage_buffer->Bind();
@@ -70,8 +70,8 @@ namespace raytracy {
 		renderer_api->SetMemoryBarrier();
 
 		raytracing_canvas->Bind(0);
-		raytracing_output->Bind();
-		raytracing_output->SetInt("tex", 0);
+		canvas_shader->Bind();
+		canvas_shader->SetInt("tex", 0);
 		renderer_api->Draw(4);
 	}
 

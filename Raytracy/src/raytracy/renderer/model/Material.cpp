@@ -8,7 +8,7 @@ namespace raytracy::renderer {
 	shared_ptr<OpenGLUniformBuffer> MeshMaterial::material_uniform_buffer = nullptr;
 
 	MeshMaterial::MeshMaterial(glm::vec4 color) : color(color) {
-		shader = ShaderLibrary::Get().Load("Basic");
+		shader = ShaderLibrary::Get().Load("default");
 		RTY_ASSERT(shader, "Could not create a shader program!");
 
 		if (!material_uniform_buffer) {

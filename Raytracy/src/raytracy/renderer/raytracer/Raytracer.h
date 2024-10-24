@@ -41,7 +41,7 @@ namespace raytracy {
 		shared_ptr<OpenGLTexture2D> raytracing_canvas = nullptr;
 
 		shared_ptr<OpenGLShader> raytracing_kernel;
-		shared_ptr<OpenGLShader> raytracing_output;
+		shared_ptr<OpenGLShader> canvas_shader;
 
 		shared_ptr<OpenGLUniformBuffer> scene_data_uniform_buffer;
 		shared_ptr<OpenGLStorageBuffer> triangles_storage_buffer;
