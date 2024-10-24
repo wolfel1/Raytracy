@@ -42,8 +42,10 @@ namespace raytracy::renderer {
 			is_indexed = true;
 		}
 
+#if RAYTRACING
 		BuildTriangles(mesh_data);
 		BuildBoundingBox(mesh_data);
+#endif
 
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
 	}
@@ -122,8 +124,10 @@ namespace raytracy::renderer {
 	}
 
 	void Mesh::UpdateBoundingBox(glm::mat4 const& transformation_matrix) {
+#if RAYTRACING
 		bounding_box.min_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.min_corner, 1.0f));
 		bounding_box.max_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.max_corner, 1.0f));
+#endif
 	}
 
 	QuadData Plane::data;

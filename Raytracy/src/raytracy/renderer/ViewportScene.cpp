@@ -20,7 +20,9 @@ namespace raytracy::renderer {
 	void Scene::AddMesh(std::shared_ptr<Mesh> const mesh) {
 		meshes.push_back(mesh);
 
+#if RAYTRACING
 		BuildBoundingVolumeHierarchie();
+#endif
 	}
 
 	void Scene::AddSkybox() {

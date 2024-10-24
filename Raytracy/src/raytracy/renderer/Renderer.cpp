@@ -3,7 +3,10 @@
 
 #include "api/Shader.h"
 #include "api/Buffer.h"
+
+#if RAYTRACING
 #include "raytracer/Raytracer.h"
+#endif
 
 #include <glad/gl.h>
 #include <glm/gtc/matrix_inverse.hpp>
@@ -21,7 +24,10 @@ namespace raytracy {
 		renderer_api->Init();
 
 		renderer_api->SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+
+#if RAYTRACING
 		Raytracer::Get().Init(renderer_api);
+#endif
 
 		is_initialized = true;
 	}
@@ -38,8 +44,11 @@ namespace raytracy {
 	void Renderer::Submit(shared_ptr<renderer::Scene> const scene) {
 		RTY_PROFILE_FUNCTION();
 		if (raytrace) {
+#if RAYTRACING
 			Raytracer::Get().Raytrace(scene);
-
+#else
+			RTY_RENDERER_ERROR("Raytracing is not supported in this build!");
+#endif
 		} else {
 			BeginScene(scene->GetCamera());
 
@@ -84,11 +93,17 @@ namespace raytracy {
 		scene_data.meshes.clear();
 		scene_data.camera_uniform_buffer = nullptr;
 
+#if RAYTRACING
 		Raytracer::Get().Shutdown();
+#endif
 	}
 
 	bool Renderer::OnWindowResize(uint32_t width, uint32_t height) {
 		renderer_api->SetViewport(0, 0, width, height);
+#if RAYTRACING
 		return Raytracer::Get().OnWindowResize(width, height);
+#else
+		return true;
+#endif
 	}
 }
