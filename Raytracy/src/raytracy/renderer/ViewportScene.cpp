@@ -29,6 +29,10 @@ namespace raytracy::renderer {
 		skybox = make_shared<Skybox>();
 		auto skybox_material = make_shared<WorldMaterial>();
 		skybox->SetMaterial(skybox_material);
+
+		auto light = make_shared<DirectionalLight>();
+
+		lights.push_back(light);
 	}
 
 

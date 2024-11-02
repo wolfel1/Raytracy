@@ -36,5 +36,6 @@ namespace raytracy {
 
 		void BindBuffer(std::string const& name);
 		void CreateCameraUniformBuffer();
+		void CreateLightUniformBuffer();
 	};
 }

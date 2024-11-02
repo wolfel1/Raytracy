@@ -22,7 +22,6 @@ namespace raytracy::renderer {
 			material_uniform_buffer = OpenGLUniformBuffer::Create("Material", layout);
 			shader->AddUniformBuffer(material_uniform_buffer);
 		}
-		material_uniform_buffer->SetVec4("color", color);
 	}
 
 	void MeshMaterial::Draw() const {

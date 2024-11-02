@@ -1,18 +1,10 @@
 #pragma once
 #include "./camera/PerspectiveCamera.h"
 #include "./model/Mesh.h"
+#include "./model/DirectionalLight.h"
 #include "raytracer/BoundingBoxNode.h"
 
 namespace raytracy::renderer {
-
-	struct DirectionalLight {
-		glm::vec3 color;
-		glm::vec3 direction;
-		float strength;
-
-		shared_ptr<OpenGLUniformBuffer> light_uniform_buffer;
-
-	};
 
 	class Scene {
 	private:
@@ -21,6 +13,7 @@ namespace raytracy::renderer {
 		std::vector<shared_ptr<Triangle>> triangles;
 		std::vector<BoundingBoxNode> bounding_volume_hierarchie;
 		shared_ptr<Skybox> skybox;
+		std::vector<shared_ptr<DirectionalLight>> lights;
 
 		static std::shared_ptr<Scene> instance;
 	public:

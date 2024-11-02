@@ -90,6 +90,7 @@ namespace raytracy {
 		Compile(shaderSources);
 
 		CreateCameraUniformBuffer();
+		CreateLightUniformBuffer();
 	}
 
 	OpenGLShader::OpenGLShader(const std::vector<std::string>& paths) {
@@ -102,6 +103,7 @@ namespace raytracy {
 		Compile(shader_sources);
 
 		CreateCameraUniformBuffer();
+		CreateLightUniformBuffer();
 	}
 
 	OpenGLShader::~OpenGLShader() {
@@ -289,6 +291,9 @@ namespace raytracy {
 			AddUniformBuffer(camera_uniform_buffer);
 			Unbind();
 		}
+	}
+
+	void OpenGLShader::CreateLightUniformBuffer() {
 	}
 
 }

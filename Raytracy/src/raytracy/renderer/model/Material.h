@@ -40,6 +40,9 @@ namespace raytracy::renderer {
 		virtual void Destroy() override {
 			material_uniform_buffer = nullptr;
 		}
+
+	private:
+		void CreateLightUniformBuffer(shared_ptr<OpenGLShader> shader);
 	};
 
 	class WorldMaterial : public Material {
