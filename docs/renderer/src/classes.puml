@@ -9,6 +9,7 @@ Scene : -BuildBoundingVolumeHierarchie()
 
 Scene --> "1" PerspectiveCamera
 Scene --> "0..*" Mesh
+Scene --> "1" DirectionalLight
 
 class PerspectiveCamera
 

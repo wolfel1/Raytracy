@@ -25,6 +25,7 @@ namespace raytracy::renderer {
 
 		static std::shared_ptr<Scene> instance;
 	public:
+		Scene(std::shared_ptr<PerspectiveCamera> camera);
 		Scene(const Scene&) = delete;
 		~Scene() = default;
 
@@ -63,7 +64,6 @@ namespace raytracy::renderer {
 		}
 
 	private:
-		Scene(std::shared_ptr<PerspectiveCamera> camera);
 
 		void BuildBoundingVolumeHierarchie();
 		void UpdateBounds(uint32_t node_index);
