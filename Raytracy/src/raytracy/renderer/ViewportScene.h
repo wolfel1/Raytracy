@@ -22,7 +22,6 @@ namespace raytracy::renderer {
 		std::vector<BoundingBoxNode> bounding_volume_hierarchie;
 		shared_ptr<Skybox> skybox;
 
-
 		static std::shared_ptr<Scene> instance;
 	public:
 		Scene(std::shared_ptr<PerspectiveCamera> camera);

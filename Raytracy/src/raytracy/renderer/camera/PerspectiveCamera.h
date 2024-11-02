@@ -25,9 +25,7 @@ namespace raytracy {
 		PerspectiveCamera(float field_of_view, float aspect_ratio);
 		~PerspectiveCamera() = default;
 
-		void SetPosition(glm::vec3 const& position) {
-			this->position = position; RecalculateViewMatrix();
-		}
+		void SetPosition(glm::vec3 const& position);
 
 		void SetDirection(glm::vec3 const& direction) {
 			this->direction = direction; RecalculateViewMatrix();
@@ -80,6 +78,7 @@ namespace raytracy {
 
 		void SetCameraUniformBuffer(shared_ptr<OpenGLUniformBuffer> const buffer) {
 			camera_uniform_buffer = buffer;
+			camera_uniform_buffer->SetVec3("position", position);
 		}
 
 		shared_ptr<OpenGLUniformBuffer> GetCameraUniformBuffer() const {

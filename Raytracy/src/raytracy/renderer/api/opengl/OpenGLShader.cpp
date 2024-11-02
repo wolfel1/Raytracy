@@ -272,7 +272,8 @@ namespace raytracy {
 				"model_matrix",
 				"view_projection_matrix",
 				"model_view_projection_matrix",
-				"normal_matrix"
+				"normal_matrix",
+				"position"
 			});
 
 			auto layout = GetUniformBufferLayout(block);

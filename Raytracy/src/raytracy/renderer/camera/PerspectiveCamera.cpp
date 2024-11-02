@@ -12,6 +12,11 @@ namespace raytracy {
 		view_matrix = glm::lookAt(position, position + direction, up);
 	}
 
+	void PerspectiveCamera::SetPosition(glm::vec3 const& position) {
+		this->position = position;
+		camera_uniform_buffer->SetVec3("position", position);
+		RecalculateViewMatrix();
+	}
 
     void PerspectiveCamera::SetProjection(float field_of_view, float aspect_ratio) {
 		projection_matrix = glm::perspective(glm::radians(field_of_view), aspect_ratio, near_clip, far_clip);

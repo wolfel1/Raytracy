@@ -29,7 +29,6 @@ namespace raytracy::renderer {
 		material_uniform_buffer->SetVec4("color", color);
 		shader->Bind();
 		shader->SetInt("skybox", 1);
-		shader->SetVec3("camera_pos", Scene::Get()->GetCamera()->GetPosition());
 	}
 
 	WorldMaterial::WorldMaterial() {
