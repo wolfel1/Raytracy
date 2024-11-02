@@ -22,7 +22,7 @@ namespace raytracy::renderer {
 		static shared_ptr<OpenGLUniformBuffer> material_uniform_buffer;
 
 	public:
-		MeshMaterial(glm::vec4 color = { 0.5f, 0.5f, 0.5f, 1.0f });
+		MeshMaterial(glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f });
 		~MeshMaterial() = default;
 
 		

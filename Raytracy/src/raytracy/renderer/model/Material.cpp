@@ -20,7 +20,6 @@ namespace raytracy::renderer {
 			auto layout = shader->GetUniformBufferLayout(block);
 
 			material_uniform_buffer = OpenGLUniformBuffer::Create("Material", layout);
-			material_uniform_buffer->SetVec4("color", { 1.0f, 1.0f, 1.0f, 1.0f });
 			shader->AddUniformBuffer(material_uniform_buffer);
 		}
 		material_uniform_buffer->SetVec4("color", color);
