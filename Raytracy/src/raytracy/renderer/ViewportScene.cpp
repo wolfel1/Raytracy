@@ -14,7 +14,7 @@ namespace raytracy::renderer {
 	}
 
 	Scene::Scene(std::shared_ptr<PerspectiveCamera> camera) : camera(camera) {
-
+		light = make_shared<DirectionalLight>();
 	}
 
 	void Scene::AddMesh(std::shared_ptr<Mesh> const mesh) {
@@ -30,9 +30,6 @@ namespace raytracy::renderer {
 		auto skybox_material = make_shared<WorldMaterial>();
 		skybox->SetMaterial(skybox_material);
 
-		auto light = make_shared<DirectionalLight>();
-
-		lights.push_back(light);
 	}
 
 

@@ -13,8 +13,6 @@
 
 namespace raytracy {
 
-	uint32_t OpenGLShader::uniform_buffer_index = 0;
-
 	static VertexDataType ConvertOpenGLBaseTypeInVertexDataType(int32_t type) {
 		switch (type) {
 		case GL_BOOL: return VertexDataType::Bool;
@@ -254,7 +252,7 @@ namespace raytracy {
 
 		std::vector<BufferElement> elements(size);
 		for (size_t i = 0; i < size; i++) {
-			elements[i] = { uniform_block.uniform_names[i], ConvertOpenGLBaseTypeInVertexDataType(types[i]), static_cast<uint32_t>(offsets[i]) };
+			elements.emplace_back(uniform_block.uniform_names[i], ConvertOpenGLBaseTypeInVertexDataType(types[i]), static_cast<uint32_t>(offsets[i]));
 		}
 
 		BufferLayout layout(static_cast<uint32_t>(ubo_size), elements);
@@ -294,6 +292,35 @@ namespace raytracy {
 	}
 
 	void OpenGLShader::CreateLightUniformBuffer() {
+		auto ubo_index = glGetUniformBlockIndex(renderer_id, "DirectionalLight");
+		if (ubo_index == GL_INVALID_INDEX) {
+			return;
+		}
+		auto light = renderer::Scene::Get()->GetLight();
+
+		if (light) {
+			auto light_uniform_buffer = light->GetUniformBuffer();
+			if (!light_uniform_buffer) {
+				UniformBlock block("DirectionalLight", {
+					"lightColor",
+					"direction",
+					"strength"
+				});
+
+				auto layout = GetUniformBufferLayout(block);
+
+				light_uniform_buffer = OpenGLUniformBuffer::Create("DirectionalLight", layout);
+				AddUniformBuffer(light_uniform_buffer);
+				light->SetUniformBuffer(light_uniform_buffer);
+			} else {
+				Bind();
+				uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "DirectionalLight");
+				RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'DirectionalLight'!");
+
+				AddUniformBuffer(light_uniform_buffer);
+				Unbind();
+			}
+		}
 	}
 
 }

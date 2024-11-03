@@ -13,7 +13,7 @@ namespace raytracy::renderer {
 		std::vector<shared_ptr<Triangle>> triangles;
 		std::vector<BoundingBoxNode> bounding_volume_hierarchie;
 		shared_ptr<Skybox> skybox;
-		std::vector<shared_ptr<DirectionalLight>> lights;
+		shared_ptr<DirectionalLight> light;
 
 		static std::shared_ptr<Scene> instance;
 	public:
@@ -53,6 +53,10 @@ namespace raytracy::renderer {
 		
 		std::vector<BoundingBoxNode> const& GetBoundingVolumeHierarchie() const {
 			return bounding_volume_hierarchie;
+		}
+
+		std::shared_ptr<DirectionalLight> GetLight() const {
+			return light;
 		}
 
 	private:

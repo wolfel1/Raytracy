@@ -10,7 +10,7 @@ namespace raytracy {
 		glm::vec3 direction;
 		float strength;
 
-		static shared_ptr<OpenGLUniformBuffer> light_uniform_buffer;
+		shared_ptr<OpenGLUniformBuffer> light_uniform_buffer = nullptr;
 
 	public:
 		DirectionalLight() : color(glm::vec3(1.0f)), direction(glm::vec3(0.0f, -1.0f, 0.0f)), strength(1.0f) {}
@@ -41,12 +41,10 @@ namespace raytracy {
 			this->strength = strength;
 		}
 
-		static shared_ptr<OpenGLUniformBuffer> GetUniformBuffer() {
+		shared_ptr<OpenGLUniformBuffer> GetUniformBuffer() const {
 			return light_uniform_buffer;
 		}
 
-		static void SetUniformBuffer(shared_ptr<OpenGLUniformBuffer> buffer) {
-			light_uniform_buffer = buffer;
-		}
+		void SetUniformBuffer(shared_ptr<OpenGLUniformBuffer> buffer);
 	};
 }
