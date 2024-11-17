@@ -9,6 +9,8 @@ layout(location = 4) in vec3 camera_position;
 
 layout(std140, binding = 1) uniform Material {
   vec4 color;
+  vec3 specular;
+  float shininess;
 };
 
 layout(std140, binding = 2) uniform DirectionalLight {
@@ -23,11 +25,18 @@ uniform samplerCube skybox;
 
 void main() {
 	vec3 normal = normalize(vertex_normal);
-	vec3 incoming = normalize(frag_position - camera_position);
-	vec3 reflection = reflect(incoming, normal);
+	vec3 viewDirection = normalize(camera_position - frag_position);
+	vec3 lightDirection = normalize(-direction);
 
-	float facingLight = max(dot(normal, -direction), 0.0);
+	vec3 ambient = 0.1 * color.rgb;
 
-	vec3 result = texture(skybox, reflection).rgb * color.rgb * facingLight;
-	out_color = color;
+	float diff = max(dot(normal, lightDirection), 0.0);
+	vec3 diffuse = diff * lightColor;
+
+	vec3 halfwayDir = normalize(lightDirection + viewDirection);
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
+	vec3 specular = spec * specular * lightColor;
+
+	vec3 result = (ambient + diffuse + specular) * color.rgb;
+	out_color = vec4(result, color.a);
 }

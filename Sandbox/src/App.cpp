@@ -29,7 +29,6 @@ public:
 		auto sphere1 = make_shared<renderer::Sphere>(glm::vec3(-2.5f, 0.0f, 0.0f));
 		scene->AddMesh(sphere1); 
 		auto sphere2 = make_shared<renderer::Sphere>(glm::vec3(2.5f, 0.0f, 0.0f));
-		std::static_pointer_cast<renderer::MeshMaterial>(sphere2->GetMaterial())->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 		scene->AddMesh(sphere2);
 
 		scene->AddSkybox();

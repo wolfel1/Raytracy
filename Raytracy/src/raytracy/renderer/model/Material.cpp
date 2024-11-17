@@ -6,22 +6,24 @@
 
 namespace raytracy::renderer {
 
-	MeshMaterial::MeshMaterial(glm::vec4 color) : color(color) {
+	MeshMaterial::MeshMaterial() {
 		shader = ShaderLibrary::Get().Load("default");
 		RTY_ASSERT(shader, "Could not create a shader program!");
 
-		if (!material_uniform_buffer) {
+		UniformBlock block("Material", {
+			"color",
+			"specular",
+			"shininess"
+		});
 
-			UniformBlock block("Material", {
-				"color",
-			});
+		auto layout = shader->GetUniformBufferLayout(block);
 
-			auto layout = shader->GetUniformBufferLayout(block);
-
-			material_uniform_buffer = OpenGLUniformBuffer::Create("Material", layout);
-			shader->AddUniformBuffer(material_uniform_buffer);
-		}
+		material_uniform_buffer = OpenGLUniformBuffer::Create("Material", layout);
+		shader->AddUniformBuffer(material_uniform_buffer);
+		
 		material_uniform_buffer->SetVec4("color", color);
+		material_uniform_buffer->SetVec3("specular", specular);
+		material_uniform_buffer->SetFloat("shininess", shininess);
 	}
 
 	void MeshMaterial::Draw() const {
