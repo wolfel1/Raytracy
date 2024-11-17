@@ -25,6 +25,7 @@ namespace raytracy {
 		BufferLayout const GetUniformBufferLayout(UniformBlock const& uniform_block) const;
 
 		void AddUniformBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer);
+		void BindBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer);
 
 		void SetInt(std::string const& name, uint32_t value);
 		void SetVec3(std::string const& name, glm::vec3 const& value);

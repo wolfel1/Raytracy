@@ -5,7 +5,6 @@
 #include "../ViewportScene.h"
 
 namespace raytracy::renderer {
-	shared_ptr<OpenGLUniformBuffer> MeshMaterial::material_uniform_buffer = nullptr;
 
 	MeshMaterial::MeshMaterial(glm::vec4 color) : color(color) {
 		shader = ShaderLibrary::Get().Load("default");
@@ -22,11 +21,12 @@ namespace raytracy::renderer {
 			material_uniform_buffer = OpenGLUniformBuffer::Create("Material", layout);
 			shader->AddUniformBuffer(material_uniform_buffer);
 		}
+		material_uniform_buffer->SetVec4("color", color);
 	}
 
 	void MeshMaterial::Draw() const {
-		material_uniform_buffer->SetVec4("color", color);
 		shader->Bind();
+		shader->BindBuffer(material_uniform_buffer);
 		shader->SetInt("skybox", 1);
 	}
 

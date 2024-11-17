@@ -64,7 +64,8 @@ namespace raytracy {
 	void OpenGLShader::AddUniformBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer) {
 		Bind();
 		BindBuffer(uniform_buffer->GetName());
-		uniform_buffer->Link(uniform_buffer_index);
+		uniform_buffer->SetBlockIndex(uniform_buffer_index);
+		uniform_buffer->Link();
 		Unbind();
 		uniform_buffer_index++;
 	}
@@ -220,6 +221,11 @@ namespace raytracy {
 	void OpenGLShader::BindBuffer(std::string const& name) {
 		auto uniform_block_index = glGetUniformBlockIndex(renderer_id, name.c_str());
 		GLCall(glUniformBlockBinding(renderer_id, uniform_block_index, uniform_buffer_index));
+	}
+
+	void OpenGLShader::BindBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer) {
+		auto uniform_block_index = glGetUniformBlockIndex(renderer_id, uniform_buffer->GetName().c_str());
+		GLCall(glUniformBlockBinding(renderer_id, uniform_block_index, uniform_buffer->GetBlockIndex()));
 	}
 
 	void OpenGLShader::Bind() const {

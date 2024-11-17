@@ -19,7 +19,7 @@ namespace raytracy::renderer {
 	class MeshMaterial : public Material {
 	private:
 		glm::vec4 color;
-		static shared_ptr<OpenGLUniformBuffer> material_uniform_buffer;
+		shared_ptr<OpenGLUniformBuffer> material_uniform_buffer = nullptr;
 
 	public:
 		MeshMaterial(glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f });
@@ -33,6 +33,7 @@ namespace raytracy::renderer {
 
 		void SetColor(glm::vec4 const& color) {
 			this->color = color;
+			material_uniform_buffer->SetVec4("color", color);
 		}
 
 		virtual void Draw() const override;

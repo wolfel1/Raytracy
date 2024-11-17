@@ -62,8 +62,8 @@ namespace raytracy {
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 	}
 
-	void OpenGLUniformBuffer::Link(uint32_t const index) const {
-		GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, index, renderer_id));
+	void OpenGLUniformBuffer::Link() const {
+		GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, block_index, renderer_id));
 	}
 
 	void OpenGLUniformBuffer::SetFloat(const std::string& name, const float value) const {

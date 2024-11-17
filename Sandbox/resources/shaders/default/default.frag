@@ -29,5 +29,5 @@ void main() {
 	float facingLight = max(dot(normal, -direction), 0.0);
 
 	vec3 result = texture(skybox, reflection).rgb * color.rgb * facingLight;
-	out_color = vec4(result, color.a);
+	out_color = color;
 }
