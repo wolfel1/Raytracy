@@ -50,7 +50,7 @@ namespace raytracy {
 		shared_ptr<OpenGLStorageBuffer> bvh_storage_buffer;
 
 		glm::uvec2 screen_size{};
-		uint32_t canvas_size = 1024;
+		uint32_t canvas_size = 2048;
 
 	public:
 		Raytracer(const Raytracer&) = delete;
