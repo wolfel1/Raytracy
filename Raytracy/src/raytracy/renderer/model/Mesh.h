@@ -5,13 +5,11 @@
 #include "../api/opengl/OpenGLRendererAPI.h"
 #include "Primitives.h"
 #include "Material.h"
+#include "../raytracer/BoundingBoxNode.h"
 
 namespace raytracy::renderer {
 
-	struct BoundingBox {
-		glm::vec3 min_corner{ infinity };
-		glm::vec3 max_corner{ -infinity };
-	};
+	
 
 	class Mesh {
 	protected:
@@ -26,6 +24,7 @@ namespace raytracy::renderer {
 		float scale = 1.0f;
 
 		std::vector<shared_ptr<Triangle>> triangles;
+		std::vector<BoundingBoxNode> bounding_volume_hierarchie;
 
 		BoundingBox bounding_box;
 
@@ -62,6 +61,10 @@ namespace raytracy::renderer {
 			return triangles;
 		}
 
+		std::vector<BoundingBoxNode> const& GetBoundingVolumeHierarchie() const {
+			return bounding_volume_hierarchie;
+		}
+
 		virtual void Draw(shared_ptr<OpenGLRendererAPI> api);
 
 		void Translate(glm::vec3 const& direction);
@@ -78,6 +81,10 @@ namespace raytracy::renderer {
 		void BuildTriangles(shared_ptr<MeshData> const mesh_data);
 		void BuildBoundingBox(shared_ptr<MeshData> const mesh_data);
 		void UpdateBoundingBox(glm::mat4 const& transformation_matrix);
+
+		void BuildBoundingVolumeHierarchie();
+		void UpdateBounds(uint32_t node_index);
+		void Subdivide(uint32_t node_index);
 	};
 
 	class Plane : public Mesh {

@@ -1,8 +1,15 @@
 #pragma once
 
 #include <numbers>
+#include <glm/glm.hpp>
+#include <glm/ext/scalar_constants.hpp>
 
 namespace raytracy {
+
+	struct BoundingBox {
+		glm::vec3 min_corner{ infinity };
+		glm::vec3 max_corner{ -infinity };
+	};
 
 	struct Vertex {
 		glm::vec3 position;
@@ -18,6 +25,21 @@ namespace raytracy {
 			vertices[0] = vertex1;
 			vertices[1] = vertex2;
 			vertices[2] = vertex3;
+		}
+
+		BoundingBox GetBoundingBox() {
+			BoundingBox bounding_box;
+
+			for (auto& vertex : vertices) {
+				bounding_box.min_corner = glm::min(bounding_box.min_corner, vertex->position) - glm::epsilon<float>();
+				bounding_box.max_corner = glm::max(bounding_box.max_corner, vertex->position) + glm::epsilon<float>();
+			}
+			
+			return bounding_box;
+		}
+
+		glm::vec3 GetCenter() {
+			return (vertices[0]->position + vertices[1]->position + vertices[2]->position) / 3.0f;
 		}
 	};
 
