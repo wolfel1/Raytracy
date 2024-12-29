@@ -22,7 +22,7 @@ namespace raytracy::renderer {
 	void Mesh::Init(shared_ptr<MeshData> const mesh_data) {
 		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
-			vertex_array = OpenGLVertexArray::Create();
+		vertex_array = OpenGLVertexArray::Create();
 
 		auto vertex_buffer = OpenGLVertexBuffer::Create(mesh_data->vertices);
 		vertex_buffer->SetLayout({

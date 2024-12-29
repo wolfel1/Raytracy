@@ -5,32 +5,31 @@
 #include "../ViewportScene.h"
 
 namespace raytracy::renderer {
-	shared_ptr<OpenGLUniformBuffer> MeshMaterial::material_uniform_buffer = nullptr;
 
-	MeshMaterial::MeshMaterial(glm::vec4 color) : color(color) {
+	MeshMaterial::MeshMaterial() {
 		shader = ShaderLibrary::Get().Load("default");
 		RTY_ASSERT(shader, "Could not create a shader program!");
 
-		if (!material_uniform_buffer) {
+		UniformBlock block("Material", {
+			"color",
+			"specular",
+			"shininess"
+		});
 
-			UniformBlock block("Material", {
-				"color",
-			});
+		auto layout = shader->GetUniformBufferLayout(block);
 
-			auto layout = shader->GetUniformBufferLayout(block);
-
-			material_uniform_buffer = OpenGLUniformBuffer::Create("Material", layout);
-			material_uniform_buffer->SetVec4("color", { 1.0f, 1.0f, 1.0f, 1.0f });
-			shader->AddUniformBuffer(material_uniform_buffer);
-		}
+		material_uniform_buffer = OpenGLUniformBuffer::Create("Material", layout);
+		shader->AddUniformBuffer(material_uniform_buffer);
+		
 		material_uniform_buffer->SetVec4("color", color);
+		material_uniform_buffer->SetVec3("specular", specular);
+		material_uniform_buffer->SetFloat("shininess", shininess);
 	}
 
 	void MeshMaterial::Draw() const {
-		material_uniform_buffer->SetVec4("color", color);
 		shader->Bind();
+		shader->BindBuffer(material_uniform_buffer);
 		shader->SetInt("skybox", 1);
-		shader->SetVec3("camera_pos", Scene::Get()->GetCamera()->GetPosition());
 	}
 
 	WorldMaterial::WorldMaterial() {

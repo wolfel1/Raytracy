@@ -10,13 +10,4 @@ DirectionalLight -> UniformBuffer : <<create>>
 return
 return
 
-create Mesh
-...
-App -> Mesh : <<create>>
-Mesh ->o] : GetLightUniformBuffer()
-return uniformbuffer
-Mesh -> Shader : AddUniformBuffer(uniformbuffer)
-return
-return
-
 @enduml

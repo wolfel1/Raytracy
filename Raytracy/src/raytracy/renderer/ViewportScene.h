@@ -1,18 +1,10 @@
 #pragma once
 #include "./camera/PerspectiveCamera.h"
 #include "./model/Mesh.h"
+#include "./model/DirectionalLight.h"
 #include "raytracer/BoundingBoxNode.h"
 
 namespace raytracy::renderer {
-
-	struct DirectionalLight {
-		glm::vec3 color;
-		glm::vec3 direction;
-		float strength;
-
-		shared_ptr<OpenGLUniformBuffer> light_uniform_buffer;
-
-	};
 
 	class Scene {
 	private:
@@ -21,10 +13,11 @@ namespace raytracy::renderer {
 		std::vector<shared_ptr<Triangle>> triangles;
 		std::vector<BoundingBoxNode> bounding_volume_hierarchie;
 		shared_ptr<Skybox> skybox;
-
+		shared_ptr<DirectionalLight> light;
 
 		static std::shared_ptr<Scene> instance;
 	public:
+		Scene(std::shared_ptr<PerspectiveCamera> camera);
 		Scene(const Scene&) = delete;
 		~Scene() = default;
 
@@ -62,8 +55,11 @@ namespace raytracy::renderer {
 			return bounding_volume_hierarchie;
 		}
 
+		std::shared_ptr<DirectionalLight> GetLight() const {
+			return light;
+		}
+
 	private:
-		Scene(std::shared_ptr<PerspectiveCamera> camera);
 
 		void BuildBoundingVolumeHierarchie();
 		void UpdateBounds(uint32_t node_index);

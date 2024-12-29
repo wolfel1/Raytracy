@@ -13,8 +13,6 @@
 
 namespace raytracy {
 
-	uint32_t OpenGLShader::uniform_buffer_index = 0;
-
 	static VertexDataType ConvertOpenGLBaseTypeInVertexDataType(int32_t type) {
 		switch (type) {
 		case GL_BOOL: return VertexDataType::Bool;
@@ -66,7 +64,8 @@ namespace raytracy {
 	void OpenGLShader::AddUniformBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer) {
 		Bind();
 		BindBuffer(uniform_buffer->GetName());
-		uniform_buffer->Link(uniform_buffer_index);
+		uniform_buffer->SetBlockIndex(uniform_buffer_index);
+		uniform_buffer->Link();
 		Unbind();
 		uniform_buffer_index++;
 	}
@@ -90,6 +89,7 @@ namespace raytracy {
 		Compile(shaderSources);
 
 		CreateCameraUniformBuffer();
+		CreateLightUniformBuffer();
 	}
 
 	OpenGLShader::OpenGLShader(const std::vector<std::string>& paths) {
@@ -102,6 +102,7 @@ namespace raytracy {
 		Compile(shader_sources);
 
 		CreateCameraUniformBuffer();
+		CreateLightUniformBuffer();
 	}
 
 	OpenGLShader::~OpenGLShader() {
@@ -222,6 +223,11 @@ namespace raytracy {
 		GLCall(glUniformBlockBinding(renderer_id, uniform_block_index, uniform_buffer_index));
 	}
 
+	void OpenGLShader::BindBuffer(shared_ptr<OpenGLUniformBuffer> const uniform_buffer) {
+		auto uniform_block_index = glGetUniformBlockIndex(renderer_id, uniform_buffer->GetName().c_str());
+		GLCall(glUniformBlockBinding(renderer_id, uniform_block_index, uniform_buffer->GetBlockIndex()));
+	}
+
 	void OpenGLShader::Bind() const {
 		glUseProgram(renderer_id);
 	}
@@ -252,7 +258,7 @@ namespace raytracy {
 
 		std::vector<BufferElement> elements(size);
 		for (size_t i = 0; i < size; i++) {
-			elements[i] = { uniform_block.uniform_names[i], ConvertOpenGLBaseTypeInVertexDataType(types[i]), static_cast<uint32_t>(offsets[i]) };
+			elements.emplace_back(uniform_block.uniform_names[i], ConvertOpenGLBaseTypeInVertexDataType(types[i]), static_cast<uint32_t>(offsets[i]));
 		}
 
 		BufferLayout layout(static_cast<uint32_t>(ubo_size), elements);
@@ -272,7 +278,8 @@ namespace raytracy {
 				"model_matrix",
 				"view_projection_matrix",
 				"model_view_projection_matrix",
-				"normal_matrix"
+				"normal_matrix",
+				"position"
 			});
 
 			auto layout = GetUniformBufferLayout(block);
@@ -287,6 +294,38 @@ namespace raytracy {
 
 			AddUniformBuffer(camera_uniform_buffer);
 			Unbind();
+		}
+	}
+
+	void OpenGLShader::CreateLightUniformBuffer() {
+		auto ubo_index = glGetUniformBlockIndex(renderer_id, "DirectionalLight");
+		if (ubo_index == GL_INVALID_INDEX) {
+			return;
+		}
+		auto light = renderer::Scene::Get()->GetLight();
+
+		if (light) {
+			auto light_uniform_buffer = light->GetUniformBuffer();
+			if (!light_uniform_buffer) {
+				UniformBlock block("DirectionalLight", {
+					"lightColor",
+					"direction",
+					"strength"
+				});
+
+				auto layout = GetUniformBufferLayout(block);
+
+				light_uniform_buffer = OpenGLUniformBuffer::Create("DirectionalLight", layout);
+				AddUniformBuffer(light_uniform_buffer);
+				light->SetUniformBuffer(light_uniform_buffer);
+			} else {
+				Bind();
+				uint32_t ubo_index = glGetUniformBlockIndex(renderer_id, "DirectionalLight");
+				RTY_ASSERT(ubo_index != GL_INVALID_INDEX, "Shader must implement uniform block named 'DirectionalLight'!");
+
+				AddUniformBuffer(light_uniform_buffer);
+				Unbind();
+			}
 		}
 	}
 

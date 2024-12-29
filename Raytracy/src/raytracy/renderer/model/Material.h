@@ -18,14 +18,14 @@ namespace raytracy::renderer {
 
 	class MeshMaterial : public Material {
 	private:
-		glm::vec4 color;
-		static shared_ptr<OpenGLUniformBuffer> material_uniform_buffer;
+		glm::vec4 color{ 1.0f };
+		glm::vec3 specular{ 1.0f };
+		float shininess = 32.0f;
+		shared_ptr<OpenGLUniformBuffer> material_uniform_buffer = nullptr;
 
 	public:
-		MeshMaterial(glm::vec4 color = { 0.5f, 0.5f, 0.5f, 1.0f });
+		MeshMaterial();
 		~MeshMaterial() = default;
-
-		
 
 		glm::vec4 GetColor() const {
 			return color;
@@ -33,6 +33,17 @@ namespace raytracy::renderer {
 
 		void SetColor(glm::vec4 const& color) {
 			this->color = color;
+			material_uniform_buffer->SetVec4("color", color);
+		}
+
+		void SetSpecular(glm::vec3 const& specular) {
+			this->specular = specular;
+			material_uniform_buffer->SetVec3("specular", specular);
+		}
+
+		void SetShininess(float shininess) {
+			this->shininess = shininess;
+			material_uniform_buffer->SetFloat("shininess", shininess);
 		}
 
 		virtual void Draw() const override;

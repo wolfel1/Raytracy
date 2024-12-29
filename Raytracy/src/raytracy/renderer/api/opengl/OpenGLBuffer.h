@@ -55,6 +55,7 @@ namespace raytracy {
 	class OpenGLUniformBuffer {
 	private:
 		uint32_t renderer_id{};
+		uint32_t block_index{};
 		BufferLayout layout;
 		std::string name;
 
@@ -70,13 +71,21 @@ namespace raytracy {
 			return layout;
 		}
 
+		void SetBlockIndex(uint32_t index) {
+			block_index = index;
+		}
+
+		uint32_t GetBlockIndex() const {
+			return block_index;
+		}
+
 		const std::string& GetName() const { return name; }
 		const uint32_t GetID() const { return renderer_id; }
 
 		void Bind() const;
 		void Unbind() const;
 
-		void Link(uint32_t const index) const;
+		void Link() const;
 
 		void SetFloat(const std::string& name, const float value) const;
 		void SetInt(const std::string& name, const int value) const;

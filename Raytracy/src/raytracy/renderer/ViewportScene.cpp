@@ -7,14 +7,14 @@ namespace raytracy::renderer {
 
 	void Scene::Create(std::shared_ptr<PerspectiveCamera> camera) {
 		if (!instance) {
-			instance = shared_ptr<Scene>(new Scene(camera));
+			instance = make_shared<Scene>(camera);
 		} else {
 			RTY_RENDERER_ERROR("Multiple Scenes are not supported yet!");
 		}
 	}
 
 	Scene::Scene(std::shared_ptr<PerspectiveCamera> camera) : camera(camera) {
-
+		light = make_shared<DirectionalLight>();
 	}
 
 	void Scene::AddMesh(std::shared_ptr<Mesh> const mesh) {
@@ -29,6 +29,7 @@ namespace raytracy::renderer {
 		skybox = make_shared<Skybox>();
 		auto skybox_material = make_shared<WorldMaterial>();
 		skybox->SetMaterial(skybox_material);
+
 	}
 
 
