@@ -13,6 +13,8 @@
 
 namespace raytracy {
 
+	uint32_t OpenGLShader::uniform_buffer_index = 0;
+
 	static VertexDataType ConvertOpenGLBaseTypeInVertexDataType(int32_t type) {
 		switch (type) {
 		case GL_BOOL: return VertexDataType::Bool;

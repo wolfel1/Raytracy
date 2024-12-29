@@ -31,7 +31,7 @@ namespace raytracy {
 
 		shared_ptr<OpenGLRendererAPI> renderer_api = nullptr;
 
-		bool raytrace = false;
+		bool raytrace = true;
 
 	public:
 		Renderer(const Renderer&) = delete;

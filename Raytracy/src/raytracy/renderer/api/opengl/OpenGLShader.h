@@ -9,7 +9,7 @@ namespace raytracy {
 	protected:
 		std::string name = "";
 		uint32_t renderer_id{};
-		uint32_t uniform_buffer_index = 0;
+		static uint32_t uniform_buffer_index;
 
 	public:
 		OpenGLShader(const std::string& name);
