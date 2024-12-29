@@ -15,6 +15,7 @@ namespace raytracy::renderer {
 
 	class Mesh {
 	protected:
+		static shared_ptr<Material> default_material;
 		shared_ptr<OpenGLVertexArray> vertex_array;
 		shared_ptr<Material> material;
 
@@ -73,6 +74,7 @@ namespace raytracy::renderer {
 		void Init(shared_ptr<MeshData> const mesh_data);
 
 	private:
+		void AddDefaultMaterial();
 		void BuildTriangles(shared_ptr<MeshData> const mesh_data);
 		void BuildBoundingBox(shared_ptr<MeshData> const mesh_data);
 		void UpdateBoundingBox(glm::mat4 const& transformation_matrix);

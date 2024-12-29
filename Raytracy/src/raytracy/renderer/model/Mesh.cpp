@@ -9,6 +9,8 @@
 
 namespace raytracy::renderer {
 
+	shared_ptr<Material> Mesh::default_material = nullptr;
+
 	Mesh::Mesh(shared_ptr<MeshData> const mesh_data, glm::vec3 const& position, float const scale_factor) {
 		Init(mesh_data);
 		Translate(position);
@@ -34,7 +36,7 @@ namespace raytracy::renderer {
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 
-		material = make_shared<MeshMaterial>();
+		AddDefaultMaterial();
 
 		if (mesh_data->is_indexed) {
 			auto index_buffer = OpenGLIndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
@@ -83,6 +85,14 @@ namespace raytracy::renderer {
 
 		scale *= value;
 		model_matrix = model_matrix * scale;
+	}
+
+	void Mesh::AddDefaultMaterial() {
+		if (!default_material) {
+			default_material = make_shared<MeshMaterial>();
+		}
+
+		material = default_material;
 	}
 
 	void Mesh::BuildTriangles(shared_ptr<MeshData> const mesh_data) {
