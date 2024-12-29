@@ -49,6 +49,9 @@ namespace raytracy {
 		shared_ptr<OpenGLStorageBuffer> vertices_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> bvh_storage_buffer;
 
+		glm::uvec2 screen_size{};
+		uint32_t canvas_size = 1024;
+
 	public:
 		Raytracer(const Raytracer&) = delete;
 		~Raytracer() = default;
@@ -59,7 +62,6 @@ namespace raytracy {
 		}
 		void Init(shared_ptr<OpenGLRendererAPI> const renderer_api);
 		void Raytrace(shared_ptr<renderer::Scene> const scene);
-		bool OnWindowResize(uint32_t width, uint32_t height);
 
 		void Shutdown();
 

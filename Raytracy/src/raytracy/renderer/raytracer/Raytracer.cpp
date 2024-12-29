@@ -16,7 +16,8 @@ namespace raytracy {
 		renderer_api = api;
 
 		auto& app_spec = IApplication::Get()->GetSpecification();
-		raytracing_canvas = OpenGLTexture2D::Create(app_spec.width, app_spec.height, GL_RGBA32F);
+		screen_size = { app_spec.width, app_spec.height };
+		raytracing_canvas = OpenGLTexture2D::Create(canvas_size, canvas_size, GL_RGBA32F);
 		raytracing_kernel = ShaderLibrary::Get().Load("raytracing");
 		canvas_shader = ShaderLibrary::Get().Load("canvas");
 
@@ -65,7 +66,7 @@ namespace raytracy {
 		raytracing_kernel->SetInt("skybox", 1);
 		raytracing_canvas->BindImage();
 		scene_data_uniform_buffer->Bind();
-		renderer_api->LaunchComputeShader(raytracing_canvas->GetWidth(), raytracing_canvas->GetHeight(), 1);
+		renderer_api->LaunchComputeShader(static_cast<uint32_t>(canvas_size/ 8), static_cast<uint32_t>(canvas_size/8), 1);
 
 		renderer_api->SetMemoryBarrier();
 
@@ -147,11 +148,4 @@ namespace raytracy {
 		vertices_storage_buffer = nullptr;
 		triangle_indices_storage_buffer = nullptr;
 	}
-
-	bool Raytracer::OnWindowResize(uint32_t width, uint32_t height) {
-		RTY_PROFILE_FUNCTION();
-		raytracing_canvas = OpenGLTexture2D::Create(width, height, GL_RGBA32F);
-		return true;
-	}
-
 }  // namespace raytracy
