@@ -27,16 +27,7 @@ namespace raytracy {
 			vertices[2] = vertex3;
 		}
 
-		BoundingBox GetBoundingBox() {
-			BoundingBox bounding_box;
-
-			for (auto& vertex : vertices) {
-				bounding_box.min_corner = glm::min(bounding_box.min_corner, vertex->position) - glm::epsilon<float>();
-				bounding_box.max_corner = glm::max(bounding_box.max_corner, vertex->position) + glm::epsilon<float>();
-			}
-			
-			return bounding_box;
-		}
+		
 
 		glm::vec3 GetCenter() {
 			return (vertices[0]->position + vertices[1]->position + vertices[2]->position) / 3.0f;

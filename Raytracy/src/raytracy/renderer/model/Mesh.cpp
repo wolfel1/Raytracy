@@ -137,6 +137,13 @@ namespace raytracy::renderer {
 #if RAYTRACING
 		bounding_box.min_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.min_corner, 1.0f));
 		bounding_box.max_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.max_corner, 1.0f));
+
+		for (auto& node : bounding_volume_hierarchie) {
+			node.min_corner = glm::vec3(transformation_matrix * glm::vec4(node.min_corner, 1.0f));
+			node.max_corner = glm::vec3(transformation_matrix * glm::vec4(node.max_corner, 1.0f));
+		}
+
+		// TODO: Update the global bounding volume hierarchie
 #endif
 	}
 
@@ -162,10 +169,21 @@ namespace raytracy::renderer {
 
 		for (size_t i = 0; i < node.object_indices.size(); i++) {
 			auto triangle = triangles[node.object_indices[i]];
-			auto bounding_box = triangle->GetBoundingBox();
+			auto bounding_box = GetTriangleBoundingBox(*triangle);
 			node.min_corner = glm::min(node.min_corner, bounding_box.min_corner);
 			node.max_corner = glm::max(node.max_corner, bounding_box.max_corner);
 		}
+	}
+
+	BoundingBox Mesh::GetTriangleBoundingBox(Triangle& triangle) {
+		BoundingBox bounding_box;
+
+		for (auto& vertex : triangle.vertices) {
+			bounding_box.min_corner = glm::min(bounding_box.min_corner, glm::vec3(model_matrix * glm::vec4(vertex->position, 1.0f))) - glm::epsilon<float>();
+			bounding_box.max_corner = glm::max(bounding_box.max_corner, glm::vec3(model_matrix * glm::vec4(vertex->position, 1.0f)))+ glm::epsilon<float>();
+		}
+
+		return bounding_box;
 	}
 
 	void Mesh::Subdivide(uint32_t node_index) {

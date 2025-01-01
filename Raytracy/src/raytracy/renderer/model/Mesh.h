@@ -85,6 +85,8 @@ namespace raytracy::renderer {
 		void BuildBoundingVolumeHierarchie();
 		void UpdateBounds(uint32_t node_index);
 		void Subdivide(uint32_t node_index);
+
+		BoundingBox GetTriangleBoundingBox(Triangle& triangle);
 	};
 
 	class Plane : public Mesh {
