@@ -81,12 +81,6 @@ namespace raytracy::renderer {
 		void BuildTriangles(shared_ptr<MeshData> const mesh_data);
 		void BuildBoundingBox(shared_ptr<MeshData> const mesh_data);
 		void UpdateBoundingBox(glm::mat4 const& transformation_matrix);
-
-		void BuildBoundingVolumeHierarchie();
-		void UpdateBounds(uint32_t node_index);
-		void Subdivide(uint32_t node_index);
-
-		BoundingBox GetTriangleBoundingBox(Triangle& triangle);
 	};
 
 	class Plane : public Mesh {

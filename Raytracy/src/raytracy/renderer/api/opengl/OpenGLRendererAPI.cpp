@@ -82,7 +82,7 @@ namespace raytracy {
 	}
 
 	void OpenGLRendererAPI::SetMemoryBarrier() {
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		GLCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
 	}
 
 	void OpenGLRendererAPI::DrawIndexed(const shared_ptr<OpenGLVertexArray> vertex_array) {

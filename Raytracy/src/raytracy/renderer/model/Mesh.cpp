@@ -138,96 +138,14 @@ namespace raytracy::renderer {
 		bounding_box.min_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.min_corner, 1.0f));
 		bounding_box.max_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.max_corner, 1.0f));
 
-		for (auto& node : bounding_volume_hierarchie) {
-			node.min_corner = glm::vec3(transformation_matrix * glm::vec4(node.min_corner, 1.0f));
-			node.max_corner = glm::vec3(transformation_matrix * glm::vec4(node.max_corner, 1.0f));
+		for (auto& triangle : triangles) {
+			std::for_each(triangle->vertices.begin(), triangle->vertices.end(), [&](auto& vertex) {
+				vertex->position = glm::vec3(transformation_matrix * glm::vec4(vertex->position, 1.0f));
+			});
 		}
-
 		// TODO: Update the global bounding volume hierarchie
 #endif
 	}
-
-	void Mesh::BuildBoundingVolumeHierarchie() {
-		bounding_volume_hierarchie.clear();
-		triangles.clear();
-
-		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
-
-		root.object_indices.resize(triangles.size());
-		for (size_t i = 0; i < triangles.size(); i++) {
-			root.object_indices[i] = static_cast<uint32_t>(i);
-		}
-
-		UpdateBounds(0);
-		Subdivide(0);
-	}
-
-	void Mesh::UpdateBounds(uint32_t node_index) {
-		BoundingBoxNode& node = bounding_volume_hierarchie[node_index];
-		node.min_corner = glm::vec3(infinity);
-		node.max_corner = glm::vec3(-infinity);
-
-		for (size_t i = 0; i < node.object_indices.size(); i++) {
-			auto triangle = triangles[node.object_indices[i]];
-			auto bounding_box = GetTriangleBoundingBox(*triangle);
-			node.min_corner = glm::min(node.min_corner, bounding_box.min_corner);
-			node.max_corner = glm::max(node.max_corner, bounding_box.max_corner);
-		}
-	}
-
-	BoundingBox Mesh::GetTriangleBoundingBox(Triangle& triangle) {
-		BoundingBox bounding_box;
-
-		for (auto& vertex : triangle.vertices) {
-			bounding_box.min_corner = glm::min(bounding_box.min_corner, glm::vec3(model_matrix * glm::vec4(vertex->position, 1.0f))) - glm::epsilon<float>();
-			bounding_box.max_corner = glm::max(bounding_box.max_corner, glm::vec3(model_matrix * glm::vec4(vertex->position, 1.0f)))+ glm::epsilon<float>();
-		}
-
-		return bounding_box;
-	}
-
-	void Mesh::Subdivide(uint32_t node_index) {
-		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
-		if (node.object_indices.size() <= 2) {
-			return;
-		}
-
-		glm::vec3 volume_extent = node.max_corner - node.min_corner;
-		uint16_t split_axis = 0;
-		if (volume_extent[1] > volume_extent[0]) {
-			split_axis = 1;
-		}
-		if (volume_extent[2] > volume_extent[split_axis]) {
-			split_axis = 2;
-		}
-		auto split_position = node.min_corner[split_axis] + volume_extent[split_axis] / 2;
-
-		bounding_volume_hierarchie.emplace_back();
-		auto left_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size() - 1);
-		BoundingBoxNode& right_child = bounding_volume_hierarchie.emplace_back();
-		auto right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size() - 1);
-
-		BoundingBoxNode& left_child = bounding_volume_hierarchie[left_child_index];
-		for (auto object_index : node.object_indices) {
-			if (triangles[object_index]->GetCenter()[split_axis] < split_position) {
-				left_child.object_indices.push_back(object_index);
-			} else {
-				right_child.object_indices.push_back(object_index);
-			}
-		}
-
-		node.object_indices.clear();
-		node.left_child_index = static_cast<uint32_t>(left_child_index);
-		node.right_child_index = static_cast<uint32_t>(right_child_index);
-
-		bounding_volume_hierarchie[node_index] = node;
-
-		UpdateBounds(left_child_index);
-		UpdateBounds(right_child_index);
-		Subdivide(left_child_index);
-		Subdivide(right_child_index);
-	}
-
 
 	QuadData Plane::data;
 	Plane::Plane(glm::vec3 const position, float const scale_factor) : Mesh(make_shared<MeshData>(data), position, scale_factor) {

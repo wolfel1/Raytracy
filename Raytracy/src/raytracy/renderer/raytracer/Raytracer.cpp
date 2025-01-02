@@ -117,8 +117,7 @@ namespace raytracy {
 				node.right_child_index = bvh_node.right_child_index;
 				node.min_corner = bvh_node.min_corner;
 				node.max_corner = bvh_node.max_corner;
-				if (node.has_object = !bvh_node.object_indices.empty()) {
-					node.model_matrix = bvh_node.model_matrix;
+				if (node.has_triangle = !bvh_node.triangle_indices.empty()) {
 					node.triangle_count = static_cast<uint32_t>(bvh_node.triangle_indices.size());
 					triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
 					node.lookup_index = lookup_index;

@@ -21,27 +21,31 @@ namespace raytracy::renderer {
 		meshes.push_back(mesh);
 
 #if RAYTRACING
+		AddTriangles(mesh);
 		BuildBoundingVolumeHierarchie();
 #endif
+	}
+
+	void Scene::AddTriangles(std::shared_ptr<Mesh> const mesh) {
+		auto& mesh_triangles = mesh->GetTriangles();
+		triangles.insert(std::end(triangles), std::begin(mesh_triangles), std::end(mesh_triangles));
 	}
 
 	void Scene::AddSkybox() {
 		skybox = make_shared<Skybox>();
 		auto skybox_material = make_shared<WorldMaterial>();
 		skybox->SetMaterial(skybox_material);
-
 	}
 
 
 	void Scene::BuildBoundingVolumeHierarchie() {
 		bounding_volume_hierarchie.clear();
-		triangles.clear();
 
 		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
 
-		root.object_indices.resize(meshes.size());
-		for (size_t i = 0; i < meshes.size(); i++) {
-			root.object_indices[i] = static_cast<uint32_t>(i);
+		root.triangle_indices.resize(triangles.size());
+		for (size_t i = 0; i < triangles.size(); i++) {
+			root.triangle_indices[i] = static_cast<uint32_t>(i);
 		}
 
 		UpdateBounds(0);
@@ -53,24 +57,34 @@ namespace raytracy::renderer {
 		node.min_corner = glm::vec3(infinity);
 		node.max_corner = glm::vec3(-infinity);
 
-		for (size_t i = 0; i < node.object_indices.size(); i++) {
-			auto mesh = meshes[node.object_indices[i]];
-			auto& bounding_box = mesh->GetBoundingBox();
+		for (size_t i = 0; i < node.triangle_indices.size(); i++) {
+			auto triangle = triangles[node.triangle_indices[i]];
+			auto bounding_box = GetTriangleBoundingBox(*triangle);
 			node.min_corner = glm::min(node.min_corner, bounding_box.min_corner);
 			node.max_corner = glm::max(node.max_corner, bounding_box.max_corner);
 		}
 	}
 
+	BoundingBox Scene::GetTriangleBoundingBox(Triangle& triangle) {
+		BoundingBox bounding_box;
+
+		for (auto& vertex : triangle.vertices) {
+			bounding_box.min_corner = glm::min(bounding_box.min_corner, vertex->position);
+			bounding_box.max_corner = glm::max(bounding_box.max_corner, vertex->position);
+		}
+
+		return bounding_box;
+	}
+
 	void Scene::Subdivide(uint32_t node_index) {
 		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
-		if (node.object_indices.size() <= 2) {
-			BuildLeafs(node_index);
+		if (node.triangle_indices.size() <= 2) {
 			return;
 		}
 
 		glm::vec3 volume_extent = node.max_corner - node.min_corner;
 		uint16_t split_axis = 0;
-		if (volume_extent[1] > volume_extent[0]) {
+		if (volume_extent[1] > volume_extent[split_axis]) {
 			split_axis = 1;
 		}
 		if (volume_extent[2] > volume_extent[split_axis]) {
@@ -78,71 +92,32 @@ namespace raytracy::renderer {
 		}
 		auto split_position = node.min_corner[split_axis] + volume_extent[split_axis] / 2;
 
-		bounding_volume_hierarchie.emplace_back();
-		auto left_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size() - 1);
-		BoundingBoxNode& right_child = bounding_volume_hierarchie.emplace_back();
-		auto right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size() - 1);
+		BoundingBoxNode left_child, right_child;
 
-		BoundingBoxNode& left_child = bounding_volume_hierarchie[left_child_index];
-		for (auto object_index : node.object_indices) {
-			if (meshes[object_index]->GetOrigin()[split_axis] < split_position) {
-				left_child.object_indices.push_back(object_index);
+		for (auto triangle_index : node.triangle_indices) {
+			auto triangle = triangles[triangle_index];
+			if (triangle->GetCenter()[split_axis] < split_position) {
+				left_child.triangle_indices.push_back(triangle_index);
 			} else {
-				right_child.object_indices.push_back(object_index);
+				right_child.triangle_indices.push_back(triangle_index);
 			}
 		}
 
-		node.object_indices.clear(); 
-		node.left_child_index = static_cast<uint32_t>(left_child_index);
-		node.right_child_index = static_cast<uint32_t>(right_child_index);
+		if (right_child.triangle_indices.empty() || left_child.triangle_indices.empty()) {
+			return;
+		}
+
+		node.triangle_indices.clear();
+		node.left_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
+		bounding_volume_hierarchie.emplace_back(left_child);
+		node.right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
+		bounding_volume_hierarchie.emplace_back(right_child);
 
 		bounding_volume_hierarchie[node_index] = node;
 
-		UpdateBounds(left_child_index);
-		UpdateBounds(right_child_index);
-		Subdivide(left_child_index);
-		Subdivide(right_child_index);
-	}
-
-	void Scene::BuildLeafs(uint32_t node_index) {
-		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
-		if (node.object_indices.size() == 2) {
-			for (size_t i = 0; i < node.object_indices.size(); i++) {
-				bounding_volume_hierarchie.emplace_back();
-				auto index = static_cast<uint32_t>(bounding_volume_hierarchie.size() - 1);
-
-				BoundingBoxNode& leaf = bounding_volume_hierarchie[index];
-				if (i == 0) {
-					node.left_child_index = index;
-				} else {
-					node.right_child_index = index;
-				}
-
-				auto mesh = meshes[node.object_indices[i]];
-				auto& bounding_box = mesh->GetBoundingBox();
-				leaf.min_corner = bounding_box.min_corner;
-				leaf.max_corner = bounding_box.max_corner;
-				leaf.object_indices.push_back(node.object_indices[i]);
-				AddTriangles(index);
-			}
-			node.object_indices.clear();
-			bounding_volume_hierarchie[node_index] = node;
-		} else if (node.object_indices.size() == 1) {
-			AddTriangles(node_index);
-		}
-	}
-
-	void Scene::AddTriangles(uint32_t node_index) {
-		BoundingBoxNode& node = bounding_volume_hierarchie[node_index];
-		RTY_ASSERT(node.object_indices.size() == 1, "Bounding Box has more than one mesh!");
-
-		auto mesh = meshes[node.object_indices[0]];
-		node.model_matrix = mesh->GetModelMatrix();
-		auto& mesh_triangles = mesh->GetTriangles();
-		uint32_t top = static_cast<uint32_t>(triangles.size());
-		for (uint32_t i = 0; i < mesh_triangles.size(); i++) {
-			triangles.push_back(mesh_triangles[i]);
-			node.triangle_indices.push_back(top + i);
-		}
+		UpdateBounds(node.left_child_index);
+		UpdateBounds(node.right_child_index);
+		//Subdivide(node.left_child_index);
+		//Subdivide(node.right_child_index);
 	}
 }

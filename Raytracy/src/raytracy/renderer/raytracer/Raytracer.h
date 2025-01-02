@@ -16,8 +16,7 @@ namespace raytracy {
 		uint32_t left_child_index;
 		glm::vec3 max_corner;
 		uint32_t right_child_index;
-		glm::mat4 model_matrix;
-		alignas(16) bool has_object;
+		alignas(16) bool has_triangle;
 		uint32_t lookup_index;
 		uint32_t triangle_count;
 	};
