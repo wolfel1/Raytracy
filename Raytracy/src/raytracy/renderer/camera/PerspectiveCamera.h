@@ -9,7 +9,7 @@ namespace raytracy {
 
 	class PerspectiveCamera {
 	private:
-		glm::vec3 position = { 0.0f, 0.0f, -5.0f };
+		glm::vec3 position = { 0.0f, 0.0f, -4.0f };
 		glm::vec3 direction = { 0.0f, 0.0f, 1.0f };
 		glm::mat4 view_matrix{};
 		glm::mat4 projection_matrix{};

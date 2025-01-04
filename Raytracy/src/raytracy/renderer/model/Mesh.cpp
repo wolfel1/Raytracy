@@ -151,23 +151,26 @@ namespace raytracy::renderer {
 #endif
 	}
 
-	QuadData Plane::data;
-	Plane::Plane(glm::vec3 const position, float const scale_factor) : Mesh(make_shared<MeshData>(data), position, scale_factor) {
-		Rotate({ 1.0f, 0.0f, 0.0f }, glm::radians(-90.0f));
-	}
-
-	CubeData Cube::data;
-	Cube::Cube(glm::vec3 const position, float const scale_factor) : Mesh(make_shared<MeshData>(data), position, scale_factor) {
+	Plane::Plane(glm::vec3 const& position, float const scale_factor) {
 		RTY_PROFILE_FUNCTION();
+		MeshData data = MeshProvider::GetPlaneData(scale_factor, position);
+		Init(make_shared<MeshData>(data));
 	}
 
-	SphereData Sphere::data;
-	Sphere::Sphere(glm::vec3 const position, float const scale_factor) : Mesh(make_shared<MeshData>(data), position, scale_factor) {
+	Cube::Cube(glm::vec3 const position, float const scale_factor) {
 		RTY_PROFILE_FUNCTION();
+		MeshData data = MeshProvider::GetCubeData(scale_factor, position);
+		Init(make_shared<MeshData>(data));
 	}
 
-	CubeData Skybox::data;
+	Sphere::Sphere(glm::vec3 const position, float const scale_factor) {
+		RTY_PROFILE_FUNCTION();
+		MeshData data = MeshProvider::GetSphereData(scale_factor, position);
+		Init(make_shared<MeshData>(data));
+	}
+
 	Skybox::Skybox() {
+		MeshData data = MeshProvider::GetCubeData();
 		Init(make_shared<MeshData>(data));
 	}
 

@@ -79,17 +79,13 @@ namespace raytracy::renderer {
 	};
 
 	class Plane : public Mesh {
-	private:
-		static QuadData data;
 
 	public:
-		Plane(glm::vec3 const position = {}, float const scale_factor = 1.0f);
+		Plane(glm::vec3 const& position = {}, float const scale_factor = 1.0f);
 		~Plane() = default;
 	};
 
 	class Cube : public Mesh {
-	private:
-		static CubeData data;
 
 	public:
 		Cube(glm::vec3 const position = {}, float const scale_factor = 1.0f);
@@ -97,17 +93,12 @@ namespace raytracy::renderer {
 	};
 
 	class Sphere : public Mesh {
-	private:
-		static SphereData data;
-
 	public:
 		Sphere(glm::vec3 const position = {}, float const scale_factor = 1.0f);
 		~Sphere() = default;
 	};
 
 	class Skybox : public Mesh {
-	private:
-		static CubeData data;
 
 	public:
 		Skybox();

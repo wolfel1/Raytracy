@@ -26,9 +26,9 @@ public:
 
 		auto mesh = make_shared<renderer::Cube>(glm::vec3(0.0f, 0.0f, 0.0f));
 		scene->AddMesh(mesh); 
-		auto sphere1 = make_shared<renderer::Sphere>(glm::vec3(-2.5f, 0.0f, 0.0f));
+		auto sphere1 = make_shared<renderer::Sphere>(glm::vec3(-1.5f, 0.0f, 0.0f));
 		scene->AddMesh(sphere1); 
-		auto sphere2 = make_shared<renderer::Sphere>(glm::vec3(2.5f, 0.0f, 0.0f));
+		auto sphere2 = make_shared<renderer::Plane>(glm::vec3(1.5f, 0.0f, 0.0f));
 		scene->AddMesh(sphere2);
 
 		scene->AddSkybox();
