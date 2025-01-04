@@ -1,6 +1,8 @@
 #include "raytracypch.h"
 #include "ViewportScene.h"
 
+#include <numeric>
+
 namespace raytracy::renderer {
 
 	shared_ptr<Scene> Scene::instance = nullptr;
@@ -46,9 +48,7 @@ namespace raytracy::renderer {
 		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
 
 		root.triangle_indices.resize(triangles.size());
-		for (size_t i = 0; i < triangles.size(); i++) {
-			root.triangle_indices[i] = static_cast<uint32_t>(i);
-		}
+		std::iota(root.triangle_indices.begin(), root.triangle_indices.end(), 0);
 
 		UpdateBounds(0);
 		Subdivide(0);
@@ -101,28 +101,14 @@ namespace raytracy::renderer {
 
 		std::vector<uint32_t> left_child_triangle_indices, right_child_triangle_indices;
 
-		/*uint32_t i = 0;
-		uint32_t j = static_cast<uint32_t>(node.triangle_indices.size() - 1);
-		while (i < j) {
-			auto triangle = triangles[node.triangle_indices[i]];
+		std::for_each(node.triangle_indices.begin(), node.triangle_indices.end(), [&](auto& index) {
+			auto triangle = triangles[index];
 			if (triangle->GetCenter()[split_axis] < split_position) {
-				i++;
+				left_child_triangle_indices.emplace_back(index);
 			} else {
-				std::swap(node.triangle_indices[i], node.triangle_indices[j]);
-				j--;
+				right_child_triangle_indices.emplace_back(index);
 			}
-		}
-		left_child_triangle_indices.insert(std::end(left_child_triangle_indices), std::begin(node.triangle_indices), std::begin(node.triangle_indices) + i);
-		right_child_triangle_indices.insert(std::end(right_child_triangle_indices), std::begin(node.triangle_indices) + i, std::end(node.triangle_indices));*/
-
-		for (size_t i = 0; i < node.triangle_indices.size(); i++) {
-			auto triangle = triangles[node.triangle_indices[i]];
-			if (triangle->GetCenter()[split_axis] < split_position) {
-				left_child_triangle_indices.push_back(node.triangle_indices[i]);
-			} else {
-				right_child_triangle_indices.push_back(node.triangle_indices[i]);
-			}
-		}
+		});
 
 		if (right_child_triangle_indices.empty() || left_child_triangle_indices.empty()) {
 			return;
