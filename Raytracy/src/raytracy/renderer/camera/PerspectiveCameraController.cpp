@@ -12,6 +12,7 @@
 namespace raytracy {
 
 	PerspectiveCameraController::PerspectiveCameraController(float aspect_ratio) : aspect_ratio(aspect_ratio) {
+		RTY_PROFILE_FUNCTION();
 		camera = make_shared<PerspectiveCamera>(field_of_view, aspect_ratio);
 
 		auto& event_bus = EventBus::Get();
@@ -21,6 +22,7 @@ namespace raytracy {
 	}
 
 	void PerspectiveCameraController::OnUpdate(Timestep timestep) {
+		RTY_PROFILE_FUNCTION();
 		auto& input = Input::Get();
 
 		if (input.IsMouseButtonPressed<>(MouseCode::ButtonMiddle)) {

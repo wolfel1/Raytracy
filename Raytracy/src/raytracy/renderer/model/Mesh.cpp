@@ -12,6 +12,7 @@ namespace raytracy::renderer {
 	shared_ptr<Material> Mesh::default_material = nullptr;
 
 	Mesh::Mesh(shared_ptr<MeshData> const mesh_data, glm::vec3 const& position, float const scale_factor) {
+		RTY_PROFILE_FUNCTION();
 		Init(mesh_data);
 		Translate(position);
 		Scale(scale_factor);
@@ -22,6 +23,7 @@ namespace raytracy::renderer {
 	}
 
 	void Mesh::Init(shared_ptr<MeshData> const mesh_data) {
+		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
 		vertex_array = OpenGLVertexArray::Create();
@@ -96,6 +98,7 @@ namespace raytracy::renderer {
 	}
 
 	void Mesh::BuildTriangles(shared_ptr<MeshData> const mesh_data) {
+		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(mesh_data->indices.size() % 3 == 0, "Can not build triangles!");
 		if (mesh_data->is_indexed) {
 
@@ -126,6 +129,7 @@ namespace raytracy::renderer {
 	}
 
 	void Mesh::BuildBoundingBox(shared_ptr<MeshData> const mesh_data) {
+		RTY_PROFILE_FUNCTION();
 		for (auto& vertex : mesh_data->vertices) {
 			bounding_box.min_corner = glm::min(bounding_box.min_corner, glm::vec3(model_matrix * glm::vec4(vertex.position, 1.0f)));
 			bounding_box.max_corner = glm::max(bounding_box.max_corner, glm::vec3(model_matrix * glm::vec4(vertex.position, 1.0f)));
@@ -133,6 +137,7 @@ namespace raytracy::renderer {
 	}
 
 	void Mesh::UpdateBoundingBox(glm::mat4 const& transformation_matrix) {
+		RTY_PROFILE_FUNCTION();
 #if RAYTRACING
 		bounding_box.min_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.min_corner, 1.0f));
 		bounding_box.max_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.max_corner, 1.0f));
@@ -153,10 +158,12 @@ namespace raytracy::renderer {
 
 	CubeData Cube::data;
 	Cube::Cube(glm::vec3 const position, float const scale_factor) : Mesh(make_shared<MeshData>(data), position, scale_factor) {
+		RTY_PROFILE_FUNCTION();
 	}
 
 	SphereData Sphere::data;
 	Sphere::Sphere(glm::vec3 const position, float const scale_factor) : Mesh(make_shared<MeshData>(data), position, scale_factor) {
+		RTY_PROFILE_FUNCTION();
 	}
 
 	CubeData Skybox::data;

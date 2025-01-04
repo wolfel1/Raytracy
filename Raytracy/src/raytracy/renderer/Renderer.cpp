@@ -46,8 +46,6 @@ namespace raytracy {
 		if (raytrace) {
 #if RAYTRACING
 			Raytracer::Get().Raytrace(scene);
-#else
-			RTY_RENDERER_ERROR("Raytracing is not supported in this build!");
 #endif
 		} else {
 			BeginScene(scene->GetCamera());

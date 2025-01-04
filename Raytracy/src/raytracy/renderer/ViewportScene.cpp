@@ -18,6 +18,7 @@ namespace raytracy::renderer {
 	}
 
 	void Scene::AddMesh(std::shared_ptr<Mesh> const mesh) {
+		RTY_PROFILE_FUNCTION();
 		meshes.push_back(mesh);
 
 #if RAYTRACING
@@ -39,6 +40,7 @@ namespace raytracy::renderer {
 
 
 	void Scene::BuildBoundingVolumeHierarchie() {
+		RTY_PROFILE_FUNCTION();
 		bounding_volume_hierarchie.clear();
 
 		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
@@ -81,6 +83,7 @@ namespace raytracy::renderer {
 	}
 
 	void Scene::Subdivide(uint32_t node_index) {
+		RTY_PROFILE_FUNCTION();
 		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
 		if (node.triangle_indices.size() < 2) {
 			return;

@@ -52,7 +52,9 @@ namespace raytracy {
 		void Shutdown();
 
 		void ToggleRaytracing() {
+#if RAYTRACING
 			raytrace = !raytrace;
+#endif
 		}
 
 		bool OnWindowResize(uint32_t width, uint32_t height);
