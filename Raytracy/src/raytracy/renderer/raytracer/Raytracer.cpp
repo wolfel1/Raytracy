@@ -93,7 +93,11 @@ namespace raytracy {
 				auto& corners = triangle_ptr->vertices;
 				for (uint32_t i = 0; i < 3; i++) {
 					triangle.vertex_indices[i] = static_cast<uint32_t>(vertices.size());
-					vertices.push_back({ corners[i]->position, corners[i]->normal, corners[i]->color, corners[i]->tex_coords });
+					RVertex& vertex = vertices.emplace_back();
+					vertex.position = corners[i]->position;
+					vertex.normal = corners[i]->normal;
+					vertex.color = corners[i]->color;
+					vertex.tex_coords = corners[i]->tex_coords;
 				}
 			});
 		}
