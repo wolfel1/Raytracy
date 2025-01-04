@@ -96,8 +96,8 @@ namespace raytracy::renderer {
 	}
 
 	void Mesh::BuildTriangles(shared_ptr<MeshData> const mesh_data) {
+		RTY_ASSERT(mesh_data->indices.size() % 3 == 0, "Can not build triangles!");
 		if (mesh_data->is_indexed) {
-			RTY_ASSERT(mesh_data->indices.size() % 3 == 0, "Can not build triangles!");
 
 			auto& indices = mesh_data->indices;
 			auto& vertices = mesh_data->vertices;
@@ -112,7 +112,6 @@ namespace raytracy::renderer {
 			}
 
 		} else {
-			RTY_ASSERT(mesh_data->vertices.size() % 3 == 0, "Can not build triangles!");
 
 			for (auto i = 0; i < mesh_data->vertices.size(); i += 3) {
 				auto triangle = make_shared<Triangle>(

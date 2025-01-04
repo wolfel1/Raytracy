@@ -88,14 +88,13 @@ namespace raytracy {
 		{
 			RTY_PROFILE_SCOPE("Triangles")
 			std::for_each(triangles_data.begin(), triangles_data.end(), [&](auto triangle_ptr) {
-				RTriangle triangle{};
+				RTriangle& triangle = triangles.emplace_back();
 
 				auto& corners = triangle_ptr->vertices;
 				for (uint32_t i = 0; i < 3; i++) {
 					triangle.vertex_indices[i] = static_cast<uint32_t>(vertices.size());
 					vertices.push_back({ corners[i]->position, corners[i]->normal, corners[i]->color, corners[i]->tex_coords });
 				}
-				triangles.push_back(triangle);
 			});
 		}
 		triangles_storage_buffer->SetData(sizeof(RTriangle) * triangles.size(), triangles.data());
@@ -112,7 +111,7 @@ namespace raytracy {
 		{
 			RTY_PROFILE_SCOPE("BVH")
 			std::for_each(scene_bvh.begin(), scene_bvh.end(), [&](auto& bvh_node) {
-				Node node{};
+				Node& node = bounding_volume_hierarchie.emplace_back();
 				node.left_child_index = bvh_node.left_child_index;
 				node.right_child_index = bvh_node.right_child_index;
 				node.min_corner = bvh_node.min_corner;
@@ -123,7 +122,6 @@ namespace raytracy {
 					node.lookup_index = lookup_index;
 					lookup_index = static_cast<uint32_t>(triangle_indices.size());
 				}
-				bounding_volume_hierarchie.push_back(node);
 			});
 		}
 

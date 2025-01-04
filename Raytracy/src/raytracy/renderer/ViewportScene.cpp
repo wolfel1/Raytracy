@@ -51,6 +51,19 @@ namespace raytracy::renderer {
 		UpdateBounds(0);
 		Subdivide(0);
 	}
+	
+	inline float snapToGrid(float value) {
+		float gridSize = glm::epsilon<float>();
+		return std::round(value / gridSize) * gridSize;
+	}
+
+	inline glm::vec3 snapToGrid(const glm::vec3& value) {
+		return glm::vec3(
+			snapToGrid(value.x),
+			snapToGrid(value.y),
+			snapToGrid(value.z)
+		);
+	}
 
 	void Scene::UpdateBounds(uint32_t node_index) {
 		BoundingBoxNode& node = bounding_volume_hierarchie[node_index];
@@ -59,26 +72,17 @@ namespace raytracy::renderer {
 
 		for (size_t i = 0; i < node.triangle_indices.size(); i++) {
 			auto triangle = triangles[node.triangle_indices[i]];
-			auto bounding_box = GetTriangleBoundingBox(*triangle);
-			node.min_corner = glm::min(node.min_corner, bounding_box.min_corner);
-			node.max_corner = glm::max(node.max_corner, bounding_box.max_corner);
+
+			std::for_each(triangle->vertices.begin(), triangle->vertices.end(), [&](auto& vertex) {
+				node.min_corner = glm::min(node.min_corner, snapToGrid(vertex->position));
+				node.max_corner = glm::max(node.max_corner, snapToGrid(vertex->position));
+			});
 		}
-	}
-
-	BoundingBox Scene::GetTriangleBoundingBox(Triangle& triangle) {
-		BoundingBox bounding_box;
-
-		for (auto& vertex : triangle.vertices) {
-			bounding_box.min_corner = glm::min(bounding_box.min_corner, vertex->position);
-			bounding_box.max_corner = glm::max(bounding_box.max_corner, vertex->position);
-		}
-
-		return bounding_box;
 	}
 
 	void Scene::Subdivide(uint32_t node_index) {
 		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
-		if (node.triangle_indices.size() <= 2) {
+		if (node.triangle_indices.size() < 2) {
 			return;
 		}
 
@@ -92,32 +96,52 @@ namespace raytracy::renderer {
 		}
 		auto split_position = node.min_corner[split_axis] + volume_extent[split_axis] / 2;
 
-		BoundingBoxNode left_child, right_child;
+		std::vector<uint32_t> left_child_triangle_indices, right_child_triangle_indices;
 
-		for (auto triangle_index : node.triangle_indices) {
-			auto triangle = triangles[triangle_index];
+		/*uint32_t i = 0;
+		uint32_t j = static_cast<uint32_t>(node.triangle_indices.size() - 1);
+		while (i < j) {
+			auto triangle = triangles[node.triangle_indices[i]];
 			if (triangle->GetCenter()[split_axis] < split_position) {
-				left_child.triangle_indices.push_back(triangle_index);
+				i++;
 			} else {
-				right_child.triangle_indices.push_back(triangle_index);
+				std::swap(node.triangle_indices[i], node.triangle_indices[j]);
+				j--;
+			}
+		}
+		left_child_triangle_indices.insert(std::end(left_child_triangle_indices), std::begin(node.triangle_indices), std::begin(node.triangle_indices) + i);
+		right_child_triangle_indices.insert(std::end(right_child_triangle_indices), std::begin(node.triangle_indices) + i, std::end(node.triangle_indices));*/
+
+		for (size_t i = 0; i < node.triangle_indices.size(); i++) {
+			auto triangle = triangles[node.triangle_indices[i]];
+			if (triangle->GetCenter()[split_axis] < split_position) {
+				left_child_triangle_indices.push_back(node.triangle_indices[i]);
+			} else {
+				right_child_triangle_indices.push_back(node.triangle_indices[i]);
 			}
 		}
 
-		if (right_child.triangle_indices.empty() || left_child.triangle_indices.empty()) {
+		if (right_child_triangle_indices.empty() || left_child_triangle_indices.empty()) {
 			return;
 		}
 
-		node.triangle_indices.clear();
-		node.left_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
-		bounding_volume_hierarchie.emplace_back(left_child);
-		node.right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
-		bounding_volume_hierarchie.emplace_back(right_child);
+		bounding_volume_hierarchie.reserve(bounding_volume_hierarchie.size() + 2);
+		auto left_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
+		auto& left_child = bounding_volume_hierarchie.emplace_back();
+		auto right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
+		auto& right_child = bounding_volume_hierarchie.emplace_back();
 
+		left_child.triangle_indices = left_child_triangle_indices;
+		right_child.triangle_indices = right_child_triangle_indices;
+
+		node.left_child_index = left_child_index;
+		node.right_child_index = right_child_index;
+		node.triangle_indices.clear();
 		bounding_volume_hierarchie[node_index] = node;
 
-		UpdateBounds(node.left_child_index);
-		UpdateBounds(node.right_child_index);
-		//Subdivide(node.left_child_index);
-		//Subdivide(node.right_child_index);
+		UpdateBounds(left_child_index);
+		UpdateBounds(right_child_index);
+		Subdivide(node.left_child_index);
+		Subdivide(node.right_child_index);
 	}
 }

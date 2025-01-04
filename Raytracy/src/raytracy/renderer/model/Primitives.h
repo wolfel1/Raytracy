@@ -173,8 +173,8 @@ namespace raytracy {
 			//vertices
 			const float PI = std::numbers::pi_v<float>;
 			float radius = 1.0f;
-			uint32_t segment_count = 36;
-			uint32_t ring_count = 18;
+			uint32_t segment_count = 32;
+			uint32_t ring_count = 16;
 			float x, y, z, xz;
 			float nx, ny, nz;
 			float s, t;

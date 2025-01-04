@@ -65,6 +65,5 @@ namespace raytracy::renderer {
 		void UpdateBounds(uint32_t node_index);
 		void Subdivide(uint32_t node_index);
 		void AddTriangles(std::shared_ptr<Mesh> const mesh);
-		BoundingBox GetTriangleBoundingBox(Triangle& triangle);
 	};
 }

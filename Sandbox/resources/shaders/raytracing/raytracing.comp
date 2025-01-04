@@ -181,8 +181,8 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 				}
 			}
 		} else {
-			for (int i = 0; i < node.triangle_count; i++) {
-				RTriangle triangle = triangles[node.lookup_index + i];
+			for (uint i = 0; i < node.triangle_count; i++) {
+				RTriangle triangle = triangles[triangle_indices[node.lookup_index + i]];
 				if (hitTriangle(ray, minimum, closest, temp, triangle)) {
 					closest = temp.distance;
 					hit_anything = true;
@@ -204,17 +204,19 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 }
 
 float hitBoundingBox(in Ray ray, in Node node) {
-	vec3 inverse_direction = vec3(1.0) / ray.direction;
+	vec3 inverse_direction = vec3(1.0) / normalize(ray.direction + vec3(epsilon));
 	vec3 t1 = (node.min_corner - ray.origin) * inverse_direction;
 	vec3 t2 = (node.max_corner - ray.origin) * inverse_direction;
 	vec3 t_min = min(t1, t2);
 	vec3 t_max = max(t1, t2);
 
 	float min_component = max(max(t_min.x, t_min.y), t_min.z);
-	float max_component = min(min(t_max.x, t_max.y), t_max.z);
-
+	float max_component = min(min(t_max.x, t_max.y), t_max.z) ;
+	
 	if(min_component > max_component || max_component < 0) {
 		return infinity;
+	} else if (min_component < 0) {
+		return max_component;
 	} else {
 		return min_component;
 	}

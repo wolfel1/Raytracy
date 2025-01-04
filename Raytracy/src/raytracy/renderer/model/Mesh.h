@@ -24,7 +24,6 @@ namespace raytracy::renderer {
 		float scale = 1.0f;
 
 		std::vector<shared_ptr<Triangle>> triangles;
-		std::vector<BoundingBoxNode> bounding_volume_hierarchie;
 
 		BoundingBox bounding_box;
 
@@ -59,10 +58,6 @@ namespace raytracy::renderer {
 
 		std::vector<shared_ptr<Triangle>> const& GetTriangles() const {
 			return triangles;
-		}
-
-		std::vector<BoundingBoxNode> const& GetBoundingVolumeHierarchie() const {
-			return bounding_volume_hierarchie;
 		}
 
 		virtual void Draw(shared_ptr<OpenGLRendererAPI> api);
