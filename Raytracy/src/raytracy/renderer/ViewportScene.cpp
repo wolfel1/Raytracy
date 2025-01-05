@@ -44,6 +44,7 @@ namespace raytracy::renderer {
 	void Scene::BuildBoundingVolumeHierarchie() {
 		RTY_PROFILE_FUNCTION();
 		bounding_volume_hierarchie.clear();
+		triangles.clear();
 
 		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
 
@@ -72,7 +73,7 @@ namespace raytracy::renderer {
 		node.min_corner = glm::vec3(infinity);
 		node.max_corner = glm::vec3(-infinity);
 
-		std::for_each(std::begin(node.mesh_indices), std::end(node.mesh_indices), [&](auto& index) {
+		std::for_each(std::begin(node.mesh_indices), std::end(node.mesh_indices), [&](auto index) {
 			auto mesh = meshes[index];
 			auto& bounding_box = mesh->GetBoundingBox();
 			node.min_corner = glm::min(node.min_corner, snapToGrid(bounding_box.min_corner));
@@ -100,7 +101,7 @@ namespace raytracy::renderer {
 
 		std::vector<uint32_t> left_child_mesh_indices, right_child_mesh_indices;
 
-		std::for_each(std::begin(node.mesh_indices), std::end(node.mesh_indices), [&](auto& index) {
+		std::for_each(std::begin(node.mesh_indices), std::end(node.mesh_indices), [&](auto index) {
 			auto mesh = meshes[index];
 			if (mesh->GetOrigin()[split_axis] < split_position) {
 				left_child_mesh_indices.emplace_back(index);
@@ -139,7 +140,7 @@ namespace raytracy::renderer {
 
 		BoundingBoxNode& root = bounding_volume_hierarchie[node_index];
 
-		std::for_each(std::begin(root.mesh_indices), std::end(root.mesh_indices), [&](auto& index) {
+		std::for_each(std::begin(root.mesh_indices), std::end(root.mesh_indices), [&](auto index) {
 			auto mesh = meshes[index];
 			auto& mesh_triangles = mesh->GetTriangles();
 			auto size = static_cast<uint32_t>(triangles.size());
@@ -150,7 +151,6 @@ namespace raytracy::renderer {
 			});
 		});
 
-
 		UpdateTriangleBounds(node_index);
 		SubdivideTriangles(node_index);
 	}
@@ -160,12 +160,12 @@ namespace raytracy::renderer {
 		node.min_corner = glm::vec3(infinity);
 		node.max_corner = glm::vec3(-infinity);
 
-		std::for_each(std::begin(node.triangle_indices), std::end(node.triangle_indices), [&](auto& index) {
-			auto triangle = triangles[index];
+		std::for_each(std::begin(node.triangle_indices), std::end(node.triangle_indices), [&](auto index) {
+			auto& triangle = triangles[index];
 
-			std::for_each(std::begin(triangle->vertices), std::end(triangle->vertices), [&](auto& vertex) {
-				node.min_corner = glm::min(node.min_corner, snapToGrid(vertex->position));
-				node.max_corner = glm::max(node.max_corner, snapToGrid(vertex->position));
+			std::for_each(std::begin(triangle.vertices), std::end(triangle.vertices), [&](auto& vertex) {
+				node.min_corner = glm::min(node.min_corner, snapToGrid(vertex.position));
+				node.max_corner = glm::max(node.max_corner, snapToGrid(vertex.position));
 			});
 		});
 	}
@@ -191,8 +191,8 @@ namespace raytracy::renderer {
 		std::vector<uint32_t> left_child_triangle_indices, right_child_triangle_indices;
 
 		std::for_each(std::begin(node.triangle_indices), std::end(node.triangle_indices), [&](auto& index) {
-			auto triangle = triangles[index];
-			if (triangle->center[split_axis] < split_position) {
+			auto& triangle = triangles[index];
+			if (triangle.center[split_axis] < split_position) {
 				left_child_triangle_indices.emplace_back(index);
 			} else {
 				right_child_triangle_indices.emplace_back(index);
@@ -211,6 +211,9 @@ namespace raytracy::renderer {
 
 		left_child.triangle_indices = std::move(left_child_triangle_indices);
 		right_child.triangle_indices = std::move(right_child_triangle_indices);
+		left_child.mesh_indices = std::move(node.mesh_indices);
+		right_child.mesh_indices = std::move(node.mesh_indices);
+
 
 		node.left_child_index = left_child_index;
 		node.right_child_index = right_child_index;

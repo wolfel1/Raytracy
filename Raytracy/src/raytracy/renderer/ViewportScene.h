@@ -10,7 +10,7 @@ namespace raytracy::renderer {
 	private:
 		std::shared_ptr<PerspectiveCamera> camera;
 		std::deque<std::shared_ptr<Mesh>> meshes;
-		std::vector<shared_ptr<Triangle>> triangles;
+		std::vector<Triangle> triangles;
 		std::vector<BoundingBoxNode> bounding_volume_hierarchie;
 		shared_ptr<Skybox> skybox;
 		shared_ptr<DirectionalLight> light;
@@ -47,7 +47,7 @@ namespace raytracy::renderer {
 			return meshes;
 		}
 
-		std::vector<std::shared_ptr<Triangle>> const& GetTriangles() const {
+		std::vector<Triangle> const& GetTriangles() const {
 			return triangles;
 		}
 		

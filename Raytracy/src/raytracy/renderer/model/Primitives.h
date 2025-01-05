@@ -19,19 +19,9 @@ namespace raytracy {
 	};
 
 	struct Triangle {
-		std::array<shared_ptr<Vertex>, 3> vertices;
-		std::array<uint32_t, 3> indices;
+		std::array<Vertex, 3> vertices;
+		//std::array<uint32_t, 3> indices;
 		glm::vec3 center;
-
-		Triangle(shared_ptr<Vertex> vertex1, shared_ptr<Vertex> vertex2, shared_ptr<Vertex> vertex3) {
-			vertices[0] = vertex1;
-			vertices[1] = vertex2;
-			vertices[2] = vertex3;
-		}
-
-		glm::vec3 GetCenter() {
-			return (vertices[0]->position + vertices[1]->position + vertices[2]->position) / 3.0f;
-		}
 	};
 
 	static const glm::vec4 DEFAULT_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };

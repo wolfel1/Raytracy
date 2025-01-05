@@ -22,7 +22,7 @@ namespace raytracy::renderer {
 		float scale;
 
 		MeshData mesh_data;
-		std::vector<shared_ptr<Triangle>> triangles;
+		std::vector<Triangle> triangles;
 
 		BoundingBox bounding_box;
 
@@ -54,7 +54,7 @@ namespace raytracy::renderer {
 			return scale;
 		}
 
-		std::vector<shared_ptr<Triangle>> const& GetTriangles() const {
+		std::vector<Triangle> const& GetTriangles() const {
 			return triangles;
 		}
 

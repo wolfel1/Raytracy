@@ -101,32 +101,27 @@ namespace raytracy::renderer {
 			triangles.reserve(indices.size() / 3);
 
 			for (auto i = 0; i < indices.size(); i += 3) {
-				auto triangle = make_shared<Triangle>(
-					make_shared<Vertex>(vertices[indices[i]]),
-					make_shared<Vertex>(vertices[indices[i + 1]]),
-					make_shared<Vertex>(vertices[indices[i + 2]])
-				);
+				auto& triangle = triangles.emplace_back();
+					
+				triangle.vertices[0] = vertices[indices[i]];
+				triangle.vertices[1] = vertices[indices[i + 1]];
+				triangle.vertices[2] = vertices[indices[i + 2]];
 				
-				triangle->indices = { indices[i], indices[i + 1], indices[i + 2] };
-				triangle->center = (vertices[indices[i]].position + vertices[indices[i + 1]].position + vertices[indices[i + 2]].position) / 3.0f;
-
-				triangles.push_back(triangle);
+				//triangle.indices = { indices[i], indices[i + 1], indices[i + 2] };
+				triangle.center = (vertices[indices[i]].position + vertices[indices[i + 1]].position + vertices[indices[i + 2]].position) / 3.0f;
 			}
 
 		} else {
 			RTY_ASSERT(mesh_data.vertices.size() % 3 == 0, "Can not build triangles!");
 
 			for (uint32_t i = 0; i < mesh_data.vertices.size(); i += 3) {
-				auto triangle = make_shared<Triangle>(
-					make_shared<Vertex>(mesh_data.vertices[i]),
-					make_shared<Vertex>(mesh_data.vertices[i + 1]),
-					make_shared<Vertex>(mesh_data.vertices[i + 2])
-				);
-
-				triangle->indices = { i, i + 1, i + 2 };
-				triangle->center = (mesh_data.vertices[i].position + mesh_data.vertices[i + 1].position + mesh_data.vertices[i + 2].position) / 3.0f;
-
-				triangles.push_back(triangle);
+				auto& triangle = triangles.emplace_back();
+				triangle.vertices[0] = mesh_data.vertices[i];
+				triangle.vertices[1] = mesh_data.vertices[i + 1];
+				triangle.vertices[2] = mesh_data.vertices[i + 2];
+				
+				//triangle.indices = { i, i + 1, i + 2 };
+				triangle.center = (mesh_data.vertices[i].position + mesh_data.vertices[i + 1].position + mesh_data.vertices[i + 2].position) / 3.0f;
 			}
 		}
 	}
@@ -146,8 +141,8 @@ namespace raytracy::renderer {
 		bounding_box.max_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.max_corner, 1.0f));
 
 		for (auto& triangle : triangles) {
-			std::for_each(std::begin(triangle->vertices), std::end(triangle->vertices), [&](auto& vertex) {
-				vertex->position = glm::vec3(transformation_matrix * glm::vec4(vertex->position, 1.0f));
+			std::for_each(std::begin(triangle.vertices), std::end(triangle.vertices), [&](auto& vertex) {
+				vertex.position = glm::vec3(transformation_matrix * glm::vec4(vertex.position, 1.0f));
 			});
 		}
 		// TODO: Update the global bounding volume hierarchie
