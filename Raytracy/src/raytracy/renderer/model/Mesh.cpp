@@ -11,24 +11,19 @@ namespace raytracy::renderer {
 
 	shared_ptr<Material> Mesh::default_material = nullptr;
 
-	Mesh::Mesh(shared_ptr<MeshData> const mesh_data, glm::vec3 const& position, float const scale_factor) {
-		RTY_PROFILE_FUNCTION();
-		Init(mesh_data);
-		Translate(position);
-		Scale(scale_factor);
-	}
-
 	Mesh::~Mesh() {
 		material->Destroy();
 	}
 
-	void Mesh::Init(shared_ptr<MeshData> const mesh_data) {
+	void Mesh::Init(MeshData const& data) {
 		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
+		mesh_data = std::move(data);
+
 		vertex_array = OpenGLVertexArray::Create();
 
-		auto vertex_buffer = OpenGLVertexBuffer::Create(mesh_data->vertices);
+		auto vertex_buffer = OpenGLVertexBuffer::Create(mesh_data.vertices);
 		vertex_buffer->SetLayout({
 			{ "position", VertexDataType::Float3 },
 			{ "normal", VertexDataType::Float3 },
@@ -40,18 +35,17 @@ namespace raytracy::renderer {
 
 		AddDefaultMaterial();
 
-		if (mesh_data->is_indexed) {
-			auto index_buffer = OpenGLIndexBuffer::Create(mesh_data->indices.data(), static_cast<uint32_t>(mesh_data->indices.size()));
+		if (mesh_data.is_indexed) {
+			auto index_buffer = OpenGLIndexBuffer::Create(mesh_data.indices.data(), static_cast<uint32_t>(mesh_data.indices.size()));
 			vertex_array->SetIndexBuffer(index_buffer);
-			is_indexed = true;
 		}
 
 #if RAYTRACING
-		BuildTriangles(mesh_data);
-		BuildBoundingBox(mesh_data);
+		BuildTriangles();
+		BuildBoundingBox();
 #endif
 
-		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data->name);
+		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data.name);
 	}
 
 	void Mesh::Draw(shared_ptr<OpenGLRendererAPI> api) {
@@ -59,7 +53,7 @@ namespace raytracy::renderer {
 
 		vertex_array->Bind();
 
-		if (is_indexed) {
+		if (mesh_data.is_indexed) {
 			api->DrawIndexed(vertex_array);
 		} else {
 			api->Draw(vertex_array);
@@ -97,13 +91,13 @@ namespace raytracy::renderer {
 		material = default_material;
 	}
 
-	void Mesh::BuildTriangles(shared_ptr<MeshData> const mesh_data) {
+	void Mesh::BuildTriangles() {
 		RTY_PROFILE_FUNCTION();
-		RTY_ASSERT(mesh_data->indices.size() % 3 == 0, "Can not build triangles!");
-		if (mesh_data->is_indexed) {
+		RTY_ASSERT(mesh_data.indices.size() % 3 == 0, "Can not build triangles!");
+		if (mesh_data.is_indexed) {
 
-			auto& indices = mesh_data->indices;
-			auto& vertices = mesh_data->vertices;
+			auto& indices = mesh_data.indices;
+			auto& vertices = mesh_data.vertices;
 			for (auto i = 0; i < indices.size(); i += 3) {
 				auto triangle = make_shared<Triangle>(
 					make_shared<Vertex>(vertices[indices[i]]),
@@ -116,11 +110,11 @@ namespace raytracy::renderer {
 
 		} else {
 
-			for (auto i = 0; i < mesh_data->vertices.size(); i += 3) {
+			for (auto i = 0; i < mesh_data.vertices.size(); i += 3) {
 				auto triangle = make_shared<Triangle>(
-					make_shared<Vertex>(mesh_data->vertices[i]),
-					make_shared<Vertex>(mesh_data->vertices[i + 1]),
-					make_shared<Vertex>(mesh_data->vertices[i + 2])
+					make_shared<Vertex>(mesh_data.vertices[i]),
+					make_shared<Vertex>(mesh_data.vertices[i + 1]),
+					make_shared<Vertex>(mesh_data.vertices[i + 2])
 				);
 
 				triangles.push_back(triangle);
@@ -128,11 +122,11 @@ namespace raytracy::renderer {
 		}
 	}
 
-	void Mesh::BuildBoundingBox(shared_ptr<MeshData> const mesh_data) {
+	void Mesh::BuildBoundingBox() {
 		RTY_PROFILE_FUNCTION();
-		for (auto& vertex : mesh_data->vertices) {
-			bounding_box.min_corner = glm::min(bounding_box.min_corner, glm::vec3(model_matrix * glm::vec4(vertex.position, 1.0f)));
-			bounding_box.max_corner = glm::max(bounding_box.max_corner, glm::vec3(model_matrix * glm::vec4(vertex.position, 1.0f)));
+		for (auto& vertex : mesh_data.vertices) {
+			bounding_box.min_corner = glm::min(bounding_box.min_corner, vertex.position);
+			bounding_box.max_corner = glm::max(bounding_box.max_corner, vertex.position);
 		}
 	}
 
@@ -151,27 +145,27 @@ namespace raytracy::renderer {
 #endif
 	}
 
-	Plane::Plane(glm::vec3 const& position, float const scale_factor) {
+	Plane::Plane(glm::vec3 const& position, float const scale_factor) : Mesh(position, scale_factor) {
 		RTY_PROFILE_FUNCTION();
 		MeshData data = MeshProvider::GetPlaneData(scale_factor, position);
-		Init(make_shared<MeshData>(data));
+		Init(data);
 	}
 
-	Cube::Cube(glm::vec3 const position, float const scale_factor) {
+	Cube::Cube(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
 		RTY_PROFILE_FUNCTION();
 		MeshData data = MeshProvider::GetCubeData(scale_factor, position);
-		Init(make_shared<MeshData>(data));
+		Init(data);
 	}
 
-	Sphere::Sphere(glm::vec3 const position, float const scale_factor) {
+	Sphere::Sphere(glm::vec3 const position, float const scale_factor) : Mesh(position, scale_factor) {
 		RTY_PROFILE_FUNCTION();
 		MeshData data = MeshProvider::GetSphereData(scale_factor, position);
-		Init(make_shared<MeshData>(data));
+		Init(data);
 	}
 
 	Skybox::Skybox() {
 		MeshData data = MeshProvider::GetCubeData();
-		Init(make_shared<MeshData>(data));
+		Init(data);
 	}
 
 	void Skybox::Draw(shared_ptr<OpenGLRendererAPI> api) {

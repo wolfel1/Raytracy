@@ -18,7 +18,7 @@ namespace raytracy {
 		static shared_ptr<OpenGLVertexBuffer> Create(size_t size) {
 			return make_shared<OpenGLVertexBuffer>(size);
 		}
-		static shared_ptr<OpenGLVertexBuffer> Create(std::vector<Vertex>& vertices) {
+		static shared_ptr<OpenGLVertexBuffer> Create(std::vector<Vertex> const& vertices) {
 			return make_shared<OpenGLVertexBuffer>(vertices);
 		}
 
@@ -40,9 +40,9 @@ namespace raytracy {
 		uint32_t count{};
 
 	public:
-		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
+		OpenGLIndexBuffer(const uint32_t* indices, uint32_t count);
 		~OpenGLIndexBuffer();
-		static shared_ptr<OpenGLIndexBuffer> Create(uint32_t* indices, uint32_t count) {
+		static shared_ptr<OpenGLIndexBuffer> Create(const uint32_t* indices, uint32_t count) {
 			return make_shared<OpenGLIndexBuffer>(indices, count);
 		}
 

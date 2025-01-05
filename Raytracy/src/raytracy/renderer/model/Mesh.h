@@ -17,19 +17,17 @@ namespace raytracy::renderer {
 		shared_ptr<OpenGLVertexArray> vertex_array;
 		shared_ptr<Material> material;
 
-		bool is_indexed = false;
-
 		glm::mat4 model_matrix = glm::mat4(1.0f);
-		glm::vec3 origin{};
-		float scale = 1.0f;
+		glm::vec3 origin;
+		float scale;
 
+		MeshData mesh_data;
 		std::vector<shared_ptr<Triangle>> triangles;
 
 		BoundingBox bounding_box;
 
 	public:
-		Mesh() {}
-		Mesh(shared_ptr<MeshData> const mesh_data, glm::vec3 const& position, float const scale_factor);
+		Mesh(glm::vec3 const& origin = {}, float scale = 1.0f) : origin(origin), scale(scale) {}
 		virtual ~Mesh();
 
 		shared_ptr<Material> GetMaterial() const {
@@ -69,12 +67,12 @@ namespace raytracy::renderer {
 		void Scale(float const value);
 
 	protected:
-		void Init(shared_ptr<MeshData> const mesh_data);
+		void Init(MeshData const& mesh_data);
 
 	private:
 		void AddDefaultMaterial();
-		void BuildTriangles(shared_ptr<MeshData> const mesh_data);
-		void BuildBoundingBox(shared_ptr<MeshData> const mesh_data);
+		void BuildTriangles();
+		void BuildBoundingBox();
 		void UpdateBoundingBox(glm::mat4 const& transformation_matrix);
 	};
 

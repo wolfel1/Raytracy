@@ -54,8 +54,8 @@ namespace raytracy::renderer {
 		Subdivide(0);
 	}
 	
-	inline float snapToGrid(float value) {
-		float gridSize = glm::epsilon<float>();
+	inline static float snapToGrid(float value) {
+		constexpr float gridSize = glm::epsilon<float>();
 		return std::round(value / gridSize) * gridSize;
 	}
 
