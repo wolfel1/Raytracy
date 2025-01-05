@@ -15,7 +15,7 @@ namespace raytracy::renderer {
 		material->Destroy();
 	}
 
-	void Mesh::Init(MeshData const& data) {
+	void Mesh::Init(MeshData& data) {
 		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
@@ -93,29 +93,38 @@ namespace raytracy::renderer {
 
 	void Mesh::BuildTriangles() {
 		RTY_PROFILE_FUNCTION();
-		RTY_ASSERT(mesh_data.indices.size() % 3 == 0, "Can not build triangles!");
 		if (mesh_data.is_indexed) {
+			RTY_ASSERT(mesh_data.indices.size() % 3 == 0, "Can not build triangles!");
 
 			auto& indices = mesh_data.indices;
 			auto& vertices = mesh_data.vertices;
+			triangles.reserve(indices.size() / 3);
+
 			for (auto i = 0; i < indices.size(); i += 3) {
 				auto triangle = make_shared<Triangle>(
 					make_shared<Vertex>(vertices[indices[i]]),
 					make_shared<Vertex>(vertices[indices[i + 1]]),
 					make_shared<Vertex>(vertices[indices[i + 2]])
 				);
+				
+				triangle->indices = { indices[i], indices[i + 1], indices[i + 2] };
+				triangle->center = (vertices[indices[i]].position + vertices[indices[i + 1]].position + vertices[indices[i + 2]].position) / 3.0f;
 
 				triangles.push_back(triangle);
 			}
 
 		} else {
+			RTY_ASSERT(mesh_data.vertices.size() % 3 == 0, "Can not build triangles!");
 
-			for (auto i = 0; i < mesh_data.vertices.size(); i += 3) {
+			for (uint32_t i = 0; i < mesh_data.vertices.size(); i += 3) {
 				auto triangle = make_shared<Triangle>(
 					make_shared<Vertex>(mesh_data.vertices[i]),
 					make_shared<Vertex>(mesh_data.vertices[i + 1]),
 					make_shared<Vertex>(mesh_data.vertices[i + 2])
 				);
+
+				triangle->indices = { i, i + 1, i + 2 };
+				triangle->center = (mesh_data.vertices[i].position + mesh_data.vertices[i + 1].position + mesh_data.vertices[i + 2].position) / 3.0f;
 
 				triangles.push_back(triangle);
 			}
@@ -137,7 +146,7 @@ namespace raytracy::renderer {
 		bounding_box.max_corner = glm::vec3(transformation_matrix * glm::vec4(bounding_box.max_corner, 1.0f));
 
 		for (auto& triangle : triangles) {
-			std::for_each(triangle->vertices.begin(), triangle->vertices.end(), [&](auto& vertex) {
+			std::for_each(std::begin(triangle->vertices), std::end(triangle->vertices), [&](auto& vertex) {
 				vertex->position = glm::vec3(transformation_matrix * glm::vec4(vertex->position, 1.0f));
 			});
 		}

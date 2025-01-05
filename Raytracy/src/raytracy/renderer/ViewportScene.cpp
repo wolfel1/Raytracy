@@ -24,7 +24,7 @@ namespace raytracy::renderer {
 		meshes.push_back(mesh);
 
 #if RAYTRACING
-		AddTriangles(mesh);
+		//AddTriangles(mesh);
 		BuildBoundingVolumeHierarchie();
 #endif
 	}
@@ -47,11 +47,11 @@ namespace raytracy::renderer {
 
 		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
 
-		root.triangle_indices.resize(triangles.size());
-		std::iota(root.triangle_indices.begin(), root.triangle_indices.end(), 0);
+		root.mesh_indices.resize(meshes.size());
+		std::iota(std::begin(root.mesh_indices), std::end(root.mesh_indices), 0);
 
-		UpdateBounds(0);
-		Subdivide(0);
+		UpdateMeshBounds(0);
+		SubdivideMeshes(0);
 	}
 	
 	inline static float snapToGrid(float value) {
@@ -67,22 +67,111 @@ namespace raytracy::renderer {
 		);
 	}
 
-	void Scene::UpdateBounds(uint32_t node_index) {
+	void Scene::UpdateMeshBounds(uint32_t node_index) {
 		BoundingBoxNode& node = bounding_volume_hierarchie[node_index];
 		node.min_corner = glm::vec3(infinity);
 		node.max_corner = glm::vec3(-infinity);
 
-		for (size_t i = 0; i < node.triangle_indices.size(); i++) {
-			auto triangle = triangles[node.triangle_indices[i]];
+		std::for_each(std::begin(node.mesh_indices), std::end(node.mesh_indices), [&](auto& index) {
+			auto mesh = meshes[index];
+			auto& bounding_box = mesh->GetBoundingBox();
+			node.min_corner = glm::min(node.min_corner, snapToGrid(bounding_box.min_corner));
+			node.max_corner = glm::max(node.max_corner, snapToGrid(bounding_box.max_corner));
+		});
+	}
 
-			std::for_each(triangle->vertices.begin(), triangle->vertices.end(), [&](auto& vertex) {
+	void Scene::SubdivideMeshes(uint32_t node_index) {
+		RTY_PROFILE_FUNCTION();
+		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
+		if (node.mesh_indices.size() < 2) {
+			BuildTriangleBoundingVolumeHierarchie(node_index);
+			return;
+		}
+
+		glm::vec3 volume_extent = node.max_corner - node.min_corner;
+		uint16_t split_axis = 0;
+		if (volume_extent[1] > volume_extent[split_axis]) {
+			split_axis = 1;
+		}
+		if (volume_extent[2] > volume_extent[split_axis]) {
+			split_axis = 2;
+		}
+		auto split_position = node.min_corner[split_axis] + volume_extent[split_axis] / 2;
+
+		std::vector<uint32_t> left_child_mesh_indices, right_child_mesh_indices;
+
+		std::for_each(std::begin(node.mesh_indices), std::end(node.mesh_indices), [&](auto& index) {
+			auto mesh = meshes[index];
+			if (mesh->GetOrigin()[split_axis] < split_position) {
+				left_child_mesh_indices.emplace_back(index);
+			} else {
+				right_child_mesh_indices.emplace_back(index);
+			}
+		});
+
+		if (right_child_mesh_indices.empty() || left_child_mesh_indices.empty()) {
+			BuildTriangleBoundingVolumeHierarchie(node_index);
+			return;
+		}
+
+		bounding_volume_hierarchie.reserve(bounding_volume_hierarchie.size() + 2);
+		auto left_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
+		auto& left_child = bounding_volume_hierarchie.emplace_back();
+		auto right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
+		auto& right_child = bounding_volume_hierarchie.emplace_back();
+
+		left_child.mesh_indices = std::move(left_child_mesh_indices);
+		right_child.mesh_indices = std::move(right_child_mesh_indices);
+
+		node.left_child_index = left_child_index;
+		node.right_child_index = right_child_index;
+		node.mesh_indices.clear();
+		bounding_volume_hierarchie[node_index] = std::move(node);
+
+		UpdateMeshBounds(left_child_index);
+		UpdateMeshBounds(right_child_index);
+		SubdivideMeshes(left_child_index);
+		SubdivideMeshes(right_child_index);
+	}
+
+	void Scene::BuildTriangleBoundingVolumeHierarchie(uint32_t node_index) {
+		RTY_PROFILE_FUNCTION();
+
+		BoundingBoxNode& root = bounding_volume_hierarchie[node_index];
+
+		std::for_each(std::begin(root.mesh_indices), std::end(root.mesh_indices), [&](auto& index) {
+			auto mesh = meshes[index];
+			auto& mesh_triangles = mesh->GetTriangles();
+			auto size = static_cast<uint32_t>(triangles.size());
+			triangles.insert(std::end(triangles), std::begin(mesh_triangles), std::end(mesh_triangles));
+			root.triangle_indices.reserve(root.triangle_indices.size() + mesh_triangles.size());
+			std::for_each(std::begin(mesh_triangles), std::end(mesh_triangles), [&](auto& triangle) {
+				root.triangle_indices.emplace_back(size++);
+			});
+		});
+
+
+		UpdateTriangleBounds(node_index);
+		SubdivideTriangles(node_index);
+	}
+
+	void Scene::UpdateTriangleBounds(uint32_t node_index) {
+		BoundingBoxNode& node = bounding_volume_hierarchie[node_index];
+		node.min_corner = glm::vec3(infinity);
+		node.max_corner = glm::vec3(-infinity);
+
+		std::for_each(std::begin(node.triangle_indices), std::end(node.triangle_indices), [&](auto& index) {
+			auto triangle = triangles[index];
+
+			std::for_each(std::begin(triangle->vertices), std::end(triangle->vertices), [&](auto& vertex) {
 				node.min_corner = glm::min(node.min_corner, snapToGrid(vertex->position));
 				node.max_corner = glm::max(node.max_corner, snapToGrid(vertex->position));
 			});
-		}
+		});
 	}
 
-	void Scene::Subdivide(uint32_t node_index) {
+	
+	void Scene::SubdivideTriangles(uint32_t node_index) {
 		RTY_PROFILE_FUNCTION();
 		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
 		if (node.triangle_indices.size() < 2) {
@@ -101,9 +190,9 @@ namespace raytracy::renderer {
 
 		std::vector<uint32_t> left_child_triangle_indices, right_child_triangle_indices;
 
-		std::for_each(node.triangle_indices.begin(), node.triangle_indices.end(), [&](auto& index) {
+		std::for_each(std::begin(node.triangle_indices), std::end(node.triangle_indices), [&](auto& index) {
 			auto triangle = triangles[index];
-			if (triangle->GetCenter()[split_axis] < split_position) {
+			if (triangle->center[split_axis] < split_position) {
 				left_child_triangle_indices.emplace_back(index);
 			} else {
 				right_child_triangle_indices.emplace_back(index);
@@ -120,17 +209,17 @@ namespace raytracy::renderer {
 		auto right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
 		auto& right_child = bounding_volume_hierarchie.emplace_back();
 
-		left_child.triangle_indices = left_child_triangle_indices;
-		right_child.triangle_indices = right_child_triangle_indices;
+		left_child.triangle_indices = std::move(left_child_triangle_indices);
+		right_child.triangle_indices = std::move(right_child_triangle_indices);
 
 		node.left_child_index = left_child_index;
 		node.right_child_index = right_child_index;
 		node.triangle_indices.clear();
-		bounding_volume_hierarchie[node_index] = node;
+		bounding_volume_hierarchie[node_index] = std::move(node);
 
-		UpdateBounds(left_child_index);
-		UpdateBounds(right_child_index);
-		Subdivide(node.left_child_index);
-		Subdivide(node.right_child_index);
+		UpdateTriangleBounds(left_child_index);
+		UpdateTriangleBounds(right_child_index);
+		SubdivideTriangles(left_child_index);
+		SubdivideTriangles(right_child_index);
 	}
 }

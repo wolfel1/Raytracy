@@ -20,6 +20,8 @@ namespace raytracy {
 
 	struct Triangle {
 		std::array<shared_ptr<Vertex>, 3> vertices;
+		std::array<uint32_t, 3> indices;
+		glm::vec3 center;
 
 		Triangle(shared_ptr<Vertex> vertex1, shared_ptr<Vertex> vertex2, shared_ptr<Vertex> vertex3) {
 			vertices[0] = vertex1;

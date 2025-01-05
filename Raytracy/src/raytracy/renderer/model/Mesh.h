@@ -67,7 +67,7 @@ namespace raytracy::renderer {
 		void Scale(float const value);
 
 	protected:
-		void Init(MeshData const& mesh_data);
+		void Init(MeshData& mesh_data);
 
 	private:
 		void AddDefaultMaterial();

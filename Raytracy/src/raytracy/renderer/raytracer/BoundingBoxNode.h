@@ -7,5 +7,6 @@ struct BoundingBoxNode {
 	uint32_t left_child_index{};
 	glm::vec3 max_corner{};
 	uint32_t right_child_index{};
+	std::vector<uint32_t> mesh_indices;
 	std::vector<uint32_t> triangle_indices;
 };
