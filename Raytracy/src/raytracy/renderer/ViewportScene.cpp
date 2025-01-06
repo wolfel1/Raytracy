@@ -24,15 +24,10 @@ namespace raytracy::renderer {
 		meshes.push_back(mesh);
 
 #if RAYTRACING
-		//AddTriangles(mesh);
 		BuildBoundingVolumeHierarchie();
 #endif
 	}
 
-	void Scene::AddTriangles(std::shared_ptr<Mesh> const mesh) {
-		auto& mesh_triangles = mesh->GetTriangles();
-		triangles.insert(std::end(triangles), std::begin(mesh_triangles), std::end(mesh_triangles));
-	}
 
 	void Scene::AddSkybox() {
 		skybox = make_shared<Skybox>();
@@ -211,7 +206,7 @@ namespace raytracy::renderer {
 
 		left_child.triangle_indices = std::move(left_child_triangle_indices);
 		right_child.triangle_indices = std::move(right_child_triangle_indices);
-		left_child.mesh_indices = std::move(node.mesh_indices);
+		left_child.mesh_indices = node.mesh_indices;
 		right_child.mesh_indices = std::move(node.mesh_indices);
 
 

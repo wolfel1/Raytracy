@@ -19,8 +19,19 @@ namespace raytracy::renderer {
 		RTY_PROFILE_FUNCTION();
 		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
-		mesh_data = std::move(data);
+		CreateVertexContainer(data);
 
+		mesh_data = std::move(data);
+#if RAYTRACING
+		BuildTriangles();
+		BuildBoundingBox();
+#endif
+		AddDefaultMaterial();
+
+		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data.name);
+	}
+
+	void Mesh::CreateVertexContainer(MeshData const& mesh_data) {
 		vertex_array = OpenGLVertexArray::Create();
 
 		auto vertex_buffer = OpenGLVertexBuffer::Create(mesh_data.vertices);
@@ -33,19 +44,10 @@ namespace raytracy::renderer {
 
 		vertex_array->SetVertexBuffer(vertex_buffer);
 
-		AddDefaultMaterial();
-
 		if (mesh_data.is_indexed) {
 			auto index_buffer = OpenGLIndexBuffer::Create(mesh_data.indices.data(), static_cast<uint32_t>(mesh_data.indices.size()));
 			vertex_array->SetIndexBuffer(index_buffer);
 		}
-
-#if RAYTRACING
-		BuildTriangles();
-		BuildBoundingBox();
-#endif
-
-		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data.name);
 	}
 
 	void Mesh::Draw(shared_ptr<OpenGLRendererAPI> api) {
@@ -169,7 +171,7 @@ namespace raytracy::renderer {
 
 	Skybox::Skybox() {
 		MeshData data = MeshProvider::GetCubeData();
-		Init(data);
+		CreateVertexContainer(data);
 	}
 
 	void Skybox::Draw(shared_ptr<OpenGLRendererAPI> api) {

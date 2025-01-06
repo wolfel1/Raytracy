@@ -68,6 +68,7 @@ namespace raytracy::renderer {
 
 	protected:
 		void Init(MeshData& mesh_data);
+		void CreateVertexContainer(MeshData const& mesh_data);
 
 	private:
 		void AddDefaultMaterial();
