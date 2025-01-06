@@ -50,6 +50,7 @@ namespace raytracy {
 
 		glm::uvec2 screen_size{};
 		uint32_t canvas_size = 2048;
+		uint32_t work_group_size = 16;
 
 	public:
 		Raytracer(const Raytracer&) = delete;

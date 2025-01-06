@@ -66,7 +66,7 @@ namespace raytracy {
 		raytracing_kernel->SetInt("skybox", 1);
 		raytracing_canvas->BindImage();
 		scene_data_uniform_buffer->Bind();
-		renderer_api->LaunchComputeShader(static_cast<uint32_t>(canvas_size/ 8), static_cast<uint32_t>(canvas_size/8), 1);
+		renderer_api->LaunchComputeShader(static_cast<uint32_t>(canvas_size/ work_group_size), static_cast<uint32_t>(canvas_size/work_group_size), 1);
 
 		renderer_api->SetMemoryBarrier();
 
