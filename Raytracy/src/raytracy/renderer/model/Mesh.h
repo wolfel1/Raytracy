@@ -3,7 +3,7 @@
 #include "../api/opengl/OpenGLBuffer.h"
 #include "../api/opengl/OpenGLVertexArray.h"
 #include "../api/opengl/OpenGLRendererAPI.h"
-#include "Primitives.h"
+#include "MeshProvider.h"
 #include "Material.h"
 #include "../raytracer/BoundingBoxNode.h"
 

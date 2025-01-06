@@ -1,5 +1,5 @@
 #include "raytracypch.h"
-#include "Primitives.h"
+#include "MeshProvider.h"
 
 namespace raytracy {
 	MeshData MeshProvider::GetPlaneData(float scale, glm::vec3 const& origin) {
