@@ -68,12 +68,12 @@ namespace raytracy::renderer {
 		node.min_corner = glm::vec3(infinity);
 		node.max_corner = glm::vec3(-infinity);
 
-		std::for_each(std::begin(node.mesh_indices), std::end(node.mesh_indices), [&](auto index) {
+		for (const auto index : node.mesh_indices) {
 			auto mesh = meshes[index];
 			auto& bounding_box = mesh->GetBoundingBox();
 			node.min_corner = glm::min(node.min_corner, snapToGrid(bounding_box.min_corner));
 			node.max_corner = glm::max(node.max_corner, snapToGrid(bounding_box.max_corner));
-		});
+		}
 	}
 
 	void Scene::SubdivideMeshes(uint32_t node_index) {
@@ -96,14 +96,14 @@ namespace raytracy::renderer {
 
 		std::vector<uint32_t> left_child_mesh_indices, right_child_mesh_indices;
 
-		std::for_each(std::begin(node.mesh_indices), std::end(node.mesh_indices), [&](auto index) {
+		for (const auto index : node.mesh_indices) {
 			auto mesh = meshes[index];
 			if (mesh->GetOrigin()[split_axis] < split_position) {
 				left_child_mesh_indices.emplace_back(index);
 			} else {
 				right_child_mesh_indices.emplace_back(index);
 			}
-		});
+		}
 
 		if (right_child_mesh_indices.empty() || left_child_mesh_indices.empty()) {
 			BuildTriangleBoundingVolumeHierarchie(node_index);
@@ -135,16 +135,16 @@ namespace raytracy::renderer {
 
 		BoundingBoxNode& root = bounding_volume_hierarchie[node_index];
 
-		std::for_each(std::begin(root.mesh_indices), std::end(root.mesh_indices), [&](auto index) {
+		for (const auto index : root.mesh_indices) {
 			auto mesh = meshes[index];
 			auto& mesh_triangles = mesh->GetTriangles();
 			auto size = static_cast<uint32_t>(triangles.size());
 			triangles.insert(std::end(triangles), std::begin(mesh_triangles), std::end(mesh_triangles));
 			root.triangle_indices.reserve(root.triangle_indices.size() + mesh_triangles.size());
-			std::for_each(std::begin(mesh_triangles), std::end(mesh_triangles), [&](auto& triangle) {
-				root.triangle_indices.emplace_back(size++);
+			std::transform(std::begin(mesh_triangles), std::end(mesh_triangles), std::back_inserter(root.triangle_indices), [&](auto&) {
+				return size++;
 			});
-		});
+		}
 
 		UpdateTriangleBounds(node_index);
 		SubdivideTriangles(node_index);
@@ -155,14 +155,14 @@ namespace raytracy::renderer {
 		node.min_corner = glm::vec3(infinity);
 		node.max_corner = glm::vec3(-infinity);
 
-		std::for_each(std::begin(node.triangle_indices), std::end(node.triangle_indices), [&](auto index) {
+		for (const auto index : node.triangle_indices) {
 			auto& triangle = triangles[index];
 
-			std::for_each(std::begin(triangle.vertices), std::end(triangle.vertices), [&](auto& vertex) {
+			for (auto const& vertex : triangle.vertices) {
 				node.min_corner = glm::min(node.min_corner, snapToGrid(vertex.position));
 				node.max_corner = glm::max(node.max_corner, snapToGrid(vertex.position));
-			});
-		});
+			}
+		}
 	}
 
 	
@@ -185,14 +185,14 @@ namespace raytracy::renderer {
 
 		std::vector<uint32_t> left_child_triangle_indices, right_child_triangle_indices;
 
-		std::for_each(std::begin(node.triangle_indices), std::end(node.triangle_indices), [&](auto& index) {
+		for (const auto index : node.triangle_indices) {
 			auto& triangle = triangles[index];
 			if (triangle.center[split_axis] < split_position) {
 				left_child_triangle_indices.emplace_back(index);
 			} else {
 				right_child_triangle_indices.emplace_back(index);
 			}
-		});
+		}
 
 		if (right_child_triangle_indices.empty() || left_child_triangle_indices.empty()) {
 			return;

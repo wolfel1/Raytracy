@@ -109,7 +109,6 @@ namespace raytracy::renderer {
 				triangle.vertices[1] = vertices[indices[i + 1]];
 				triangle.vertices[2] = vertices[indices[i + 2]];
 				
-				//triangle.indices = { indices[i], indices[i + 1], indices[i + 2] };
 				triangle.center = (vertices[indices[i]].position + vertices[indices[i + 1]].position + vertices[indices[i + 2]].position) / 3.0f;
 			}
 
@@ -122,7 +121,6 @@ namespace raytracy::renderer {
 				triangle.vertices[1] = mesh_data.vertices[i + 1];
 				triangle.vertices[2] = mesh_data.vertices[i + 2];
 				
-				//triangle.indices = { i, i + 1, i + 2 };
 				triangle.center = (mesh_data.vertices[i].position + mesh_data.vertices[i + 1].position + mesh_data.vertices[i + 2].position) / 3.0f;
 			}
 		}
@@ -130,7 +128,7 @@ namespace raytracy::renderer {
 
 	void Mesh::BuildBoundingBox() {
 		RTY_PROFILE_FUNCTION();
-		for (auto& vertex : mesh_data.vertices) {
+		for (auto const& vertex : mesh_data.vertices) {
 			bounding_box.min_corner = glm::min(bounding_box.min_corner, vertex.position);
 			bounding_box.max_corner = glm::max(bounding_box.max_corner, vertex.position);
 		}

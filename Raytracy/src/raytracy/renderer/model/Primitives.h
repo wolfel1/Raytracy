@@ -20,7 +20,6 @@ namespace raytracy {
 
 	struct Triangle {
 		std::array<Vertex, 3> vertices;
-		//std::array<uint32_t, 3> indices;
 		glm::vec3 center;
 	};
 

@@ -87,7 +87,7 @@ namespace raytracy {
 
 		{
 			RTY_PROFILE_SCOPE("Triangles")
-			std::for_each(triangles_data.begin(), triangles_data.end(), [&](auto& triangle_data) {
+			for (auto const& triangle_data : triangles_data) {
 				RTriangle& triangle = triangles.emplace_back();
 
 				auto& corners = triangle_data.vertices;
@@ -99,7 +99,7 @@ namespace raytracy {
 					vertex.color = corners[i].color;
 					vertex.tex_coords = corners[i].tex_coords;
 				}
-			});
+			}
 		}
 		triangles_storage_buffer->SetData(sizeof(RTriangle) * triangles.size(), triangles.data());
 		vertices_storage_buffer->SetData(sizeof(RVertex) * vertices.size(), vertices.data());
@@ -111,10 +111,10 @@ namespace raytracy {
 		bounding_volume_hierarchie.reserve(scene_bvh.size());
 		triangle_indices.reserve(triangles.size());
 
-		uint32_t lookup_index = 0;
 		{
 			RTY_PROFILE_SCOPE("BVH")
-			std::for_each(scene_bvh.begin(), scene_bvh.end(), [&](auto& bvh_node) {
+			uint32_t lookup_index = 0;
+			for (auto const& bvh_node : scene_bvh) {
 				Node& node = bounding_volume_hierarchie.emplace_back();
 				node.left_child_index = bvh_node.left_child_index;
 				node.right_child_index = bvh_node.right_child_index;
@@ -126,7 +126,7 @@ namespace raytracy {
 					node.lookup_index = lookup_index;
 					lookup_index = static_cast<uint32_t>(triangle_indices.size());
 				}
-			});
+			}
 		}
 
 		triangle_indices_storage_buffer->SetData(sizeof(uint32_t) * triangle_indices.size(), triangle_indices.data());
