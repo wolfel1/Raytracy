@@ -56,19 +56,19 @@ layout(std140, binding = 0) uniform SceneData {
 	int max_depth;
 };
 
-layout(std430, binding = 0) buffer Triangles {
+layout(std430, binding = 0) readonly buffer Triangles {
     RTriangle triangles[];
 };
 
-layout(std430, binding = 1) buffer Vertices {
+layout(std430, binding = 1) readonly buffer Vertices {
     RVertex vertices[];
 };
 
-layout(std430, binding = 2) buffer BoundingVolumeHierarchie {
+layout(std430, binding = 2) readonly buffer BoundingVolumeHierarchie {
     Node nodes[];
 };
 
-layout(std430, binding = 3) buffer TriangleIndices {
+layout(std430, binding = 3) readonly buffer TriangleIndices {
     uint triangle_indices[];
 };
 
