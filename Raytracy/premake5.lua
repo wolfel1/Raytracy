@@ -31,7 +31,8 @@ project "Raytracy"
 		"../%{IncludeDir.glm}",
 		"../%{IncludeDir.glfw}",
 		"../%{IncludeDir.glad}",
-		"../%{IncludeDir.stb_image}"
+		"../%{IncludeDir.stb_image}",
+		"../%{IncludeDir.taskflow}"
 	}
 
 	links {

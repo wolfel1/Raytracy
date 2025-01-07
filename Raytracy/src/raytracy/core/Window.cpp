@@ -43,14 +43,14 @@ namespace raytracy {
 			window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
 			RTY_ASSERT(window_handle, "Could not create window!");
 		}
-		window_data.v_sync = false;
+		
 
 		graphics_context = OpenGLContext::Create();
 		graphics_context->Init(window_handle);
 
 		glfwSetWindowUserPointer(window_handle, &window_data);
 
-
+		SetVSync(false);
 		{
 			RTY_PROFILE_SCOPE("SetEventCallbacks");
 			glfwSetWindowCloseCallback(window_handle, [](GLFWwindow* window) {

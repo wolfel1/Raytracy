@@ -20,6 +20,7 @@ IncludeDir["glm"] = "Raytracy/vendor/glm"
 IncludeDir["glfw"] = "Raytracy/vendor/glfw/include"
 IncludeDir["glad"] = "Raytracy/vendor/glad/include"
 IncludeDir["stb_image"] = "Raytracy/vendor/stb_image"
+IncludeDir["taskflow"] = "Raytracy/vendor/taskflow"
 
 
 group "Dependencies"

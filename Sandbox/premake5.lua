@@ -16,7 +16,8 @@ project "Sandbox"
 		"../Raytracy/src",
 		"../Raytracy/vendor",
 		"../%{IncludeDir.spdlog}",
-		"../%{IncludeDir.glm}"
+		"../%{IncludeDir.glm}",
+		"../%{IncludeDir.taskflow}"
 	}
 
 	defines {
