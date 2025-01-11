@@ -9,11 +9,8 @@
 
 namespace raytracy::renderer {
 
-	
-
 	class Mesh {
 	protected:
-		static shared_ptr<Material> default_material;
 		shared_ptr<OpenGLVertexArray> vertex_array;
 		shared_ptr<Material> material;
 
@@ -28,7 +25,7 @@ namespace raytracy::renderer {
 
 	public:
 		Mesh(glm::vec3 const& origin = {}, float scale = 1.0f) : origin(origin), scale(scale) {}
-		virtual ~Mesh();
+		virtual ~Mesh() = default;
 
 		shared_ptr<Material> GetMaterial() const {
 			return material;
@@ -71,7 +68,6 @@ namespace raytracy::renderer {
 		void CreateVertexContainer(MeshData const& mesh_data);
 
 	private:
-		void AddDefaultMaterial();
 		void BuildTriangles();
 		void BuildBoundingBox();
 		void UpdateBoundingBox(glm::mat4 const& transformation_matrix);

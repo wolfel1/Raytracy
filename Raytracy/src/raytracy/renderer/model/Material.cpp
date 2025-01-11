@@ -6,7 +6,33 @@
 
 namespace raytracy::renderer {
 
-	MeshMaterial::MeshMaterial() {
+	shared_ptr<MeshMaterial> MaterialLibrary::Load(const std::string& name) {
+		if (Exist(name)) {
+			return materials[name];
+		}
+
+		auto material = std::make_shared<MeshMaterial>(name);
+		Add(material);
+		return material;
+	}
+
+	void MaterialLibrary::Add(const shared_ptr<MeshMaterial> material) {
+		materials[material->GetName()] = material;
+		RTY_RENDERER_TRACE("Material '{0}' successfully added!", material->GetName());
+	}
+
+	void MaterialLibrary::Remove(const std::string& name) {
+		if (Exist(name)) {
+			materials.erase(name);
+		} else {
+			RTY_RENDERER_ERROR("Could not remove material refered as {0}!", name);
+		}
+	}
+	bool MaterialLibrary::Exist(const std::string& name) {
+		return materials.find(name) != materials.end();
+	}
+
+	MeshMaterial::MeshMaterial(std::string const& name) : Material(name) {
 		shader = ShaderLibrary::Get().Load("default");
 		RTY_ASSERT(shader, "Could not create a shader program!");
 
@@ -32,7 +58,7 @@ namespace raytracy::renderer {
 		shader->SetInt("skybox", 1);
 	}
 
-	WorldMaterial::WorldMaterial() {
+	WorldMaterial::WorldMaterial() : Material("WorldMaterial") {
 		shader = ShaderLibrary::Get().Load("world");
 
 		cube_map = OpenGLTextureCubemap::Create({{

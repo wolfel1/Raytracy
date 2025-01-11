@@ -6,14 +6,18 @@ namespace raytracy::renderer {
 
 	class Material {
 	protected:
+		std::string name = "";
 		shared_ptr<OpenGLShader> shader;
 
-		public:
-		~Material() = default;
-		
-		virtual void Draw() const = 0;
+	public:
+		Material(std::string const& name) : name(name) {}
+		virtual ~Material() = default;
 
-		virtual void Destroy() = 0;
+		virtual std::string GetName() const {
+			return name;
+		}
+
+		virtual void Draw() const = 0;
 	};
 
 	class MeshMaterial : public Material {
@@ -24,8 +28,8 @@ namespace raytracy::renderer {
 		shared_ptr<OpenGLUniformBuffer> material_uniform_buffer = nullptr;
 
 	public:
-		MeshMaterial();
-		~MeshMaterial() = default;
+		MeshMaterial(std::string const& name);
+		virtual ~MeshMaterial() = default;
 
 		glm::vec4 GetColor() const {
 			return color;
@@ -47,10 +51,33 @@ namespace raytracy::renderer {
 		}
 
 		virtual void Draw() const override;
+	};
 
-		virtual void Destroy() override {
-			material_uniform_buffer = nullptr;
+	class MaterialLibrary {
+	private:
+		std::unordered_map<std::string, shared_ptr<MeshMaterial>> materials;
+
+	public:
+		MaterialLibrary(const MaterialLibrary&) = delete;
+		~MaterialLibrary() = default;
+
+		static MaterialLibrary& Get() {
+			static MaterialLibrary library;
+			return library;
 		}
+
+		shared_ptr<MeshMaterial> Load(const std::string& name);
+		void Add(const shared_ptr<MeshMaterial> material);
+		void Remove(const std::string& name);
+
+		bool Exist(const std::string& name);
+
+		void Shutdown() {
+			materials.clear();
+		}
+
+	private:
+		MaterialLibrary() {};
 	};
 
 	class WorldMaterial : public Material {
@@ -59,11 +86,9 @@ namespace raytracy::renderer {
 
 	public:
 		WorldMaterial();
-		~WorldMaterial() = default;
+		virtual ~WorldMaterial() = default;
 
 
 		virtual void Draw() const override;
-
-		virtual void Destroy() override {}
 	};
 }

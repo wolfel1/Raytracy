@@ -21,13 +21,13 @@ namespace raytracy::renderer {
 		Scene(const Scene&) = delete;
 		~Scene() = default;
 
-		static void Create(std::shared_ptr<PerspectiveCamera> camera);
+		static std::shared_ptr<Scene> Create(std::shared_ptr<PerspectiveCamera> camera);
 
 		static std::shared_ptr<Scene> Get() {
 			return instance;
 		}
 
-		static void Destroy() {
+		void Destroy() {
 			instance = nullptr;
 		}
 

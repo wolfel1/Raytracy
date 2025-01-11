@@ -9,15 +9,8 @@
 
 namespace raytracy::renderer {
 
-	shared_ptr<Material> Mesh::default_material = nullptr;
-
-	Mesh::~Mesh() {
-		material->Destroy();
-	}
-
 	void Mesh::Init(MeshData& data) {
 		RTY_PROFILE_FUNCTION();
-		RTY_ASSERT(Scene::Get(), "Must have scene to create meshes!")
 
 		CreateVertexContainer(data);
 
@@ -26,7 +19,7 @@ namespace raytracy::renderer {
 		BuildTriangles();
 		BuildBoundingBox();
 #endif
-		AddDefaultMaterial();
+		material = MaterialLibrary::Get().Load("DefaultMaterial");
 
 		RTY_RENDERER_TRACE("Mesh created with type {0}.", mesh_data.name);
 	}
@@ -85,13 +78,6 @@ namespace raytracy::renderer {
 		model_matrix = model_matrix * scale;
 	}
 
-	void Mesh::AddDefaultMaterial() {
-		if (!default_material) {
-			default_material = make_shared<MeshMaterial>();
-		}
-
-		material = default_material;
-	}
 
 	void Mesh::BuildTriangles() {
 		RTY_PROFILE_FUNCTION();

@@ -4,6 +4,7 @@
 #include "event/Event.h"
 #include "renderer/Renderer.h"
 #include "core/Timestep.h"
+#include "renderer/model/Material.h"
 
 #include <GLFW/glfw3.h>
 
@@ -69,6 +70,7 @@ namespace raytracy {
 		window->Shutdown();
 		Renderer::Get().Shutdown();
 		ShaderLibrary::Get().Shutdown();
+		renderer::MaterialLibrary::Get().Shutdown();
 
 		running = false;
 	}

@@ -21,8 +21,7 @@ public:
 		auto& spec = IApplication::Get()->GetSpecification();
 		camera_controller = make_unique<PerspectiveCameraController>(static_cast<float>(spec.width) / static_cast<float>(spec.height));
 
-		renderer::Scene::Create(camera_controller->GetCamera());
-		scene = renderer::Scene::Get();
+		scene = renderer::Scene::Create(camera_controller->GetCamera());
 
 		auto mesh = make_shared<renderer::Cube>(glm::vec3(0.0f, 0.0f, 0.0f));
 		scene->AddMesh(mesh); 
@@ -32,13 +31,15 @@ public:
 		scene->AddMesh(sphere2);
 
 		scene->AddSkybox();
+
+		auto material = renderer::MaterialLibrary::Get().Load("DefaultMaterial");
+		material->SetColor(glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
 	}
 
 	void OnUpdate(Timestep timestep) override {
 		camera_controller->OnUpdate(timestep);
 
 		Renderer::Get().Submit(scene);
-		
 	}
 
 
@@ -54,7 +55,7 @@ public:
 	}
 	
 	void OnDetach() override {
-		renderer::Scene::Destroy();
+		scene->Destroy();
 	};
 
 	~SandboxLayer() = default;

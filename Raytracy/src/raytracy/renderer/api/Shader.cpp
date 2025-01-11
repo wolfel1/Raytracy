@@ -33,8 +33,9 @@ namespace raytracy {
 	void ShaderLibrary::Remove(const std::string& name) {
 		if (Exist(name)) {
 			shaders.erase(name);
+		} else {
+			RTY_RENDERER_ERROR("Could not remove shader program refered as {0}!", name);
 		}
-		RTY_RENDERER_ERROR("Could not remove shader program refered as {0}!", name);
 	}
 	bool ShaderLibrary::Exist(const std::string& name) {
 		return shaders.find(name) != shaders.end();
