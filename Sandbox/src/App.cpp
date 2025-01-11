@@ -31,9 +31,6 @@ public:
 		scene->AddMesh(sphere2);
 
 		scene->AddSkybox();
-
-		auto material = renderer::MaterialLibrary::Get().Load("DefaultMaterial");
-		material->SetColor(glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
 	}
 
 	void OnUpdate(Timestep timestep) override {

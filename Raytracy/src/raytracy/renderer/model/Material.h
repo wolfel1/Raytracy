@@ -22,7 +22,7 @@ namespace raytracy::renderer {
 
 	class MeshMaterial : public Material {
 	private:
-		glm::vec4 color{ 1.0f };
+		glm::vec4 color{ 0.8f, 0.8f, 0.8f, 1.0f };
 		glm::vec3 specular{ 1.0f };
 		float shininess = 32.0f;
 		shared_ptr<OpenGLUniformBuffer> material_uniform_buffer = nullptr;
