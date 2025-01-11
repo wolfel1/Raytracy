@@ -40,7 +40,7 @@ namespace raytracy {
 		return shaders.find(name) != shaders.end();
 	}
 
-	std::string ShaderLibrary::ReadFile(const std::string& path) {
+	std::string ReadFile(const std::string& path) {
 
 		std::string result;
 		std::ifstream in(path, std::ios::in | std::ios::binary);

@@ -86,7 +86,7 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 
 		std::string path = ShaderLibrary::rootPath + name + ".glsl";
-		std::string source = ShaderLibrary::ReadFile(path);
+		std::string source = ReadFile(path);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
 
@@ -147,7 +147,7 @@ namespace raytracy {
 		count = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;
 		name = path.substr(lastSlash, count);
 
-		std::string source = ShaderLibrary::ReadFile(path);
+		std::string source = ReadFile(path);
 		shaderSources[ShaderTypeFromString(type)] = source;
 	}
 

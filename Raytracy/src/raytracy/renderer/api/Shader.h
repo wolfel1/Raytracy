@@ -5,6 +5,9 @@
 typedef unsigned int GLenum;
 
 namespace raytracy {
+
+	std::string ReadFile(const std::string& path);
+
 	class OpenGLShader;
 
 	class ShaderLibrary {
@@ -23,7 +26,6 @@ namespace raytracy {
 			return library;
 		}
 
-		static std::string ReadFile(const std::string& path);
 
 		shared_ptr<OpenGLShader> Load(const std::string& name);
 		void Add(const shared_ptr<OpenGLShader> shader_program);
