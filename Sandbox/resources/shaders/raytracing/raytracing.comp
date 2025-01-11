@@ -21,6 +21,12 @@ struct RVertex {
 	vec2 tex_coords;
 };
 
+struct DirectionalLight {
+	vec3 direction;
+	vec4 color;
+	float strength;
+};
+
 struct Camera {
 	vec3 position;
 	vec3 direction;
@@ -79,6 +85,7 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit);
 bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const RTriangle triangle);
 float hitBoundingBox(in Ray ray, in Node node);
 
+DirectionalLight light = {vec3(0.0, 1.0, 0.0), vec4(1.0, 1.0, 1.0, 1.0), 1.0};
 
 void main() {
     vec4 value = vec4(0.0, 0.0, 0.0, 1.0);
@@ -116,10 +123,25 @@ vec4 computePixelColor(Ray ray) {
         Hit hit;
         if (trace(current_ray, 0.001, infinity, hit)) {
             vec3 scatter_direction = reflect(current_ray.direction, hit.normal);
+			
+			vec3 lightDirection = normalize(-light.direction);
+			vec3 viewDirection = normalize(current_ray.direction);
+			vec4 color = vec4(0.8,0.8,0.8,1.0);
+
+			vec4 ambient = 0.1 * color;
+
+			float diff = max(dot(hit.normal, lightDirection), 0.0);
+			vec4 diffuse = diff * color * light.color;
+
+			vec3 halfwayDir = normalize(lightDirection + viewDirection);
+			float spec = pow(max(dot(hit.normal, halfwayDir), 0.0), 32.0);
+			vec4 specular = spec * vec4(1.0) * light.color;
+			
+			vec4 result = (ambient + diffuse + specular) * light.strength;
 
             current_ray.origin = hit.point;
-            current_ray.direction = scatter_direction;
-            current_attenuation = current_attenuation * hit.color;
+            current_ray.direction = vec3(0.0);
+            current_attenuation = current_attenuation * result;
         } else {
             vec3 unit_direction = normalize(current_ray.direction);
 			float ambient = 0.5 * (unit_direction.y + 1.0);

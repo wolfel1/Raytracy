@@ -31,12 +31,12 @@ void main() {
 	vec3 ambient = 0.1 * color.rgb;
 
 	float diff = max(dot(normal, lightDirection), 0.0);
-	vec3 diffuse = diff * lightColor;
+	vec3 diffuse = diff * lightColor * color.rgb;
 
 	vec3 halfwayDir = normalize(lightDirection + viewDirection);
 	float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
 	vec3 specular = spec * specular * lightColor;
 
-	vec3 result = (ambient + diffuse + specular) * color.rgb;
+	vec3 result = (ambient + diffuse + specular) * strength;
 	out_color = vec4(result, color.a);
 }
