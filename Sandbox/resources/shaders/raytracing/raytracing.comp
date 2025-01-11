@@ -84,6 +84,8 @@ vec4 computePixelColor(Ray ray);
 bool trace(in Ray ray, float minimum, float maximum, inout Hit hit);
 bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const RTriangle triangle);
 float hitBoundingBox(in Ray ray, in Node node);
+vec3 calculate_barycentric(in vec3 point, in vec3 v0, in vec3 v1, in vec3 v2);
+vec3 interpolate_normal(in vec3 barycentric, in vec3 n0, in vec3 n1, in vec3 n2);
 
 DirectionalLight light = {vec3(0.0, 1.0, 0.0), vec4(1.0, 1.0, 1.0, 1.0), 1.0};
 
@@ -115,6 +117,8 @@ void main() {
         
     imageStore(imgOutput, texelCoord, accumulated_color);
 }
+
+
 
 vec4 computePixelColor(Ray ray) {
     Ray current_ray = ray;
@@ -151,6 +155,8 @@ vec4 computePixelColor(Ray ray) {
     }
     return vec4(0);
 }
+
+
 
 bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 	Hit temp;
@@ -244,6 +250,8 @@ float hitBoundingBox(in Ray ray, in Node node) {
 	}
 }
 
+
+
 bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const RTriangle triangle) {
 	RVertex v0 = vertices[triangle.vertex_indices[0]];
 	RVertex v1 = vertices[triangle.vertex_indices[1]];
@@ -251,7 +259,7 @@ bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const 
 
 	vec3 edge1 = v1.position - v0.position;
 	vec3 edge2 = v2.position - v0.position;
-
+	
 	vec3 normal = cross(ray.direction, edge2);
     float angle = dot(edge1, normal);
 
@@ -280,10 +288,40 @@ bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const 
 		hit.color = v0.color;
         hit.distance = t;
         hit.point = ray.origin + ray.direction * t;
-        hit.normal = normalize(cross(edge2, edge1));
+
+		vec3 barycentric = calculate_barycentric(hit.point, v0.position, v1.position, v2.position);
+        hit.normal = interpolate_normal(barycentric, v0.normal, v1.normal, v2.normal);
         return true;
     }
         
 	return false; // Intersection point is outside the ray segment.
     
+}
+
+vec3 calculate_barycentric(in vec3 point, in vec3 v0, in vec3 v1, in vec3 v2) {
+    vec3 v0v1 = v1 - v0;
+    vec3 v0v2 = v2 - v0;
+    vec3 v0p = point - v0;
+        
+    float d00 = dot(v0v1, v0v1);
+    float d01 = dot(v0v1, v0v2);
+    float d11 = dot(v0v2, v0v2);
+    float d20 = dot(v0p, v0v1);
+    float d21 = dot(v0p, v0v2);
+        
+    float denom = d00 * d11 - d01 * d01;
+    float v = (d11 * d20 - d01 * d21) / denom;
+    float w = (d00 * d21 - d01 * d20) / denom;
+    float u = 1.0 - v - w;
+        
+    return vec3(u, v, w);
+}
+
+vec3 interpolate_normal(in vec3 barycentric, in vec3 n0, in vec3 n1, in vec3 n2) {
+    vec3 normal = {
+        barycentric[0] * n0[0] + barycentric[1] * n1[0] + barycentric[2] * n2[0],
+        barycentric[0] * n0[1] + barycentric[1] * n1[1] + barycentric[2] * n2[1],
+        barycentric[0] * n0[2] + barycentric[1] * n1[2] + barycentric[2] * n2[2]
+    };
+    return normalize(-normal);
 }
