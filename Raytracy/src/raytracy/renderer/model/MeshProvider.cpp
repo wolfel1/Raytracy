@@ -93,7 +93,6 @@ namespace raytracy {
 
 		return cube;
 	}
-
 	MeshData MeshProvider::GetSphereData(float scale, glm::vec3 const& origin, const uint16_t segment_count, const uint16_t ring_count) {
 		MeshData sphere;
 		sphere.name = "Sphere";

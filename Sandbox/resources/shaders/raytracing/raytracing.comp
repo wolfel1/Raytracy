@@ -44,6 +44,7 @@ struct Hit {
 	float distance;
 	vec3 point;
 	vec3 normal;
+	uint triangle_index;
 };
 
 const float infinity = 1.0 / 0.0;
@@ -128,23 +129,30 @@ vec4 computePixelColor(Ray ray) {
         if (trace(current_ray, 0.001, infinity, hit)) {
             vec3 scatter_direction = reflect(current_ray.direction, hit.normal);
 			
+			RTriangle triangle = triangles[hit.triangle_index];
+			RVertex v0 = vertices[triangle.vertex_indices[0]];
+			RVertex v1 = vertices[triangle.vertex_indices[1]];
+			RVertex v2 = vertices[triangle.vertex_indices[2]];
+			vec3 barycentric = calculate_barycentric(hit.point, v0.position, v1.position, v2.position);
+			vec3 shading_normal = interpolate_normal(barycentric, v0.normal, v1.normal, v2.normal);
+
 			vec3 lightDirection = normalize(-light.direction);
 			vec3 viewDirection = normalize(current_ray.direction);
 			vec4 color = vec4(0.8,0.8,0.8,1.0);
 
 			vec4 ambient = 0.1 * color;
 
-			float diff = max(dot(hit.normal, lightDirection), 0.0);
+			float diff = max(dot(shading_normal, lightDirection), 0.0);
 			vec4 diffuse = diff * color * light.color;
 
 			vec3 halfwayDir = normalize(lightDirection + viewDirection);
-			float spec = pow(max(dot(hit.normal, halfwayDir), 0.0), 32.0);
+			float spec = pow(max(dot(shading_normal, halfwayDir), 0.0), 32.0);
 			vec4 specular = spec * vec4(1.0) * light.color;
 			
 			vec4 result = (ambient + diffuse + specular) * light.strength;
 
             current_ray.origin = hit.point;
-            current_ray.direction = vec3(0.0);
+            current_ray.direction = vec3(0);
             current_attenuation = current_attenuation * result;
         } else {
             vec3 unit_direction = normalize(current_ray.direction);
@@ -210,10 +218,12 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 			}
 		} else {
 			for (uint i = 0; i < node.triangle_count; i++) {
-				RTriangle triangle = triangles[triangle_indices[node.lookup_index + i]];
+				uint index = triangle_indices[node.lookup_index + i];
+				RTriangle triangle = triangles[index];
 				if (hitTriangle(ray, minimum, closest, temp, triangle)) {
 					closest = temp.distance;
 					hit_anything = true;
+					temp.triangle_index = index;
 					hit = temp;
 				}
 			}
@@ -289,8 +299,7 @@ bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const 
         hit.distance = t;
         hit.point = ray.origin + ray.direction * t;
 
-		vec3 barycentric = calculate_barycentric(hit.point, v0.position, v1.position, v2.position);
-        hit.normal = interpolate_normal(barycentric, v0.normal, v1.normal, v2.normal);
+        hit.normal = normalize(cross(edge2, edge1));
         return true;
     }
         
