@@ -10,11 +10,16 @@ struct Node {
 	uint triangle_count;
 };
 
-struct RTriangle {
-	uint vertex_indices[3];
+struct Mesh {
+	uint material_index;
 };
 
-struct RVertex {
+struct Triangle {
+	uint vertex_indices[3];
+	uint mesh_index;
+};
+
+struct Vertex {
 	vec3 position;
 	vec3 normal;
 	vec4 color;
@@ -22,9 +27,15 @@ struct RVertex {
 };
 
 struct DirectionalLight {
-	vec3 direction;
 	vec3 color;
+	vec3 direction;
 	float strength;
+};
+
+struct Material {
+	vec4 color;
+	vec3 specular;
+	float shininess;
 };
 
 struct Camera {
@@ -64,11 +75,11 @@ layout(std140, binding = 0) uniform SceneData {
 };
 
 layout(std430, binding = 0) readonly buffer Triangles {
-    RTriangle triangles[];
+    Triangle triangles[];
 };
 
 layout(std430, binding = 1) readonly buffer Vertices {
-    RVertex vertices[];
+    Vertex vertices[];
 };
 
 layout(std430, binding = 2) readonly buffer BoundingVolumeHierarchie {
@@ -79,16 +90,26 @@ layout(std430, binding = 3) readonly buffer TriangleIndices {
     uint triangle_indices[];
 };
 
+layout(std430, binding = 4) readonly buffer Lights {
+    DirectionalLight lights[];
+};
+
+layout(std430, binding = 5) readonly buffer Materials {
+    Material materials[];
+};
+
+layout(std430, binding = 6) readonly buffer Meshes {
+    Mesh meshes[];
+};
+
 uniform samplerCube skybox;
 
 vec4 computePixelColor(Ray ray);
 bool trace(in Ray ray, float minimum, float maximum, inout Hit hit);
-bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const RTriangle triangle);
+bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const Triangle triangle);
 float hitBoundingBox(in Ray ray, in Node node);
 vec3 calculate_barycentric(in vec3 point, in vec3 v0, in vec3 v1, in vec3 v2);
 vec3 interpolate_normal(in vec3 barycentric, in vec3 n0, in vec3 n1, in vec3 n2);
-
-DirectionalLight light = {vec3(0.0, 1.0, 0.0), vec3(1.0), 1.0};
 
 void main() {
     vec4 value = vec4(0.0, 0.0, 0.0, 1.0);
@@ -127,37 +148,43 @@ vec4 computePixelColor(Ray ray) {
     for (int i = 0; i < max_depth; i++) {
         Hit hit;
         if (trace(current_ray, 0.001, infinity, hit)) {
-			RTriangle triangle = triangles[hit.triangle_index];
-			RVertex v0 = vertices[triangle.vertex_indices[0]];
-			RVertex v1 = vertices[triangle.vertex_indices[1]];
-			RVertex v2 = vertices[triangle.vertex_indices[2]];
+			Triangle triangle = triangles[hit.triangle_index];
+			Mesh mesh = meshes[triangle.mesh_index];
+			Material material = materials[mesh.material_index];
+
+			Vertex v0 = vertices[triangle.vertex_indices[0]];
+			Vertex v1 = vertices[triangle.vertex_indices[1]];
+			Vertex v2 = vertices[triangle.vertex_indices[2]];
 			vec3 barycentric = calculate_barycentric(hit.point, v0.position, v1.position, v2.position);
 			vec3 shading_normal = interpolate_normal(barycentric, v0.normal, v1.normal, v2.normal);
 
-            vec3 scatter_direction = reflect(current_ray.direction, shading_normal);
+            //vec3 scatter_direction = reflect(current_ray.direction, shading_normal);
 
-			vec3 lightDirection = normalize(-light.direction);
-			vec3 viewDirection = normalize(current_ray.direction);
-			vec4 color = vec4(0.8,0.8,0.8,1.0);
+			for (int j = 0; j < 1; j++) {
+				DirectionalLight light = lights[j];
+				vec3 lightDirection = normalize(-light.direction);
+				vec3 viewDirection = normalize(-current_ray.direction);
 
-			vec3 ambient = 0.1 * light.color;
+				vec3 ambient = 0.1 * light.color;
 
-			float diff = max(dot(shading_normal, lightDirection), 0.0);
-			vec3 diffuse = diff * light.color;
+				float diff = max(dot(shading_normal, lightDirection), 0.0);
+				vec3 diffuse = diff * light.color;
 
-			vec3 halfwayDir = normalize(lightDirection + viewDirection);
-			float spec = pow(max(dot(shading_normal, halfwayDir), 0.0), 32.0);
-			vec3 specular = spec * vec3(1.0) * light.color;
+				vec3 halfwayDir = normalize(lightDirection + viewDirection);
+				float spec = pow(max(dot(shading_normal, halfwayDir), 0.0), material.shininess);
+				vec3 specular = spec * material.specular * light.color;
 			
-			vec3 result = (ambient + diffuse + specular) * color.rgb * light.strength;
+				vec3 result = (ambient + diffuse + specular) * material.color.rgb * light.strength;
+				current_attenuation = current_attenuation * vec4(result, material.color.a);
+			}
 
             current_ray.origin = hit.point;
             current_ray.direction = vec3(0);
-            current_attenuation = current_attenuation * vec4(result, color.a);
+
         } else {
             vec3 unit_direction = normalize(current_ray.direction);
             vec4 color = texture(skybox, unit_direction);
-            return current_attenuation * color;
+            return current_attenuation;
         }
     }
     return vec4(0);
@@ -216,7 +243,7 @@ bool trace(in Ray ray, float minimum, float maximum, inout Hit hit) {
 		} else {
 			for (uint i = 0; i < node.triangle_count; i++) {
 				uint index = triangle_indices[node.lookup_index + i];
-				RTriangle triangle = triangles[index];
+				Triangle triangle = triangles[index];
 				if (hitTriangle(ray, minimum, closest, temp, triangle)) {
 					closest = temp.distance;
 					hit_anything = true;
@@ -259,10 +286,10 @@ float hitBoundingBox(in Ray ray, in Node node) {
 
 
 
-bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const RTriangle triangle) {
-	RVertex v0 = vertices[triangle.vertex_indices[0]];
-	RVertex v1 = vertices[triangle.vertex_indices[1]];
-	RVertex v2 = vertices[triangle.vertex_indices[2]];
+bool hitTriangle(in Ray ray, float minimum, float maximum, inout Hit hit, const Triangle triangle) {
+	Vertex v0 = vertices[triangle.vertex_indices[0]];
+	Vertex v1 = vertices[triangle.vertex_indices[1]];
+	Vertex v2 = vertices[triangle.vertex_indices[2]];
 
 	vec3 edge1 = v1.position - v0.position;
 	vec3 edge2 = v2.position - v0.position;
@@ -329,5 +356,5 @@ vec3 interpolate_normal(in vec3 barycentric, in vec3 n0, in vec3 n1, in vec3 n2)
         barycentric[0] * n0[1] + barycentric[1] * n1[1] + barycentric[2] * n2[1],
         barycentric[0] * n0[2] + barycentric[1] * n1[2] + barycentric[2] * n2[2]
     };
-    return normalize(-normal);
+    return normalize(normal);
 }

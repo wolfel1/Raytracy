@@ -31,8 +31,16 @@ namespace raytracy::renderer {
 		MeshMaterial(std::string const& name);
 		virtual ~MeshMaterial() = default;
 
-		glm::vec4 GetColor() const {
+		glm::vec4 const& GetColor() const {
 			return color;
+		}
+
+		glm::vec3 const& GetSpecular() const {
+			return specular;
+		}
+
+		float GetShininess() const {
+			return shininess;
 		}
 
 		void SetColor(glm::vec4 const& color) {
@@ -69,6 +77,10 @@ namespace raytracy::renderer {
 		shared_ptr<MeshMaterial> Load(const std::string& name);
 		void Add(const shared_ptr<MeshMaterial> material);
 		void Remove(const std::string& name);
+
+		std::unordered_map<std::string, shared_ptr<MeshMaterial>> const& GetMaterials() const {
+			return materials;
+		}
 
 		bool Exist(const std::string& name);
 

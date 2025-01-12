@@ -10,7 +10,6 @@
 
 namespace raytracy {
 
-
 	void Raytracer::Init(shared_ptr<OpenGLRendererAPI> const api) {
 		RTY_PROFILE_FUNCTION();
 		renderer_api = api;
@@ -36,6 +35,18 @@ namespace raytracy {
 		triangle_indices_storage_buffer = OpenGLStorageBuffer::Create("TriangleIndices");
 		triangle_indices_storage_buffer->Bind();
 		triangle_indices_storage_buffer->BindSlot(3);
+
+		light_storage_buffer = OpenGLStorageBuffer::Create("Lights");
+		light_storage_buffer->Bind();
+		light_storage_buffer->BindSlot(4);
+
+		material_storage_buffer = OpenGLStorageBuffer::Create("Materials");
+		material_storage_buffer->Bind();
+		material_storage_buffer->BindSlot(5);
+
+		meshes_storage_buffer = OpenGLStorageBuffer::Create("Meshes");
+		meshes_storage_buffer->Bind();
+		meshes_storage_buffer->BindSlot(6);
 
 		UniformBlock block("SceneData", {
 			"inverse_view",
@@ -78,9 +89,41 @@ namespace raytracy {
 
 	void Raytracer::Preprocess(shared_ptr<renderer::Scene> const scene) {
 		RTY_PROFILE_FUNCTION();
-		std::vector<RTriangle> triangles;
-		std::vector<RVertex> vertices;
 
+		std::vector<DirectionalLight> lights_data;
+		auto light = scene->GetLight();
+		if (light) {
+			DirectionalLight& dir_light = lights_data.emplace_back();
+			dir_light.color = light->GetColor();
+			dir_light.direction = light->GetDirection();
+			dir_light.strength = light->GetStrength();
+		}
+		light_storage_buffer->SetData(sizeof(DirectionalLight) * lights_data.size(), lights_data.data());
+
+		std::vector<Material> materials_data;
+		auto& materials = renderer::MaterialLibrary::Get().GetMaterials();
+		materials_data.reserve(materials.size());
+		for (auto const& [name, material] : materials) {
+			Material& mat = materials_data.emplace_back();
+			mat.color = material->GetColor();
+			mat.specular = material->GetSpecular();
+			mat.shininess = material->GetShininess();
+		};
+		material_storage_buffer->SetData(sizeof(Material) * materials_data.size(), materials_data.data());
+
+		std::vector<Mesh> meshes_data;
+
+		auto& meshes = scene->GetMeshes();
+		meshes_data.reserve(meshes.size());
+		for (auto const& mesh : meshes) {
+			Mesh& mesh_data = meshes_data.emplace_back();
+			auto material = mesh->GetMaterial();
+			mesh_data.material_index = static_cast<uint32_t>(std::distance(std::begin(materials), materials.find(material->GetName())));
+		}
+		meshes_storage_buffer->SetData(sizeof(Mesh) * meshes_data.size(), meshes_data.data());
+
+		std::vector<Triangle> triangles;
+		std::vector<Vertex> vertices;
 		auto& triangles_data = scene->GetTriangles();
 		triangles.reserve(triangles_data.size());
 		vertices.reserve(triangles_data.size() * 3);
@@ -88,12 +131,13 @@ namespace raytracy {
 		{
 			RTY_PROFILE_SCOPE("Triangles")
 			for (auto const& triangle_data : triangles_data) {
-				RTriangle& triangle = triangles.emplace_back();
+				Triangle& triangle = triangles.emplace_back();
+				triangle.mesh_index = triangle_data.mesh_index;
 
 				auto& corners = triangle_data.vertices;
 				for (uint32_t i = 0; i < 3; i++) {
 					triangle.vertex_indices[i] = static_cast<uint32_t>(vertices.size());
-					RVertex& vertex = vertices.emplace_back();
+					Vertex& vertex = vertices.emplace_back();
 					vertex.position = corners[i].position;
 					vertex.normal = corners[i].normal;
 					vertex.color = corners[i].color;
@@ -101,8 +145,8 @@ namespace raytracy {
 				}
 			}
 		}
-		triangles_storage_buffer->SetData(sizeof(RTriangle) * triangles.size(), triangles.data());
-		vertices_storage_buffer->SetData(sizeof(RVertex) * vertices.size(), vertices.data());
+		triangles_storage_buffer->SetData(sizeof(Triangle) * triangles.size(), triangles.data());
+		vertices_storage_buffer->SetData(sizeof(Vertex) * vertices.size(), vertices.data());
 
 		std::vector<Node> bounding_volume_hierarchie;
 		std::vector<uint32_t> triangle_indices;
@@ -148,5 +192,8 @@ namespace raytracy {
 		triangles_storage_buffer = nullptr;
 		vertices_storage_buffer = nullptr;
 		triangle_indices_storage_buffer = nullptr;
+		light_storage_buffer = nullptr;
+		material_storage_buffer = nullptr;
+		meshes_storage_buffer = nullptr;
 	}
 }  // namespace raytracy

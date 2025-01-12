@@ -11,28 +11,48 @@
 
 namespace raytracy {
 
-	struct Node {
-		glm::vec3 min_corner;
-		uint32_t left_child_index;
-		glm::vec3 max_corner;
-		uint32_t right_child_index;
-		alignas(16) bool has_triangle;
-		uint32_t lookup_index;
-		uint32_t triangle_count;
-	};
-
-	struct RTriangle {
-		std::array<uint32_t, 3> vertex_indices;
-	};
-
-	struct RVertex {
-		alignas(16) glm::vec3 position;
-		alignas(16) glm::vec3 normal;
-		glm::vec4 color;
-		glm::vec2 tex_coords;
-	};
+	
 
 	class Raytracer {
+
+		struct Node {
+			glm::vec3 min_corner;
+			uint32_t left_child_index;
+			glm::vec3 max_corner;
+			uint32_t right_child_index;
+			alignas(16) bool has_triangle;
+			uint32_t lookup_index;
+			uint32_t triangle_count;
+		};
+
+		struct Mesh {
+			uint32_t material_index;
+		};
+
+		struct Triangle {
+			std::array<uint32_t, 3> vertex_indices;
+			uint32_t mesh_index;
+		};
+
+		struct Vertex {
+			glm::vec3 position;
+			alignas(16) glm::vec3 normal;
+			glm::vec4 color;
+			glm::vec2 tex_coords;
+		};
+
+		struct DirectionalLight {
+			glm::vec3 color;
+			alignas(16) glm::vec3 direction;
+			float strength;
+		};
+
+		struct Material {
+			glm::vec4 color;
+			glm::vec3 specular;
+			float shininess;
+		};
+
 	private:
 
 		shared_ptr<OpenGLRendererAPI> renderer_api = nullptr;
@@ -43,9 +63,12 @@ namespace raytracy {
 		shared_ptr<OpenGLShader> canvas_shader;
 
 		shared_ptr<OpenGLUniformBuffer> scene_data_uniform_buffer;
+		shared_ptr<OpenGLStorageBuffer> meshes_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> triangles_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> triangle_indices_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> vertices_storage_buffer;
+		shared_ptr<OpenGLStorageBuffer> light_storage_buffer;
+		shared_ptr<OpenGLStorageBuffer> material_storage_buffer;
 		shared_ptr<OpenGLStorageBuffer> bvh_storage_buffer;
 
 		glm::uvec2 screen_size{};

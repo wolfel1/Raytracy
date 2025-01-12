@@ -21,6 +21,7 @@ namespace raytracy {
 	struct Triangle {
 		std::array<Vertex, 3> vertices;
 		glm::vec3 center;
+		uint32_t mesh_index;
 	};
 
 	static const glm::vec4 DEFAULT_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };

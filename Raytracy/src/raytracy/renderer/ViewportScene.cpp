@@ -143,6 +143,7 @@ namespace raytracy::renderer {
 			triangles.insert(std::end(triangles), std::begin(mesh_triangles), std::end(mesh_triangles));
 			root.triangle_indices.reserve(root.triangle_indices.size() + mesh_triangles.size());
 			std::transform(std::begin(mesh_triangles), std::end(mesh_triangles), std::back_inserter(root.triangle_indices), [&](auto&) {
+				triangles[size].mesh_index = index;
 				return size++;
 			});
 		}
