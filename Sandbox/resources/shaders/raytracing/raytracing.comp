@@ -184,7 +184,7 @@ vec4 computePixelColor(Ray ray) {
         } else {
             vec3 unit_direction = normalize(current_ray.direction);
             vec4 color = texture(skybox, unit_direction);
-            return current_attenuation;
+            return current_attenuation * color;
         }
     }
     return vec4(0);
