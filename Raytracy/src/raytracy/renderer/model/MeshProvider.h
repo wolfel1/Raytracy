@@ -44,4 +44,17 @@ namespace raytracy {
 	private:
 		MeshProvider() = default;
 	};
+
+	inline static float snapToGrid(float value) {
+		constexpr float gridSize = glm::epsilon<float>();
+		return std::round(value / gridSize) * gridSize;
+	}
+
+	inline glm::vec3 snapToGrid(const glm::vec3& value) {
+		return glm::vec3(
+			snapToGrid(value.x),
+			snapToGrid(value.y),
+			snapToGrid(value.z)
+		);
+	}
 }

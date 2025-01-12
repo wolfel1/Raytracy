@@ -109,9 +109,10 @@ namespace raytracy {
 			for (int j = 0; j <= segment_count; ++j) {
 				float sectorAngle = j * 2 * glm::pi<float>() / segment_count;
 
+				auto d = glm::vec3(xz * cosf(sectorAngle), y, xz * sinf(sectorAngle));
 				Vertex& vertex = sphere.vertices.emplace_back();
-				vertex.position = origin + glm::vec3(xz * cosf(sectorAngle), y, xz * sinf(sectorAngle));
-				vertex.normal = glm::normalize(vertex.position - origin);
+				vertex.position = origin + d;
+				vertex.normal = glm::normalize(d);
 				vertex.color = DEFAULT_COLOR;
 				vertex.tex_coords = glm::vec2((float)j / segment_count, (float)i / ring_count);
 			}
