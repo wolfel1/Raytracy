@@ -25,10 +25,18 @@ public:
 
 		auto mesh = make_shared<renderer::Cube>(glm::vec3(0.0f, 0.0f, 0.0f));
 		scene->AddMesh(mesh); 
-		auto sphere1 = make_shared<renderer::Sphere>(glm::vec3(-1.5f, 0.0f, 0.0f));
-		scene->AddMesh(sphere1); 
-		auto sphere2 = make_shared<renderer::Plane>(glm::vec3(1.5f, 0.0f, 0.0f));
-		scene->AddMesh(sphere2);
+		auto sphere = make_shared<renderer::Sphere>(glm::vec3(-1.5f, 0.0f, 0.0f));
+		scene->AddMesh(sphere); 
+		auto plane = make_shared<renderer::Plane>(glm::vec3(1.5f, 0.0f, 0.0f));
+		scene->AddMesh(plane);
+
+		auto green_material = renderer::MaterialLibrary::Get().Load("GreenMaterial");
+		green_material->SetColor(glm::vec4(0.2f, 0.9f, 0.1f, 1.0f));
+		plane->SetMaterial(green_material);
+
+		auto red_material = renderer::MaterialLibrary::Get().Load("RedMaterial");
+		red_material->SetColor(glm::vec4(0.9f, 0.1f, 0.1f, 1.0f));
+		sphere->SetMaterial(red_material);
 
 		scene->AddSkybox();
 	}
