@@ -17,7 +17,7 @@ namespace raytracy {
 
 		auto& app_spec = IApplication::Get()->GetSpecification();
 		screen_size = { app_spec.width, app_spec.height };
-		raytracing_canvas = OpenGLTexture2D::Create(canvas_size, canvas_size, GL_RGBA32F);
+		raytracing_canvas = OpenGLTexture2D::Create(canvas_size, canvas_size, GL_RGBA16F);
 		raytracing_kernel = ShaderLibrary::Get().Load("raytracing");
 		canvas_shader = ShaderLibrary::Get().Load("canvas");
 

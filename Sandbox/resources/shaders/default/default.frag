@@ -28,15 +28,15 @@ void main() {
 	vec3 viewDirection = normalize(camera_position - frag_position);
 	vec3 lightDirection = normalize(-direction);
 
-	vec3 ambient = 0.1 * color.rgb;
+	vec3 ambient = 0.1 * lightColor;
 
 	float diff = max(dot(normal, lightDirection), 0.0);
-	vec3 diffuse = diff * lightColor * color.rgb;
+	vec3 diffuse = diff * lightColor;
 
 	vec3 halfwayDir = normalize(lightDirection + viewDirection);
 	float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
 	vec3 specular = spec * specular * lightColor;
 
-	vec3 result = (ambient + diffuse + specular) * strength;
+	vec3 result = (ambient + diffuse + specular) * color.rgb * strength;
 	out_color = vec4(result, color.a);
 }
