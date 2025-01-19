@@ -8,6 +8,7 @@
 #include "../api/opengl/OpenGLShader.h"
 #include "../ViewportScene.h"
 #include <glm/glm.hpp>
+#include <taskflow.hpp>
 
 namespace raytracy {
 
@@ -54,6 +55,8 @@ namespace raytracy {
 		};
 
 	private:
+
+		tf::Executor executor;
 
 		shared_ptr<OpenGLRendererAPI> renderer_api = nullptr;
 

@@ -77,7 +77,7 @@ namespace raytracy {
 		raytracing_kernel->SetInt("skybox", 1);
 		raytracing_canvas->BindImage();
 		scene_data_uniform_buffer->Bind();
-		renderer_api->LaunchComputeShader(static_cast<uint32_t>(canvas_size/ work_group_size), static_cast<uint32_t>(canvas_size/work_group_size), 1);
+		renderer_api->LaunchComputeShader(static_cast<uint32_t>(canvas_size / work_group_size), static_cast<uint32_t>(canvas_size / work_group_size), 1);
 
 		renderer_api->SetMemoryBarrier();
 
@@ -89,99 +89,115 @@ namespace raytracy {
 
 	void Raytracer::Preprocess(shared_ptr<renderer::Scene> const scene) {
 		RTY_PROFILE_FUNCTION();
+		tf::Taskflow taskflow;
 
 		std::vector<DirectionalLight> lights_data;
-		auto light = scene->GetLight();
-		if (light) {
-			DirectionalLight& dir_light = lights_data.emplace_back();
-			dir_light.color = light->GetColor();
-			dir_light.direction = light->GetDirection();
-			dir_light.strength = light->GetStrength();
-		}
-		light_storage_buffer->SetData(sizeof(DirectionalLight) * lights_data.size(), lights_data.data());
+		lights_data.reserve(1);
+		auto lights_task = taskflow.emplace([&](auto& runtime) {
+			{
+				RTY_PROFILE_SCOPE("Lights");
+				auto light = scene->GetLight();
+				if (light) {
+					DirectionalLight& dir_light = lights_data.emplace_back();
+					dir_light.color = light->GetColor();
+					dir_light.direction = light->GetDirection();
+					dir_light.strength = light->GetStrength();
+				}
+			}
+		});
 
 		std::vector<Material> materials_data;
-		auto& materials = renderer::MaterialLibrary::Get().GetMaterials();
-		materials_data.reserve(materials.size());
-		for (auto const& [name, material] : materials) {
-			Material& mat = materials_data.emplace_back();
-			mat.color = material->GetColor();
-			mat.specular = material->GetSpecular();
-			mat.shininess = material->GetShininess();
-		};
-		material_storage_buffer->SetData(sizeof(Material) * materials_data.size(), materials_data.data());
-
 		std::vector<Mesh> meshes_data;
 
+		auto& materials = renderer::MaterialLibrary::Get().GetMaterials();
+		materials_data.reserve(materials.size());
 		auto& meshes = scene->GetMeshes();
 		meshes_data.reserve(meshes.size());
-		for (auto const& mesh : meshes) {
-			Mesh& mesh_data = meshes_data.emplace_back();
-			auto material = mesh->GetMaterial();
-			mesh_data.material_index = static_cast<uint32_t>(std::distance(std::begin(materials), materials.find(material->GetName())));
-		}
-		meshes_storage_buffer->SetData(sizeof(Mesh) * meshes_data.size(), meshes_data.data());
+		auto material_task = taskflow.emplace([&](auto& runtime) {
+			{
+				RTY_PROFILE_SCOPE("Materials");
+				for (auto const& [name, material] : materials) {
+					Material& mat = materials_data.emplace_back();
+					mat.color = material->GetColor();
+					mat.specular = material->GetSpecular();
+					mat.shininess = material->GetShininess();
+				};
+
+				for (auto const& mesh : meshes) {
+					Mesh& mesh_data = meshes_data.emplace_back();
+					auto material = mesh->GetMaterial();
+					mesh_data.material_index = static_cast<uint32_t>(std::distance(std::begin(materials), materials.find(material->GetName())));
+				}
+			}
+		});
+
 
 		std::vector<Triangle> triangles;
 		std::vector<Vertex> vertices;
+
 		auto& triangles_data = scene->GetTriangles();
 		triangles.reserve(triangles_data.size());
 		vertices.reserve(triangles_data.size() * 3);
-
-		{
-			RTY_PROFILE_SCOPE("Triangles")
-			for (auto const& triangle_data : triangles_data) {
-				Triangle& triangle = triangles.emplace_back();
-				triangle.mesh_index = triangle_data.mesh_index;
-
-				auto& corners = triangle_data.vertices;
-				for (uint32_t i = 0; i < 3; i++) {
-					triangle.vertex_indices[i] = static_cast<uint32_t>(vertices.size());
-					Vertex& vertex = vertices.emplace_back();
-					vertex.position = corners[i].position;
-					vertex.normal = corners[i].normal;
-					vertex.color = corners[i].color;
-					vertex.tex_coords = corners[i].tex_coords;
+		auto triangle_task = taskflow.emplace([&](auto& runtime) {
+			{
+				RTY_PROFILE_SCOPE("Triangles");
+				for (auto const& triangle_data : triangles_data) {
+					Triangle& triangle = triangles.emplace_back();
+					triangle.mesh_index = triangle_data.mesh_index;
+					auto& corners = triangle_data.vertices;
+					for (uint32_t i = 0; i < 3; i++) {
+						triangle.vertex_indices[i] = static_cast<uint32_t>(vertices.size());
+						Vertex& vertex = vertices.emplace_back();
+						vertex.position = corners[i].position;
+						vertex.normal = corners[i].normal;
+						vertex.color = corners[i].color;
+						vertex.tex_coords = corners[i].tex_coords;
+					}
 				}
 			}
-		}
-		triangles_storage_buffer->SetData(sizeof(Triangle) * triangles.size(), triangles.data());
-		vertices_storage_buffer->SetData(sizeof(Vertex) * vertices.size(), vertices.data());
+		});
 
 		std::vector<Node> bounding_volume_hierarchie;
 		std::vector<uint32_t> triangle_indices;
 
 		auto& scene_bvh = scene->GetBoundingVolumeHierarchie();
 		bounding_volume_hierarchie.reserve(scene_bvh.size());
-		triangle_indices.reserve(triangles.size());
-
-		{
-			RTY_PROFILE_SCOPE("BVH")
-			uint32_t lookup_index = 0;
-			for (auto const& bvh_node : scene_bvh) {
-				Node& node = bounding_volume_hierarchie.emplace_back();
-				node.left_child_index = bvh_node.left_child_index;
-				node.right_child_index = bvh_node.right_child_index;
-				node.min_corner = bvh_node.min_corner;
-				node.max_corner = bvh_node.max_corner;
-				if (node.has_triangle = !bvh_node.triangle_indices.empty()) {
-					node.triangle_count = static_cast<uint32_t>(bvh_node.triangle_indices.size());
-					triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
-					node.lookup_index = lookup_index;
-					lookup_index = static_cast<uint32_t>(triangle_indices.size());
+		triangle_indices.reserve(scene->GetTriangles().size());
+		auto bvh_task = taskflow.emplace([&](auto& runtime) {
+			{
+				RTY_PROFILE_SCOPE("BVH");
+				uint32_t lookup_index = 0;
+				for (auto const& bvh_node : scene_bvh) {
+					Node& node = bounding_volume_hierarchie.emplace_back();
+					node.left_child_index = bvh_node.left_child_index;
+					node.right_child_index = bvh_node.right_child_index;
+					node.min_corner = bvh_node.min_corner;
+					node.max_corner = bvh_node.max_corner;
+					if (node.has_triangle = !bvh_node.triangle_indices.empty()) {
+						node.triangle_count = static_cast<uint32_t>(bvh_node.triangle_indices.size());
+						triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
+						node.lookup_index = lookup_index;
+						lookup_index = static_cast<uint32_t>(triangle_indices.size());
+					}
 				}
 			}
-		}
-
-		triangle_indices_storage_buffer->SetData(sizeof(uint32_t) * triangle_indices.size(), triangle_indices.data());
-
-		bvh_storage_buffer->SetData(sizeof(Node) * bounding_volume_hierarchie.size(), bounding_volume_hierarchie.data());
+		});
+		auto future = executor.run(std::move(taskflow));
 
 		auto camera = scene->GetCamera();
 		scene_data_uniform_buffer->SetMat4("inverse_view", glm::inverse(camera->GetViewMatrix()));
 		scene_data_uniform_buffer->SetMat4("inverse_projection", glm::inverse(camera->GetProjectionMatrix()));
 		scene_data_uniform_buffer->SetVec3("camera_position", camera->GetPosition());
 		scene_data_uniform_buffer->SetVec3("camera_direction", camera->GetDirection());
+
+		future.wait();
+		triangle_indices_storage_buffer->SetData(sizeof(uint32_t) * triangle_indices.size(), triangle_indices.data());
+		bvh_storage_buffer->SetData(sizeof(Node) * bounding_volume_hierarchie.size(), bounding_volume_hierarchie.data());
+		triangles_storage_buffer->SetData(sizeof(Triangle) * triangles.size(), triangles.data());
+		vertices_storage_buffer->SetData(sizeof(Vertex) * vertices.size(), vertices.data());
+		meshes_storage_buffer->SetData(sizeof(Mesh) * meshes_data.size(), meshes_data.data());
+		material_storage_buffer->SetData(sizeof(Material) * materials_data.size(), materials_data.data());
+		light_storage_buffer->SetData(sizeof(DirectionalLight) * lights_data.size(), lights_data.data());
 	}
 
 	void Raytracer::Shutdown() {
