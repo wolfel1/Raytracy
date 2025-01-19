@@ -89,7 +89,6 @@ namespace raytracy {
 
 	void Raytracer::Preprocess(shared_ptr<renderer::Scene> const scene) {
 		RTY_PROFILE_FUNCTION();
-		tf::Taskflow taskflow;
 
 		std::vector<DirectionalLight> lights_data;
 		lights_data.reserve(1);
@@ -182,7 +181,7 @@ namespace raytracy {
 				}
 			}
 		});
-		auto future = executor.run(std::move(taskflow));
+		auto future = executor.run(taskflow);
 
 		auto camera = scene->GetCamera();
 		scene_data_uniform_buffer->SetMat4("inverse_view", glm::inverse(camera->GetViewMatrix()));
@@ -198,6 +197,8 @@ namespace raytracy {
 		meshes_storage_buffer->SetData(sizeof(Mesh) * meshes_data.size(), meshes_data.data());
 		material_storage_buffer->SetData(sizeof(Material) * materials_data.size(), materials_data.data());
 		light_storage_buffer->SetData(sizeof(DirectionalLight) * lights_data.size(), lights_data.data());
+
+		taskflow.clear();
 	}
 
 	void Raytracer::Shutdown() {

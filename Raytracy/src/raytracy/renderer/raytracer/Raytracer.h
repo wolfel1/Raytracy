@@ -57,6 +57,7 @@ namespace raytracy {
 	private:
 
 		tf::Executor executor;
+		tf::Taskflow taskflow;
 
 		shared_ptr<OpenGLRendererAPI> renderer_api = nullptr;
 
