@@ -35,7 +35,7 @@
 
 #define RTY_BIND_EVENT_FN(fn) [this]<class T>(T& e) { return fn(e); }
 
-#define RAYTRACING 1
+#define RAYTRACING 0
 
 using std::make_shared;
 using std::shared_ptr;

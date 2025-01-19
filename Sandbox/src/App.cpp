@@ -24,8 +24,8 @@ public:
 		scene = renderer::Scene::Create(camera_controller->GetCamera());
 
 
-		/*auto ground = make_shared<renderer::Plane>(glm::vec3(0.0f, -1.5f, 0.0f), 10.0f);
-		scene->AddMesh(ground);*/
+		auto ground = make_shared<renderer::Plane>(glm::vec3(0.0f, -1.5f, 0.0f), 10.0f);
+		scene->AddMesh(ground);
 		auto mesh = make_shared<renderer::Cube>(glm::vec3(0.0f, 0.0f, 0.0f));
 		scene->AddMesh(mesh); 
 		auto sphere = make_shared<renderer::Sphere>(glm::vec3(-1.5f, 0.0f, 0.0f));
