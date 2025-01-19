@@ -23,16 +23,19 @@ public:
 
 		scene = renderer::Scene::Create(camera_controller->GetCamera());
 
+
+		/*auto ground = make_shared<renderer::Plane>(glm::vec3(0.0f, -1.5f, 0.0f), 10.0f);
+		scene->AddMesh(ground);*/
 		auto mesh = make_shared<renderer::Cube>(glm::vec3(0.0f, 0.0f, 0.0f));
 		scene->AddMesh(mesh); 
 		auto sphere = make_shared<renderer::Sphere>(glm::vec3(-1.5f, 0.0f, 0.0f));
 		scene->AddMesh(sphere); 
-		auto plane = make_shared<renderer::Plane>(glm::vec3(1.5f, 0.0f, 0.0f));
-		scene->AddMesh(plane);
+		auto sphere1 = make_shared<renderer::Sphere>(glm::vec3(1.5f, 0.0f, 0.0f));
+		scene->AddMesh(sphere1);
 
 		auto green_material = renderer::MaterialLibrary::Get().Load("GreenMaterial");
 		green_material->SetColor(glm::vec4(0.2f, 0.9f, 0.1f, 1.0f));
-		plane->SetMaterial(green_material);
+		sphere1->SetMaterial(green_material);
 
 		auto red_material = renderer::MaterialLibrary::Get().Load("RedMaterial");
 		red_material->SetColor(glm::vec4(0.9f, 0.1f, 0.1f, 1.0f));
