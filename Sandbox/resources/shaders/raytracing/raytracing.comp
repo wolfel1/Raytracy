@@ -28,8 +28,8 @@ struct Vertex {
 
 struct DirectionalLight {
 	vec3 color;
-	vec3 direction;
 	float strength;
+	vec3 direction;
 };
 
 struct Material {

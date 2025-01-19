@@ -16,9 +16,9 @@ namespace raytracy {
 	class Raytracer {
 
 		struct Node {
-			glm::vec3 min_corner;
+			alignas(16) glm::vec3 min_corner;
 			uint32_t left_child_index;
-			glm::vec3 max_corner;
+			alignas(16) glm::vec3 max_corner;
 			uint32_t right_child_index;
 			alignas(16) bool has_triangle;
 			uint32_t lookup_index;
@@ -30,26 +30,26 @@ namespace raytracy {
 		};
 
 		struct Triangle {
-			std::array<uint32_t, 3> vertex_indices;
+			alignas(16) std::array<uint32_t, 3> vertex_indices;
 			uint32_t mesh_index;
 		};
 
 		struct Vertex {
-			glm::vec3 position;
+			alignas(16) glm::vec3 position;
 			alignas(16) glm::vec3 normal;
-			glm::vec4 color;
-			glm::vec2 tex_coords;
+			alignas(16) glm::vec4 color;
+			alignas(16) glm::vec2 tex_coords;
 		};
 
 		struct DirectionalLight {
-			glm::vec3 color;
-			alignas(16) glm::vec3 direction;
+			alignas(16) glm::vec3 color;
 			float strength;
+			alignas(16) glm::vec3 direction;
 		};
 
 		struct Material {
-			glm::vec4 color;
-			glm::vec3 specular;
+			alignas(16) glm::vec4 color;
+			alignas(16) glm::vec3 specular;
 			float shininess;
 		};
 
