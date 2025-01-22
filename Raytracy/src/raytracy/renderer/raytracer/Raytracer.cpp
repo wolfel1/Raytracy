@@ -176,8 +176,8 @@ namespace raytracy {
 					if (node.has_triangle = !bvh_node.triangle_indices.empty()) {
 						node.triangle_count = static_cast<uint32_t>(bvh_node.triangle_indices.size());
 						node.lookup_index = lookup_index;
+						lookup_index += node.triangle_count;
 						triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
-						lookup_index = static_cast<uint32_t>(triangle_indices.size());
 					}
 				}
 			}
