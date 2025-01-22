@@ -3,7 +3,7 @@
 #include "./model/Mesh.h"
 #include "./model/DirectionalLight.h"
 #include "raytracer/BoundingBoxNode.h"
-#include <taskflow.hpp>
+#include <taskflow/taskflow.hpp>
 
 namespace raytracy::renderer {
 

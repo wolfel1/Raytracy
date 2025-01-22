@@ -8,7 +8,7 @@
 #include "../api/opengl/OpenGLShader.h"
 #include "../ViewportScene.h"
 #include <glm/glm.hpp>
-#include <taskflow.hpp>
+#include <taskflow/taskflow.hpp>
 
 namespace raytracy {
 

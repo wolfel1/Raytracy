@@ -7,6 +7,7 @@
 #include "../model/Material.h"
 
 #include <glad/gl.h>
+#include <taskflow/algorithm/for_each.hpp>
 
 namespace raytracy {
 
@@ -174,8 +175,8 @@ namespace raytracy {
 					node.max_corner = bvh_node.max_corner;
 					if (node.has_triangle = !bvh_node.triangle_indices.empty()) {
 						node.triangle_count = static_cast<uint32_t>(bvh_node.triangle_indices.size());
-						triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
 						node.lookup_index = lookup_index;
+						triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
 						lookup_index = static_cast<uint32_t>(triangle_indices.size());
 					}
 				}
