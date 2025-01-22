@@ -18,6 +18,8 @@ namespace raytracy::renderer {
 
 	Scene::Scene(std::shared_ptr<PerspectiveCamera> camera) : camera(camera) {
 		light = make_shared<DirectionalLight>();
+
+
 	}
 
 	void Scene::AddMesh(std::shared_ptr<Mesh> const mesh) {
@@ -50,8 +52,8 @@ namespace raytracy::renderer {
 		UpdateMeshBounds(0);
 		SubdivideMeshes(0);
 	}
-	
-	
+
+
 
 	void Scene::UpdateMeshBounds(uint32_t node_index) {
 		BoundingBoxNode& node = bounding_volume_hierarchie[node_index];
@@ -136,6 +138,7 @@ namespace raytracy::renderer {
 				return size++;
 			});
 		}
+		bounding_volume_hierarchie.reserve(bounding_volume_hierarchie.size() + triangles.size() * 2);
 
 		UpdateTriangleBounds(node_index);
 		SubdivideTriangles(node_index);
@@ -156,7 +159,7 @@ namespace raytracy::renderer {
 		}
 	}
 
-	
+
 	void Scene::SubdivideTriangles(uint32_t node_index) {
 		RTY_PROFILE_FUNCTION();
 		BoundingBoxNode node = bounding_volume_hierarchie[node_index];
@@ -189,7 +192,6 @@ namespace raytracy::renderer {
 			return;
 		}
 
-		bounding_volume_hierarchie.reserve(bounding_volume_hierarchie.size() + 2);
 		auto left_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
 		auto& left_child = bounding_volume_hierarchie.emplace_back();
 		auto right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
@@ -200,15 +202,25 @@ namespace raytracy::renderer {
 		left_child.mesh_indices = node.mesh_indices;
 		right_child.mesh_indices = std::move(node.mesh_indices);
 
-
 		node.left_child_index = left_child_index;
 		node.right_child_index = right_child_index;
 		node.triangle_indices.clear();
 		bounding_volume_hierarchie[node_index] = std::move(node);
 
-		UpdateTriangleBounds(left_child_index);
+		std::future<void> future;
+		if (left_child.triangle_indices.size() < 5) {
+			UpdateTriangleBounds(left_child_index);
+			SubdivideTriangles(left_child_index);
+		} else {
+			future = executor.async([&]() {
+				UpdateTriangleBounds(left_child_index);
+				SubdivideTriangles(left_child_index);
+			});
+		}
 		UpdateTriangleBounds(right_child_index);
-		SubdivideTriangles(left_child_index);
+		if (future.valid()) {
+			future.get();
+		}
 		SubdivideTriangles(right_child_index);
 	}
 }
