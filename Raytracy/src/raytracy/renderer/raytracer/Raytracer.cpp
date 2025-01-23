@@ -92,10 +92,10 @@ namespace raytracy {
 		RTY_PROFILE_FUNCTION();
 
 		std::vector<DirectionalLight> lights_data;
-		lights_data.reserve(1);
-		auto lights_task = taskflow.emplace([&](auto& runtime) {
+		auto lights_task = taskflow.emplace([&]() {
 			{
 				RTY_PROFILE_SCOPE("Lights");
+				lights_data.reserve(1);
 				auto light = scene->GetLight();
 				if (light) {
 					DirectionalLight& dir_light = lights_data.emplace_back();
@@ -109,13 +109,13 @@ namespace raytracy {
 		std::vector<Material> materials_data;
 		std::vector<Mesh> meshes_data;
 
-		auto& materials = renderer::MaterialLibrary::Get().GetMaterials();
-		materials_data.reserve(materials.size());
-		auto& meshes = scene->GetMeshes();
-		meshes_data.reserve(meshes.size());
-		auto material_task = taskflow.emplace([&](auto& runtime) {
+		auto material_task = taskflow.emplace([&]() {
 			{
 				RTY_PROFILE_SCOPE("Materials");
+				auto& materials = renderer::MaterialLibrary::Get().GetMaterials();
+				materials_data.reserve(materials.size());
+				auto& meshes = scene->GetMeshes();
+				meshes_data.reserve(meshes.size());
 				for (auto const& [name, material] : materials) {
 					Material& mat = materials_data.emplace_back();
 					mat.color = material->GetColor();
@@ -132,43 +132,19 @@ namespace raytracy {
 		});
 
 
-		std::vector<Triangle> triangles;
-		std::vector<Vertex> vertices;
-
-		auto& triangles_data = scene->GetTriangles();
-		triangles.reserve(triangles_data.size());
-		vertices.reserve(triangles_data.size() * 3);
-		auto triangle_task = taskflow.emplace([&](auto& runtime) {
-			{
-				RTY_PROFILE_SCOPE("Triangles");
-				for (auto const& triangle_data : triangles_data) {
-					Triangle& triangle = triangles.emplace_back();
-					triangle.mesh_index = triangle_data.mesh_index;
-					auto& corners = triangle_data.vertices;
-					for (uint32_t i = 0; i < 3; i++) {
-						triangle.vertex_indices[i] = static_cast<uint32_t>(vertices.size());
-						Vertex& vertex = vertices.emplace_back();
-						vertex.position = corners[i].position;
-						vertex.normal = corners[i].normal;
-						vertex.color = corners[i].color;
-						vertex.tex_coords = corners[i].tex_coords;
-					}
-				}
-			}
-		});
-
 		std::vector<Node> bounding_volume_hierarchie;
 		std::vector<uint32_t> triangle_indices;
 
-		auto& scene_bvh = scene->GetBoundingVolumeHierarchie();
-		bounding_volume_hierarchie.reserve(scene_bvh.size());
-		triangle_indices.reserve(scene->GetTriangles().size());
-		auto bvh_task = taskflow.emplace([&](auto& runtime) {
+		auto bvh_task = taskflow.emplace([&]() {
 			{
 				RTY_PROFILE_SCOPE("BVH");
+				auto& scene_bvh = scene->GetBoundingVolumeHierarchie();
+				bounding_volume_hierarchie.resize(scene_bvh.size());
+				triangle_indices.reserve(scene->GetTriangles().size());
+				std::atomic<uint32_t> bvh_index = 0;
 				uint32_t lookup_index = 0;
 				for (auto const& bvh_node : scene_bvh) {
-					Node& node = bounding_volume_hierarchie.emplace_back();
+					Node& node = bounding_volume_hierarchie[bvh_index++];
 					node.left_child_index = bvh_node.left_child_index;
 					node.right_child_index = bvh_node.right_child_index;
 					node.min_corner = bvh_node.min_corner;
@@ -176,13 +152,39 @@ namespace raytracy {
 					if (node.has_triangle = !bvh_node.triangle_indices.empty()) {
 						node.triangle_count = static_cast<uint32_t>(bvh_node.triangle_indices.size());
 						node.lookup_index = lookup_index;
-						lookup_index += node.triangle_count;
 						triangle_indices.insert(std::end(triangle_indices), std::begin(bvh_node.triangle_indices), std::end(bvh_node.triangle_indices));
+						lookup_index = triangle_indices.size();
 					}
 				}
 			}
 		});
 		auto future = executor.run(taskflow);
+
+		std::vector<Triangle> triangles;
+		std::vector<Vertex> vertices;
+		std::atomic<uint32_t> triangle_index = 0;
+		std::atomic<uint32_t> vertex_index = 0;
+
+		auto& triangles_data = scene->GetTriangles();
+		triangles.resize(triangles_data.size());
+		vertices.resize(triangles_data.size() * 3);
+		{
+			RTY_PROFILE_SCOPE("Triangles");
+			for (auto const& triangle_data : triangles_data) {
+				Triangle& triangle = triangles[triangle_index++];
+				triangle.mesh_index = triangle_data.mesh_index;
+				auto& corners = triangle_data.vertices;
+				for (uint32_t i = 0; i < 3; i++) {
+					uint32_t local_vertex_index = vertex_index++;
+					triangle.vertex_indices[i] = local_vertex_index;
+					Vertex& vertex = vertices[local_vertex_index];
+					vertex.position = corners[i].position;
+					vertex.normal = corners[i].normal;
+					vertex.color = corners[i].color;
+					vertex.tex_coords = corners[i].tex_coords;
+				}
+			}
+		}
 
 		auto camera = scene->GetCamera();
 		scene_data_uniform_buffer->SetMat4("inverse_view", glm::inverse(camera->GetViewMatrix()));

@@ -42,6 +42,7 @@ namespace raytracy::renderer {
 		bounding_volume_hierarchie.clear();
 		triangles.clear();
 
+		bounding_volume_hierarchie.reserve(2 * meshes.size());
 		BoundingBoxNode& root = bounding_volume_hierarchie.emplace_back();
 
 		root.mesh_indices.resize(meshes.size());
@@ -100,7 +101,6 @@ namespace raytracy::renderer {
 			return;
 		}
 
-		bounding_volume_hierarchie.reserve(bounding_volume_hierarchie.size() + 2);
 		auto left_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
 		auto& left_child = bounding_volume_hierarchie.emplace_back();
 		auto right_child_index = static_cast<uint32_t>(bounding_volume_hierarchie.size());
@@ -205,20 +205,11 @@ namespace raytracy::renderer {
 		node.triangle_indices.clear();
 		bounding_volume_hierarchie[node_index] = std::move(node);
 
-		std::future<void> future;
-		if (left_child.triangle_indices.size() < 5) {
-			UpdateTriangleBounds(left_child_index);
-			SubdivideTriangles(left_child_index);
-		} else {
-			future = executor.async([&]() {
-				UpdateTriangleBounds(left_child_index);
-				SubdivideTriangles(left_child_index);
-			});
-		}
+		
+		UpdateTriangleBounds(left_child_index);
+		SubdivideTriangles(left_child_index);
+		
 		UpdateTriangleBounds(right_child_index);
-		if (future.valid()) {
-			future.get();
-		}
 		SubdivideTriangles(right_child_index);
 	}
 }

@@ -9,9 +9,6 @@ namespace raytracy::renderer {
 
 	class Scene {
 	private:
-		tf::Executor executor;
-		tf::Taskflow taskflow;
-
 		std::shared_ptr<PerspectiveCamera> camera;
 		std::deque<std::shared_ptr<Mesh>> meshes;
 		std::vector<Triangle> triangles;
