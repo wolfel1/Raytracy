@@ -165,11 +165,11 @@ namespace raytracy {
 		std::atomic<uint32_t> triangle_index = 0;
 		std::atomic<uint32_t> vertex_index = 0;
 
-		auto& triangles_data = scene->GetTriangles();
-		triangles.resize(triangles_data.size());
-		vertices.resize(triangles_data.size() * 3);
 		{
 			RTY_PROFILE_SCOPE("Triangles");
+			auto& triangles_data = scene->GetTriangles();
+			triangles.resize(triangles_data.size());
+			vertices.resize(triangles_data.size() * 3);
 			for (auto const& triangle_data : triangles_data) {
 				Triangle& triangle = triangles[triangle_index++];
 				triangle.mesh_index = triangle_data.mesh_index;
