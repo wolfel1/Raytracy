@@ -8,10 +8,9 @@
 #include <algorithm>
 #include <fstream>
 #include <sys/stat.h>
+#include <filesystem>
 
 #include <thread>
-
-
 
 namespace raytracy {
 	struct ProfileResult
@@ -35,8 +34,7 @@ namespace raytracy {
 		int m_ProfileCount;
 	public:
 		Instrumentor()
-			: m_CurrentSession(nullptr), m_ProfileCount(0) {
-		}
+			: m_CurrentSession(nullptr), m_ProfileCount(0) {}
 
 		void BeginSession(const std::string& name, const std::string& filepath = "results.json") {
 			std::lock_guard lock(m_Mutex);
@@ -51,9 +49,17 @@ namespace raytracy {
 				InternalEndSession();
 			}
 			std::string dir = "profiling";
-			m_OutputStream.open("profiling/" + filepath);
+			m_OutputStream.open(dir + "/" + filepath);
 			if (!m_OutputStream.is_open()) {
-				_mkdir(dir.c_str());
+				try {
+					if (std::filesystem::create_directory(dir)) {
+						m_OutputStream.open(dir + "/" + filepath);
+					} else {
+						std::cerr << "Failed to create directory: " << dir << "\n";
+					}
+				} catch (const std::exception& e) {
+					std::cerr << e.what() << '\n';
+				}
 			}
 			if (m_OutputStream.is_open()) {
 				m_CurrentSession = new InstrumentationSession({ name });

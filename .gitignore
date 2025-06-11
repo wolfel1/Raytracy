@@ -1,22 +1,20 @@
 # Directories
 bin/
-bin-int/
 profiling/
+vcpkg_installed/
+.vs/
+.vscode/
+out/
 
 # Files
 *.log
 *.ppm
-
-# Visual Studio files and folder
-.vs/
-.vscode/
+Makefile
 **.sln
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
-
-compile.bat
-
-out/
-TestCoverage.bat
 Coverage
+
+# Exclude
+!vendor/bin

@@ -1,3 +1,6 @@
+
+
+
 project "Raytracy"
 	kind "StaticLib"
 	language "C++"
@@ -5,7 +8,7 @@ project "Raytracy"
 	staticruntime "off"
 
 	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
+	objdir ("../bin/intermediates/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "raytracypch.h"
 	pchsource "src/raytracypch.cpp"
@@ -13,10 +16,7 @@ project "Raytracy"
 	files {
 		"src/**.h",
 		"src/**.cpp",
-		"vendor/glm/glm/**.hpp",
-		"vendor/glm/glm/**.inl",
-		"vendor/stb_image/**.h",
-		"vendor/stb_image/**.cpp",
+		"vendor/stb/**.cpp"
 	}
 
 	defines {
@@ -27,22 +27,27 @@ project "Raytracy"
 
 	includedirs {
 		"src",
-		"../%{IncludeDir.spdlog}",
-		"../%{IncludeDir.glm}",
-		"../%{IncludeDir.glfw}",
-		"../%{IncludeDir.glad}",
-		"../%{IncludeDir.stb_image}",
-		"../%{IncludeDir.taskflow}"
+		"../%{IncludeDir.glad}"
 	}
 
 	links {
-		"glfw",
+		"glfw3",
 		"glad",
-		"opengl32.lib"
 	}
 
 	filter "system:windows"
 		systemversion "latest"
+		defines {
+			"RTY_PLATFORM_WINDOWS"
+		}
+		links {
+			"opengl32.lib"
+		}
+
+	filter "system:linux"
+        systemversion "latest"
+        defines { "RTY_PLATFORM_LINUX" }
+        links { "GL", "dl" }
 
 
 	filter "configurations:Debug"

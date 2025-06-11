@@ -5,7 +5,7 @@ project "Sandbox"
 	staticruntime "off"
 
 	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
+	objdir ("../bin/intermediates/" .. outputdir .. "/%{prj.name}")
 
 	files {
 		"src/**.h",
@@ -13,11 +13,7 @@ project "Sandbox"
 	}
 
 	includedirs {
-		"../Raytracy/src",
-		"../Raytracy/vendor",
-		"../%{IncludeDir.spdlog}",
-		"../%{IncludeDir.glm}",
-		"../%{IncludeDir.taskflow}"
+		"../Raytracy/src"
 	}
 
 	defines {
@@ -25,12 +21,25 @@ project "Sandbox"
 		"_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS"
 	}
 
+	postbuildcommands {
+        "{COPYDIR} resources/ %{cfg.targetdir}"
+    }
+
 	links {
-		"Raytracy"
+		"Raytracy",
+		"glfw3",
+		"glad",
+		"fmt",
 	}
+
+	filter "system:linux"
+        systemversion "latest"
+        defines { "RTY_PLATFORM_LINUX" }
+        targetname ("%{prj.name}.out")
 
 	filter "system:windows"
 		systemversion "latest"
+        defines { "RTY_PLATFORM_WINDOWS" }
 		
 
 	filter "configurations:Debug"

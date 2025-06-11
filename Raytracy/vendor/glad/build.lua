@@ -1,17 +1,16 @@
 project "glad"
 	kind "StaticLib"
 	language "C"
-	staticruntime "off"
-	warnings "off"
+	staticruntime "on"
+	warnings "Off"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("../../../bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("../../../bin/intermediates/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
-		"include/glad/gl.h",
-		"include/KHR/khrplatform.h",
-		"src/gl.c"
+		"include/**/*.h",
+		"src/*.c"
 	}
 
 	includedirs {
@@ -20,7 +19,6 @@ project "glad"
 
 	filter "system:linux"
 		pic "On"
-
 		systemversion "latest"
 
 	filter "system:windows"
