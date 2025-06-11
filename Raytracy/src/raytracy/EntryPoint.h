@@ -5,8 +5,6 @@
 #include "Application.h"
 #include "debug/Instrumentor.h"
 
-#ifdef RTY_PLATFORM_WINDOWS
-
 extern raytracy::Application* raytracy::CreateApplication();
 
 namespace raytracy {
@@ -36,6 +34,3 @@ namespace raytracy {
 int main(int argc, char** argv) {
 	return raytracy::Main(argc, argv);
 }
-#else
-#error This app only supports Windows for now
-#endif // RTY_PLATFORM_WINDOWS
