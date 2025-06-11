@@ -3,7 +3,6 @@
 #include "./model/Mesh.h"
 #include "./model/DirectionalLight.h"
 #include "raytracer/BoundingBoxNode.h"
-#include <taskflow/taskflow.hpp>
 
 namespace raytracy::renderer {
 
@@ -40,7 +39,7 @@ namespace raytracy::renderer {
 
 		void AddSkybox();
 
-		shared_ptr<Skybox> GetSkybox() const{
+		shared_ptr<Skybox> GetSkybox() const {
 			return skybox;
 		}
 
@@ -51,7 +50,7 @@ namespace raytracy::renderer {
 		std::vector<Triangle> const& GetTriangles() const {
 			return triangles;
 		}
-		
+
 		std::vector<BoundingBoxNode> const& GetBoundingVolumeHierarchie() const {
 			return bounding_volume_hierarchie;
 		}

@@ -4,6 +4,7 @@
         "glm",
         "stb",
         "spdlog",
-        "gtest"
+        "gtest",
+        "taskflow"
     ]
 }
