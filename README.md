@@ -1,3 +1,5 @@
+This project is moved to (https://codeberg.org/wolfel/Raytracy).
+
 # Raytracy
 
 This app is meant to experiment with raytracing and other render techniques.
