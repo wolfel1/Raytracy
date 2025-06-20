@@ -37,13 +37,16 @@ namespace raytracy {
 #ifdef RTY_DEBUG
 			if (Renderer::GetAPI() == API::OpenGL) {
 				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+				glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 			}
 #endif
 			glfwWindowHint(GLFW_SAMPLES, 4);
 			window_handle = glfwCreateWindow(window_data.width, window_data.height, window_data.name.c_str(), NULL, NULL);
 			RTY_ASSERT(window_handle, "Could not create window!");
 		}
-		
+
 
 		graphics_context = OpenGLContext::Create();
 		graphics_context->Init(window_handle);

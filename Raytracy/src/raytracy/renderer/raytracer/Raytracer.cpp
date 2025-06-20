@@ -207,6 +207,9 @@ namespace raytracy {
 	void Raytracer::Shutdown() {
 		RTY_PROFILE_FUNCTION();
 		renderer_api = nullptr;
+		raytracing_canvas = nullptr;
+		raytracing_kernel = nullptr;
+		canvas_shader = nullptr;
 		scene_data_uniform_buffer = nullptr;
 		bvh_storage_buffer = nullptr;
 		triangles_storage_buffer = nullptr;
