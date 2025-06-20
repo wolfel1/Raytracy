@@ -1,4 +1,4 @@
-This project is moved to (https://codeberg.org/wolfel/Raytracy).
+This project is moved to https://codeberg.org/wolfel/Raytracy.
 
 # Raytracy
 
